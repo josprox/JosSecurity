@@ -1,94 +1,13 @@
 <?php
 
-// JosSecurity, la mejor seguridad al alcance de tus manos.
-require __DIR__ . './vendor/autoload.php';
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
-
-date_default_timezone_set($_ENV['ZONA_HORARIA']);
-$fecha = date("Y-m-d H:i:s");
-
-$host = $_ENV['HOST'];
-$user = $_ENV['USUARIO'];
-$pass = $_ENV['CONTRA'];
-$DB = $_ENV['BASE_DE_DATOS'];
-
-echo "<script>console.log('JosSecurity está funcionando');</script>";
-
-function head(){
-    echo "<script>console.log('JosSecurity Head está activo');</script>";
-    include "./routes/head.php";
-}
-
-
-function footer(){
-    echo "<script>console.log('JosSecurity footer está activo');</script>";
-}
-
-function conect_mysqli($host,$user,$pass,$database){
-    $conexion = new mysqli("$host","$user", "$pass","$database");;
-    $conexion->set_charset("utf8");
-    
-    // AGREGANDO CHARSET UTF8
-    if (!$conexion->set_charset("utf8")) {
-        printf("Error código JSS_utf8, no se puede cargar el conjunto de caracteres utf8: %s\n", $conexion->error);
-        exit();
-    }
-    
-    if($conexion == TRUE){
-        echo "<script>console.log('La conexión mysqli ha funcionado');</script>";
-    }else{
-        echo "<script>console.log('La conexión mysqli ha fallado');</script>";
-    }
-
-}
-
-function conect_mysql($host,$database,$user,$pass){
-
-    try {
-        $pdo = new PDO('mysql:host='.$host.';dbname='.$database.'', $user, $pass);
-        //echo "conectado";
-    } catch (PDOException $e) {
-        print "¡Error!: " . $e->getMessage() . "<br/>";
-        die();
-    }
-
-    if($pdo == TRUE){
-        echo "<script>console.log('La conexión mysql ha funcionado');</script>";
-    }else{
-        echo "<script>console.log('La conexión mysql ha fallado');</script>";
-    }
-}
-
-function mail_smtp_v1_3($nombre,$asunto,$cuerpo,$correo){
-    $nombre = $nombre;
-    $asunto = $asunto;
-    $cuerpo = $cuerpo;
-    $correo = $correo;
-    require "./config/correo.php";
-
-}
-
-conect_mysqli($host,$user,$pass,$DB);
-conect_mysql($host,$DB,$user,$pass);
-
-if(isset($_POST['mail'])){
-	$nombre = $_POST['nombre'];
-	$asunto = $_POST['asunto'];
-	$cuerpo = $_POST['cuerpo'];
-	$correo = $_POST['correo'];
-    mail_smtp_v1_3($nombre,$asunto,$cuerpo,$correo);
-    echo "<script>console.log('Se ha mandado un correo');</script>";
-}
-
+require __DIR__ . "/jossecurity.php";
 
 ?>
-
 <!doctype html>
 <html lang="es-MX">
 
 <head>
-  <title>Title</title>
+  <title><?php echo $nombre_app," versión: ", $version_app; ?></title>
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -105,7 +24,7 @@ if(isset($_POST['mail'])){
 
     <nav class="navbar navbar-expand-sm navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="http://github.com/josprox/JosSecurity">JosSecurity</a>
+            <a class="navbar-brand" href="http://github.com/josprox/JosSecurity"><?php echo $nombre_app; ?></a>
             <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavId" aria-controls="collapsibleNavId"
                 aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -134,13 +53,65 @@ if(isset($_POST['mail'])){
     <div class="container">
 
         <div class="alert alert-primary" role="alert">
-          <h4 class="alert-heading">JosSecurity</h4>
-          <p>Sistema de control de datos</p>
+          <h4 class="alert-heading"><?php echo $nombre_app; ?></h4>
+          <p>Sistema de control de datos. Versión: <?php echo $version_app; ?>.</p>
           <hr>
-          <p class="mb-0">Muchas gracias por instalar JosSecurity, este es el apartado principal donde deberás incluir en php cualquier función a usar dentro de php.</p>
+          <p class="mb-0" align="justify">Muchas gracias por instalar <?php echo $nombre_app; ?>, este es el apartado principal donde deberás incluir en php cualquier función a usar dentro de php.</p>
         </div>
 
     </div>
+
+    <?php
+    if (isset($_POST["ingresar"])){
+        login($host,$user,$pass,$DB,$_POST['txtCorreo'],$_POST['txtPassword'],"users");
+        header("Location: ./admin/");
+    }
+
+    ?>
+
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-4">
+            </div>
+
+            <div class="col-md-4">
+                <br>
+                <div class="card">
+                    <div class="card-header">
+                        Inicio de sesión
+                    </div>
+                    <div class="card-body">
+                        
+                        <form action="<?php $_SERVER["PHP_SELF"]; ?>" method="post">
+
+                            <div class="mb-3">
+                              <label for="txtCorreo" class="form-label">Correo:</label>
+                              <input type="email" class="form-control" name="txtCorreo" id="txtCorreo" aria-describedby="helpId" placeholder="Inserta tu usuario">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="txtPassword" class="form-label">Contraseña:</label>
+                                <input type="password" class="form-control" name="txtPassword" id="txtPassword" aria-describedby="helpId" placeholder="Inserta tu contraseña">
+                              </div>
+
+                            <button type="submit" name="ingresar" class="btn btn-success">Entrar</button>
+
+                        </form>
+
+                    </div>
+                    <div class="card-footer text-muted">
+                        JOSPROX MX | Internacional
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+            </div>
+            
+        </div>
+    </div>
+
     
     <script>
       var alertList = document.querySelectorAll('.alert');
