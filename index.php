@@ -2,19 +2,22 @@
 
 require __DIR__ . "/jossecurity.php";
 
+if (isset($_SESSION['id_usuario'])) {
+    header("Location: ./admin/");
+}
+
+login_cookie($host,$user,$pass,$DB,"users");
+
 ?>
 <!doctype html>
 <html lang="es-MX">
 
 <head>
   <title><?php echo $nombre_app," versión: ", $version_app; ?></title>
+  <link rel="shortcut icon" href="./resourses/img/logo transparente/vector/default.svg" type="image/x-icon">
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-  <!-- Bootstrap CSS v5.2.0-beta1 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
-    integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
 
     <?php head(); ?>
 
@@ -24,7 +27,7 @@ require __DIR__ . "/jossecurity.php";
 
     <nav class="navbar navbar-expand-sm navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="http://github.com/josprox/JosSecurity"><?php echo $nombre_app; ?></a>
+            <a class="navbar-brand" href="https://github.com/josprox/JosSecurity"><?php echo $nombre_app; ?></a>
             <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavId" aria-controls="collapsibleNavId"
                 aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -35,7 +38,7 @@ require __DIR__ . "/jossecurity.php";
                         <a class="nav-link active" href="./" aria-current="page">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="https//josprox.com/">Sitio web</a>
+                        <a class="nav-link" href="https://josprox.com/">Sitio web</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Otros proyectos</a>
@@ -52,12 +55,33 @@ require __DIR__ . "/jossecurity.php";
 
     <div class="container">
 
+        <?php
+        if($_ENV['DEBUG'] ==1){?>
+
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <strong>Advertencia</strong> Actualmente tienes el modo DEBUG activado, si estás en modo prueba no hay de que preocuparse, si estás en un entorno de producción favor de desactivar el modo DEBUG en el panel de administración o modificando el archivo .env.
+        </div>
+
         <div class="alert alert-primary" role="alert">
           <h4 class="alert-heading"><?php echo $nombre_app; ?></h4>
           <p>Sistema de control de datos. Versión: <?php echo $version_app; ?>.</p>
           <hr>
-          <p class="mb-0" align="justify">Muchas gracias por instalar <?php echo $nombre_app; ?>, este es el apartado principal donde deberás incluir en php cualquier función a usar dentro de php.</p>
+          <p class="mb-0" align="justify">Muchas gracias por instalar <?php echo $nombre_app; ?>, para poder usar la librería deberas incluir al archivo jossecurity.php en tus archivos principales del proyecto.</p>
         </div>
+
+        <?php
+        }
+        ?>
+        
+        <script>
+          var alertList = document.querySelectorAll('.alert');
+          alertList.forEach(function (alert) {
+            new bootstrap.Alert(alert)
+          })
+        </script>
+        
+
 
     </div>
 
@@ -112,6 +136,24 @@ require __DIR__ . "/jossecurity.php";
         </div>
     </div>
 
+    <br>
+
+    <div class="container">
+    <?php
+        if($_ENV['DEBUG'] !=1){?>
+
+            <div class="alert alert-success" role="alert">
+                <strong><?php echo $nombre_app; ?></strong> El sistema se encuentra funcionando.
+            </div>
+            
+
+        <?php
+        }
+        ?>
+    
+    </div>
+
+    <?php footer(); ?>
     
     <script>
       var alertList = document.querySelectorAll('.alert');
@@ -121,14 +163,6 @@ require __DIR__ . "/jossecurity.php";
     </script>
     
 
-  <!-- Bootstrap JavaScript Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
-    integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous">
-  </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
-    integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK" crossorigin="anonymous">
-  </script>
 </body>
 
 </html>

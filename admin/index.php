@@ -1,10 +1,16 @@
 <?php
 
 include __DIR__ . "/../jossecurity.php";
+
+login_cookie($host,$user,$pass,$DB,"users");
+
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: ../");
 }
+
 $iduser = $_SESSION['id_usuario'];
+
+$row = consulta_mysqli($host,$user,$pass,$DB,"name","users","","where","id",$iduser,"");
 
 if(isset($_POST['salir'])){
   logout($host,$user,$pass,$DB,$iduser,"users");
@@ -18,46 +24,49 @@ if(isset($_POST['salir'])){
 
 <head>
   <title><?php echo $nombre_app," versión: ", $version_app; ?></title>
+  <?php head_admin(); ?>
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-  <!-- Bootstrap CSS v5.2.0-beta1 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
-    integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
 
 </head>
 
 <body>
 
-<div class="card" style="width:18rem;">
-  <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" class="card-img-top" alt="...">
-  <div class="card-body">
-    <h5 class="card-title">Iniciaste sesión</h5>
-    <h6 class="card-subtitle mb-2 text-muted ">ID: <?php echo $iduser; ?></h6>
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-    b5
-  </div>
-</div>
+  <?php navbar_admin(); ?>
 
-<div class="container">
-  <form action="<?php $_SERVER["PHP_SELF"]; ?>" method="post">
-    <div class="mb-3 row">
-      <div class="offset-sm-4 col-sm-8">
-        <button name ="salir" type="submit" class="btn btn-primary">Salir</button>
-      </div>
+  <br>
+
+  <div class="container">
+
+  <?php
+    if($_ENV['DEBUG'] ==1){
+  ?>
+
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <strong>Advertencia</strong> Actualmente tienes el modo DEBUG activado, si estás en modo prueba no hay de que preocuparse, si estás en un entorno de producción favor de desactivar el modo DEBUG en el panel de administración o modificando el archivo .env.
     </div>
-  </form>
-</div>
+
+  <?php
+    }
+  ?>
+
+  <h1 align="center">Bienvenido a <?php echo $nombre_app; ?></h1>
+  <p align="center">Un gusto volver a verte <?php echo $row['name']; ?></p>
+  <p align="center">Versión: <?php echo $version_app; ?></p>
+
+
+  <div class="card">
+    <img class="card-img-top" src="./../resourses/img/logo azul/cover.png" alt="Title">
+  </div>
+
+  <br>
+
+  </div>
 
   <!-- Bootstrap JavaScript Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
-    integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous">
-  </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
-    integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK" crossorigin="anonymous">
-  </script>
+  <?php footer_admin(); ?>
   <script src="../node_modules/jquery/dist/jquery.min.js"></script>
 </body>
 

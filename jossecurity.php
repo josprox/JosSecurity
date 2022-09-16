@@ -1,6 +1,8 @@
 <?php
 
 // JosSecurity, la mejor seguridad al alcance de tus manos.
+
+// NO ELIMINES las lineas 6 a 9 por seguridad, si tu borras esta linea dejará de funcionar JosSecurity.
 require __DIR__ . './vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
@@ -18,21 +20,74 @@ $user = $_ENV['USUARIO'];
 $pass = $_ENV['CONTRA'];
 $DB = $_ENV['BASE_DE_DATOS'];
 
-echo "<script>console.log('".$nombre_app." está funcionando.');</script>";
-
-function head(){
-    echo "<script>console.log('".$_ENV['NAME_APP']." Head está activo.');</script>";
-    include __DIR__ . "./routes/head.php";
+if ($_ENV['DEBUG'] == 1) {
+    echo "<script>console.log('".$nombre_app." está funcionando.');</script>";
 }
 
 
+function head(){
+    if ($_ENV['DEBUG'] == 1){
+        echo "<script>console.log('".$_ENV['NAME_APP']." Head está activo.');</script>";
+    }
+    include __DIR__ . "./routes/head/head.php";
+}
+
+function head_admin(){
+    if ($_ENV['DEBUG'] == 1){
+        echo "<script>console.log('".$_ENV['NAME_APP']." Head admin está activo.');</script>";
+    }
+    include __DIR__ . "./routes/head/head_admin.php";
+}
+
+function navbar_admin(){
+    if ($_ENV['DEBUG'] == 1){
+        echo "<script>console.log('".$_ENV['NAME_APP']." navbar admin está activo.');</script>";
+    }
+    include __DIR__ . "./routes/navbar/navbar.php";
+}
+
 function footer(){
-    echo "<script>console.log('".$_ENV['NAME_APP']." footer está activo.');</script>";
+    if ($_ENV['DEBUG'] == 1){
+        echo "<script>console.log('".$_ENV['NAME_APP']." footer está activo.');</script>";
+    }
+    include __DIR__ . "./routes/footer/footer.php";
+}
+
+function footer_admin(){
+    if ($_ENV['DEBUG'] == 1){
+        echo "<script>console.log('".$_ENV['NAME_APP']." footer admin está activo.');</script>";
+    }
+    include __DIR__ . "./routes/footer/footer_admin.php";
+}
+
+function edit_file($titulo,$directorio){
+    $archivo = strip_tags($directorio);
+    if(isset($_POST['enviar'])){
+        $fp=fopen($archivo, "w+");
+        fputs($fp,$_POST['contenido']);
+        fclose($fp);
+        echo "Editado correctamente";
+    }
+
+    $fp=fopen($archivo, "r");
+    $contenido = fread($fp, filesize($archivo));
+    $contenido = htmlspecialchars($contenido);
+    fclose($fp);
+    echo '<h1 align="center">'.$titulo.'</h1>';
+    echo '<form action="" method="post">';
+    echo '<div class="mb-3">';
+    echo "<textarea class='form-control' name='contenido' rows='15'>$contenido</textarea>";
+    echo '</div>';
+    echo "<center><input type='submit' class='btn btn-success' name='enviar' value='Guardar archivo'></center>";
+    echo "</form>";
 }
 
 if ($_ENV['CONECT_DATABASE'] == 1){
 
-    echo "<script>console.log('Se ha activado la función para usar la base de datos.');</script>";
+    if ($_ENV['DEBUG'] == 1){
+        echo "<script>console.log('Se ha activado la función para usar la base de datos.');</script>";
+    }
+
 
     if($_ENV['CONECT_MYSQLI'] == 1){
 
@@ -47,9 +102,13 @@ if ($_ENV['CONECT_DATABASE'] == 1){
             }
             
             if($conexion == TRUE){
-                echo "<script>console.log('La conexión mysqli ha funcionado.');</script>";
+                if ($_ENV['DEBUG'] == 1){
+                    echo "<script>console.log('La conexión mysqli ha funcionado.');</script>";
+                }
             }else{
-                echo "<script>console.log('La conexión mysqli ha fallado.');</script>";
+                if ($_ENV['DEBUG'] == 1){
+                    echo "<script>console.log('La conexión mysqli ha fallado.');</script>";
+                }
             }
         
             return $conexion;
@@ -60,7 +119,9 @@ if ($_ENV['CONECT_DATABASE'] == 1){
 
     }
     if($_ENV['CONECT_MYSQLI'] != 1){
-        echo "<script>console.log('La conexión mysqli está desactivada.');</script>";
+        if ($_ENV['DEBUG'] == 1){
+            echo "<script>console.log('La conexión mysqli está desactivada.');</script>";
+        }
     }
 
     if($_ENV['CONECT_MYSQL'] == 1){
@@ -76,9 +137,13 @@ if ($_ENV['CONECT_DATABASE'] == 1){
             }
         
             if($pdo == TRUE){
-                echo "<script>console.log('La conexión mysql ha funcionado.');</script>";
+                if ($_ENV['DEBUG'] == 1){
+                    echo "<script>console.log('La conexión mysql ha funcionado.');</script>";
+                }
             }else{
-                echo "<script>console.log('La conexión mysql ha fallado.');</script>";
+                if ($_ENV['DEBUG'] == 1){
+                    echo "<script>console.log('La conexión mysql ha fallado.');</script>";
+                }
             }
         
             return $pdo;
@@ -88,11 +153,15 @@ if ($_ENV['CONECT_DATABASE'] == 1){
 
     }
     if($_ENV['CONECT_MYSQL'] != 1){
-        echo "<script>console.log('La conexión mysql está desactivada.');</script>";
+        if ($_ENV['DEBUG'] == 1){
+            echo "<script>console.log('La conexión mysql está desactivada.');</script>";
+        }
     }
 
 }else{
-    echo "<script>console.log('Se ha desactivado el uso de bases de datos.');</script>";
+    if ($_ENV['DEBUG'] == 1){
+        echo "<script>console.log('Se ha desactivado el uso de bases de datos.');</script>";
+    }
 }
 
 function login($host,$user,$pass,$DB,$login_email,$login_password,$table_DB){
@@ -122,20 +191,53 @@ function login($host,$user,$pass,$DB,$login_email,$login_password,$table_DB){
                 setcookie("COOKIE_DATA_INDEFINED_SESSION[user]", $usuario, time()+$_ENV['COOKIE_SESSION'], "/");
                 setcookie("COOKIE_DATA_INDEFINED_SESSION[pass]", $password, time()+$_ENV['COOKIE_SESSION'], "/");
 
-                }else{
-                    echo "<script>
-                    alert('Contraseña incorrecta, vuélvelo a intentar o cambia la contraseña. Error ".$_ENV['NAME_APP']."_219');
-                    window.location= './';
-                  </script>";
-                  }
-            } else {
-                echo "<script>
-                    alert('Ninguno de los dos datos existen. Error ".$_ENV['NAME_APP']."_220');
-                    window.location= './';
-                </script>";
+                }
             }
 
             
+}
+
+function login_cookie($host,$user,$pass,$DB,$table_DB){
+    $conexion = conect_mysqli($host,$user,$pass,$DB);
+    if (isset($_COOKIE['COOKIE_INDEFINED_SESSION'])) {
+        if ($_COOKIE['COOKIE_INDEFINED_SESSION']) {
+            $nombre_user = $_COOKIE['COOKIE_DATA_INDEFINED_SESSION']['user'];
+            $password_user = $_COOKIE['COOKIE_DATA_INDEFINED_SESSION']['pass'];
+    
+            $sql = "SELECT id, password FROM $table_DB WHERE email = '$nombre_user'";
+            $resultado = $conexion->query($sql);
+            $rows = $resultado->num_rows;
+            if ($rows > 0) {
+                $row = $resultado->fetch_assoc();
+                $password_encriptada = $row['password'];
+                if(password_verify($password_user,$password_encriptada) == TRUE){
+                    $_SESSION['id_usuario'] = $row['id'];
+                }
+            }
+        }
+    }
+}
+
+function registro($host,$user,$pass,$DB,$table_db,$name_user,$email_user,$contra_user,$rol_user){
+    $conexion = conect_mysqli($host,$user,$pass,$DB);
+    $nombre = mysqli_real_escape_string($conexion, $name_user);
+    $email = mysqli_real_escape_string($conexion, $email_user);
+	$password = mysqli_real_escape_string($conexion, $contra_user);
+	$password_encriptada = password_hash($password,PASSWORD_BCRYPT,["cost"=>10]);
+	$rol = mysqli_real_escape_string($conexion,$rol_user);
+    $rol = (int)$rol;
+	date_default_timezone_set($_ENV['ZONA_HORARIA']);
+    $fecha = date("Y-m-d H:i:s");
+
+
+    $sql_check = "SELECT id FROM $table_db WHERE email = '$email'";
+    $sql_rest = $conexion->query($sql_check);
+    $filas = $sql_rest -> num_rows;
+
+    if ($filas < 1) {
+        $sql_insert = "INSERT INTO $table_db (name, email, password, id_rol, created_at, updated_at) VALUES ('$nombre', '$email', '$password_encriptada', '$rol', '$fecha', NULL) ";
+        $sql_inyect = $conexion->query($sql_insert);
+    }
 }
 
 function logout($host,$user,$pass,$DB,$id,$table_DB){
@@ -178,6 +280,30 @@ if(isset($_POST['mail'])){
     echo "<script>console.log('Se ha mandado un correo');
     window.location= './';
     </script>";
+}
+
+function consulta_mysqli($host,$user,$pass,$DB,$select_db,$table_db,$custom,$sentence,$data,$compare,$inner){
+    $conexion = conect_mysqli($host,$user,$pass,$DB);
+    if ($sentence == "clasic"){
+        $sql = "SELECT $select_db FROM $table_db";
+        $resultado = $conexion->query($sql);
+        return $resultado->fetch_assoc();
+    }
+    if ($sentence == "where"){
+        $sql = "SELECT $select_db FROM $table_db $custom WHERE $data = $compare";
+        $resultado = $conexion->query($sql);
+        return $resultado->fetch_assoc();
+    }
+    if ($sentence == "innerjoin"){
+        $sql = "SELECT $select_db FROM $table_db INNER JOIN $data ON $compare = $inner $custom";
+        $resultado = $conexion->query($sql);
+        return $resultado->fetch_assoc();
+    }
+    if ($sentence == "custom"){
+        $sql = "SELECT $select_db FROM $table_db $custom";
+        $resultado = $conexion->query($sql);
+        return $resultado->fetch_assoc();
+    }
 }
 
 
