@@ -1,13 +1,16 @@
 <?php
 
-include __DIR__ . "/../jossecurity.php";
+include __DIR__ . "/../../jossecurity.php";
 
 login_cookie($host,$user,$pass,$DB,"users");
 
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: ../");
 }
+
 $iduser = $_SESSION['id_usuario'];
+
+$row = consulta_mysqli($host,$user,$pass,$DB,"name","users","","where","id",$iduser,"");
 
 if(isset($_POST['salir'])){
   logout($host,$user,$pass,$DB,$iduser,"users");
@@ -36,8 +39,16 @@ if(isset($_POST['salir'])){
 
   <div class="container">
 
-    <?php edit_file("Archivo footer del administrador","../routes/footer/footer_admin.php"); ?>
+  <h1 align="center">Bienvenido a <?php echo $nombre_app; ?></h1>
+  <p align="center">Un gusto volver a verte <?php echo $row['name']; ?></p>
+  <p align="center">Versión: <?php echo $version_app; ?></p>
 
+
+  <div class="card">
+    <img class="card-img-top" src="./../../resourses/img/logo azul/cover.png" alt="Title">
+  </div>
+
+  <br>
 
   </div>
 

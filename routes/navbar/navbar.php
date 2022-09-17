@@ -16,8 +16,12 @@
         <li class="nav-item">
           <a class="nav-link" href="registrar" aria-current="page">Registrar</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="env">Configuración</a>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Configuraciones</a>
+          <div class="dropdown-menu" aria-labelledby="dropdownId">
+            <a class="dropdown-item" href="env">Archivo env</a>
+            <a class="dropdown-item" href="htaccess">Archivo htaccess</a>
+          </div>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Herramientas</a>
@@ -26,6 +30,12 @@
             <a class="dropdown-item" href="footer">Footer global</a>
             <a class="dropdown-item" href="head_admin">Head del administrador</a>
             <a class="dropdown-item" href="footer_admin">Footer del administrador</a>
+            <?php
+            if($_ENV['PLUGINS']==1){?>
+            <a class="dropdown-item" href="backups">Realizar Backup</a>
+            <?php
+            }
+            ?>
           </div>
         </li>
         <li class="nav-item dropdown">
@@ -42,3 +52,20 @@
     </div>
   </div>
 </nav>
+
+<br>
+
+<div class="container">
+<?php
+    if($_ENV['DEBUG'] ==1){
+  ?>
+
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <strong>Advertencia</strong> Actualmente tienes el modo DEBUG activado, si estás en modo prueba no hay de que preocuparse, si estás en un entorno de producción favor de desactivar el modo DEBUG en el panel de administración o modificando el archivo .env.
+    </div>
+
+  <?php
+    }
+  ?>
+</div>

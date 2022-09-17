@@ -305,6 +305,10 @@ function consulta_mysqli($host,$user,$pass,$DB,$select_db,$table_db,$custom,$sen
         return $resultado->fetch_assoc();
     }
 }
+if ($_ENV['PLUGINS'] == 1){
 
+    require __DIR__ . "./plugins/autoload.php";
+
+}
 
 ?>

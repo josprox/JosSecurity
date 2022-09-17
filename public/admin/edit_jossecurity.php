@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__ . "/../jossecurity.php";
+include __DIR__ . "/../../jossecurity.php";
 
 login_cookie($host,$user,$pass,$DB,"users");
 
@@ -36,7 +36,7 @@ if(isset($_POST['salir'])){
 
   <div class="container">
 
-    <?php edit_file("Archivo head global","../routes/head/head.php"); ?>
+    <?php edit_file("Archivo jossecurity","./../../jossecurity.php"); ?>
 
 
   </div>
