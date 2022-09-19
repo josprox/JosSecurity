@@ -164,7 +164,7 @@ if ($_ENV['CONECT_DATABASE'] == 1){
     }
 }
 
-function login($host,$user,$pass,$DB,$login_email,$login_password,$table_DB){
+function login($host,$user,$pass,$DB,$login_email,$login_password,$table_DB,$location){
 
     $conexion = conect_mysqli($host,$user,$pass,$DB);
 
@@ -190,6 +190,8 @@ function login($host,$user,$pass,$DB,$login_email,$login_password,$table_DB){
                 setcookie("COOKIE_INDEFINED_SESSION", TRUE, time()+$_ENV['COOKIE_SESSION'], "/");
                 setcookie("COOKIE_DATA_INDEFINED_SESSION[user]", $usuario, time()+$_ENV['COOKIE_SESSION'], "/");
                 setcookie("COOKIE_DATA_INDEFINED_SESSION[pass]", $password, time()+$_ENV['COOKIE_SESSION'], "/");
+
+                header("Location: $location");
 
                 }
             }
@@ -240,6 +242,22 @@ function registro($host,$user,$pass,$DB,$table_db,$name_user,$email_user,$contra
     }
 }
 
+function resetear_contra($host,$user,$pass,$DB,$email){
+    $conexion = conect_mysqli($host,$user,$pass,$DB);
+    $key = "";
+    $pattern = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    $max = strlen($pattern)-1;
+    for($i = 0; $i < 12; $i++){
+        $key .= substr($pattern, mt_rand(0,$max), 1);
+    }
+    $password_encriptada = password_hash($key,PASSWORD_BCRYPT,["cost"=>10]);
+    date_default_timezone_set($_ENV['ZONA_HORARIA']);
+    $fecha = date("Y-m-d H:i:s");
+    $insert = "UPDATE `users` SET `password` = '$password_encriptada' WHERE `users`.`email` = '$email'";
+    mysqli_query($conexion, $insert);
+    return $key;
+}
+
 function logout($host,$user,$pass,$DB,$id,$table_DB){
 
     $conexion = conect_mysqli($host,$user,$pass,$DB);
@@ -262,24 +280,12 @@ function logout($host,$user,$pass,$DB,$id,$table_DB){
 }
 
 function mail_smtp_v1_3($nombre,$asunto,$cuerpo,$correo){
-    $nombre = $nombre;
-    $asunto = $asunto;
-    $cuerpo = $cuerpo;
-    $correo = $correo;
-    require "./config/correo.php";
-
-}
-
-
-if(isset($_POST['mail'])){
-	$nombre = $_POST['nombre'];
-	$asunto = $_POST['asunto'];
-	$cuerpo = $_POST['cuerpo'];
-	$correo = $_POST['correo'];
-    mail_smtp_v1_3($nombre,$asunto,$cuerpo,$correo);
-    echo "<script>console.log('Se ha mandado un correo');
-    window.location= './';
-    </script>";
+    if($_ENV['SMTP_ACTIVE'] == 1){
+        require __DIR__ . "./config/correo.php";
+    }
+    if($_ENV['SMTP_ACTIVE'] != 1){
+        echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
+    }
 }
 
 function consulta_mysqli($host,$user,$pass,$DB,$select_db,$table_db,$custom,$sentence,$data,$compare,$inner){
@@ -295,16 +301,40 @@ function consulta_mysqli($host,$user,$pass,$DB,$select_db,$table_db,$custom,$sen
         return $resultado->fetch_assoc();
     }
     if ($sentence == "innerjoin"){
-        $sql = "SELECT $select_db FROM $table_db INNER JOIN $data ON $compare = $inner $custom";
-        $resultado = $conexion->query($sql);
-        return $resultado->fetch_assoc();
-    }
-    if ($sentence == "custom"){
-        $sql = "SELECT $select_db FROM $table_db $custom";
+        $sql = "SELECT $select_db FROM $table_db INNER JOIN $inner ON $compare = $data $custom";
         $resultado = $conexion->query($sql);
         return $resultado->fetch_assoc();
     }
 }
+
+function consulta_mysqli_clasic($host,$user,$pass,$DB,$select_db,$table_db){
+    $conexion = conect_mysqli($host,$user,$pass,$DB);
+    $sql = "SELECT $select_db FROM $table_db";
+    $resultado = $conexion->query($sql);
+    return $resultado->fetch_assoc();
+}
+
+function consulta_mysqli_where($host,$user,$pass,$DB,$select_db,$table_db,$data,$compare){
+    $conexion = conect_mysqli($host,$user,$pass,$DB);
+    $sql = "SELECT $select_db FROM $table_db WHERE $data = $compare";
+    $resultado = $conexion->query($sql);
+    return $resultado->fetch_assoc();
+}
+
+function consulta_mysqli_innerjoin($host,$user,$pass,$DB,$select_db,$table_db,$inner,$data,$compare){
+    $conexion = conect_mysqli($host,$user,$pass,$DB);
+    $sql = "SELECT $select_db FROM $table_db INNER JOIN $inner ON $compare = $data";
+    $resultado = $conexion->query($sql);
+    return $resultado->fetch_assoc();
+}
+
+function consulta_mysqli_custom_all($host,$user,$pass,$DB,$code){
+    $conexion = conect_mysqli($host,$user,$pass,$DB);
+    $sql = "$code";
+    $resultado = $conexion->query($sql);
+    return $resultado->fetch_assoc();
+}
+
 if ($_ENV['PLUGINS'] == 1){
 
     require __DIR__ . "./plugins/autoload.php";

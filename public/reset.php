@@ -86,16 +86,9 @@ login_cookie($host,$user,$pass,$DB,"users");
     </div>
 
     <?php
-    if (isset($_POST["ingresar"])){
-        login($host,$user,$pass,$DB,$_POST['txtCorreo'],$_POST['txtPassword'],"users","./admin/");
-        echo "
-        <script>
-            Swal.fire(
-            'Falló',
-            'El inicio de sesión ha fallado, favor de volver a intentarlo.',
-            'error'
-            )
-        </script>";
+    if(isset($_POST['enviar'])){
+        $rest = resetear_contra($host,$user,$pass,$DB,$_POST['txtCorreo']);
+        echo $rest;
     }
 
     ?>
@@ -110,7 +103,7 @@ login_cookie($host,$user,$pass,$DB,"users");
                 <br>
                 <div class="card">
                     <div class="card-header">
-                        Inicio de sesión
+                        Olvidé mi contraseña
                     </div>
                     <div class="card-body">
                         
@@ -118,22 +111,17 @@ login_cookie($host,$user,$pass,$DB,"users");
 
                             <div class="mb-3">
                               <label for="txtCorreo" class="form-label">Correo:</label>
-                              <input type="email" class="form-control" name="txtCorreo" id="txtCorreo" aria-describedby="helpId" placeholder="Inserta tu usuario">
+                              <input type="email" class="form-control" name="txtCorreo" id="txtCorreo" aria-describedby="helpId" placeholder="Inserta tu correo">
                             </div>
 
-                            <div class="mb-3">
-                                <label for="txtPassword" class="form-label">Contraseña:</label>
-                                <input type="password" class="form-control" name="txtPassword" id="txtPassword" aria-describedby="helpId" placeholder="Inserta tu contraseña">
-                              </div>
-
-                            <button type="submit" name="ingresar" class="btn btn-success">Entrar</button>
+                            <button type="submit" name="enviar" class="btn btn-success">Solicitar contraseña</button>
 
                         </form>
 
                     </div>
                     <div class="card-footer text-muted">
                         JOSPROX MX | Internacional
-                        <a href="./reset">Olvidé mi contraseña</a>
+                        <a href="./">Iniciar sesión</a>
                     </div>
                 </div>
             </div>

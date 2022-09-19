@@ -30,6 +30,7 @@
             <a class="dropdown-item" href="footer">Footer global</a>
             <a class="dropdown-item" href="head_admin">Head del administrador</a>
             <a class="dropdown-item" href="footer_admin">Footer del administrador</a>
+            <a class="dropdown-item" href="correo_prueba">Probar email</a>
             <?php
             if($_ENV['PLUGINS']==1){?>
             <a class="dropdown-item" href="backups">Realizar Backup</a>
