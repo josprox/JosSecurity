@@ -91,8 +91,9 @@ if ($_ENV['CONECT_DATABASE'] == 1){
 
     if($_ENV['CONECT_MYSQLI'] == 1){
 
-        function conect_mysqli($host,$user,$pass,$database){
-            $conexion = new mysqli("$host","$user", "$pass","$database");;
+        function conect_mysqli(){
+            global $host,$user,$pass,$DB;
+            $conexion = new mysqli("$host","$user", "$pass","$DB");;
             $conexion->set_charset("utf8");
             
             // AGREGANDO CHARSET UTF8
@@ -115,8 +116,6 @@ if ($_ENV['CONECT_DATABASE'] == 1){
         
         }
 
-        $conexion = conect_mysqli($host,$user,$pass,$DB);
-
     }
     if($_ENV['CONECT_MYSQLI'] != 1){
         if ($_ENV['DEBUG'] == 1){
@@ -126,10 +125,12 @@ if ($_ENV['CONECT_DATABASE'] == 1){
 
     if($_ENV['CONECT_MYSQL'] == 1){
 
-        function conect_mysql($host,$database,$user,$pass){
+        function conect_mysql(){
+
+            global $host,$user,$pass,$DB;
         
             try {
-                $pdo = new PDO('mysql:host='.$host.';dbname='.$database.'', $user, $pass);
+                $pdo = new PDO('mysql:host='.$host.';dbname='.$DB.'', $user, $pass);
                 //echo "conectado";
             } catch (PDOException $e) {
                 print "¡Error!: " . $e->getMessage() . "<br/>";
@@ -149,8 +150,6 @@ if ($_ENV['CONECT_DATABASE'] == 1){
             return $pdo;
         }
 
-        $pdo = conect_mysql($host,$DB,$user,$pass);
-
     }
     if($_ENV['CONECT_MYSQL'] != 1){
         if ($_ENV['DEBUG'] == 1){
@@ -164,9 +163,9 @@ if ($_ENV['CONECT_DATABASE'] == 1){
     }
 }
 
-function login($host,$user,$pass,$DB,$login_email,$login_password,$table_DB,$location){
+function login($login_email,$login_password,$table_DB,$location){
 
-    $conexion = conect_mysqli($host,$user,$pass,$DB);
+    $conexion = conect_mysqli();
 
         $table_DB= $table_DB;
         $email_catch = $login_email;
@@ -191,16 +190,22 @@ function login($host,$user,$pass,$DB,$login_email,$login_password,$table_DB,$loc
                 setcookie("COOKIE_DATA_INDEFINED_SESSION[user]", $usuario, time()+$_ENV['COOKIE_SESSION'], "/");
                 setcookie("COOKIE_DATA_INDEFINED_SESSION[pass]", $password, time()+$_ENV['COOKIE_SESSION'], "/");
 
+                mysqli_close($conexion);
+
                 header("Location: $location");
 
+                }else{
+                    mysqli_close($conexion);
                 }
             }
-
+        else{
+        mysqli_close($conexion);
+        }
             
 }
 
-function login_cookie($host,$user,$pass,$DB,$table_DB){
-    $conexion = conect_mysqli($host,$user,$pass,$DB);
+function login_cookie($table_DB){
+    $conexion = conect_mysqli();
     if (isset($_COOKIE['COOKIE_INDEFINED_SESSION'])) {
         if ($_COOKIE['COOKIE_INDEFINED_SESSION']) {
             $nombre_user = $_COOKIE['COOKIE_DATA_INDEFINED_SESSION']['user'];
@@ -214,22 +219,22 @@ function login_cookie($host,$user,$pass,$DB,$table_DB){
                 $password_encriptada = $row['password'];
                 if(password_verify($password_user,$password_encriptada) == TRUE){
                     $_SESSION['id_usuario'] = $row['id'];
+                    mysqli_close($conexion);
                 }
             }
         }
     }
 }
 
-function registro($host,$user,$pass,$DB,$table_db,$name_user,$email_user,$contra_user,$rol_user){
-    $conexion = conect_mysqli($host,$user,$pass,$DB);
+function registro($table_db,$name_user,$email_user,$contra_user,$rol_user){
+    global $fecha;
+    $conexion = conect_mysqli();
     $nombre = mysqli_real_escape_string($conexion, $name_user);
     $email = mysqli_real_escape_string($conexion, $email_user);
 	$password = mysqli_real_escape_string($conexion, $contra_user);
 	$password_encriptada = password_hash($password,PASSWORD_BCRYPT,["cost"=>10]);
 	$rol = mysqli_real_escape_string($conexion,$rol_user);
     $rol = (int)$rol;
-	date_default_timezone_set($_ENV['ZONA_HORARIA']);
-    $fecha = date("Y-m-d H:i:s");
 
 
     $sql_check = "SELECT id FROM $table_db WHERE email = '$email'";
@@ -238,29 +243,44 @@ function registro($host,$user,$pass,$DB,$table_db,$name_user,$email_user,$contra
 
     if ($filas < 1) {
         $sql_insert = "INSERT INTO $table_db (name, email, password, id_rol, created_at, updated_at) VALUES ('$nombre', '$email', '$password_encriptada', '$rol', '$fecha', NULL) ";
-        $sql_inyect = $conexion->query($sql_insert);
+        $conexion->query($sql_insert);
     }
+    mysqli_close($conexion);
 }
 
-function resetear_contra($host,$user,$pass,$DB,$email){
-    $conexion = conect_mysqli($host,$user,$pass,$DB);
+function resetear_contra($correo){
+    $conexion = conect_mysqli();
     $key = "";
     $pattern = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
     $max = strlen($pattern)-1;
-    for($i = 0; $i < 12; $i++){
+    for($i = 0; $i < 16; $i++){
         $key .= substr($pattern, mt_rand(0,$max), 1);
     }
+    $password = $key;
     $password_encriptada = password_hash($key,PASSWORD_BCRYPT,["cost"=>10]);
     date_default_timezone_set($_ENV['ZONA_HORARIA']);
     $fecha = date("Y-m-d H:i:s");
-    $insert = "UPDATE `users` SET `password` = '$password_encriptada' WHERE `users`.`email` = '$email'";
+    $insert = "UPDATE `users` SET `password` = '$password_encriptada' WHERE `users`.`email` = '$correo'";
     mysqli_query($conexion, $insert);
+    
+    $row = consulta_mysqli_where("name","users","email","'$correo'");
+    
+    $name = $row['name'];
+    
+    if($_ENV['SMTP_ACTIVE'] == 1){
+        require __DIR__ . "./config/correo_reset_password.php";
+    }
+    if($_ENV['SMTP_ACTIVE'] != 1){
+        echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
+    }
+    
+    mysqli_close($conexion);
     return $key;
 }
 
-function logout($host,$user,$pass,$DB,$id,$table_DB){
+function logout($id,$table_DB){
 
-    $conexion = conect_mysqli($host,$user,$pass,$DB);
+    $conexion = conect_mysqli();
     $table_DB= $table_DB;
     $table = mysqli_real_escape_string($conexion, $table_DB);
     $sql = "SELECT email,password FROM $table WHERE id = '$id'";
@@ -277,6 +297,8 @@ function logout($host,$user,$pass,$DB,$id,$table_DB){
     }
 
     session_destroy();
+    mysqli_close($conexion);
+
 }
 
 function mail_smtp_v1_3($nombre,$asunto,$cuerpo,$correo){
@@ -288,8 +310,8 @@ function mail_smtp_v1_3($nombre,$asunto,$cuerpo,$correo){
     }
 }
 
-function consulta_mysqli($host,$user,$pass,$DB,$select_db,$table_db,$custom,$sentence,$data,$compare,$inner){
-    $conexion = conect_mysqli($host,$user,$pass,$DB);
+function consulta_mysqli($select_db,$table_db,$custom,$sentence,$data,$compare,$inner){
+    $conexion = conect_mysqli();
     if ($sentence == "clasic"){
         $sql = "SELECT $select_db FROM $table_db";
         $resultado = $conexion->query($sql);
@@ -305,35 +327,110 @@ function consulta_mysqli($host,$user,$pass,$DB,$select_db,$table_db,$custom,$sen
         $resultado = $conexion->query($sql);
         return $resultado->fetch_assoc();
     }
+    mysqli_close($conexion);
 }
 
-function consulta_mysqli_clasic($host,$user,$pass,$DB,$select_db,$table_db){
-    $conexion = conect_mysqli($host,$user,$pass,$DB);
+function consulta_mysqli_clasic($select_db,$table_db){
+    $conexion = conect_mysqli();
     $sql = "SELECT $select_db FROM $table_db";
     $resultado = $conexion->query($sql);
     return $resultado->fetch_assoc();
+    mysqli_close($conexion);
 }
 
-function consulta_mysqli_where($host,$user,$pass,$DB,$select_db,$table_db,$data,$compare){
-    $conexion = conect_mysqli($host,$user,$pass,$DB);
+function consulta_mysqli_where($select_db,$table_db,$data,$compare){
+    $conexion = conect_mysqli();
     $sql = "SELECT $select_db FROM $table_db WHERE $data = $compare";
     $resultado = $conexion->query($sql);
     return $resultado->fetch_assoc();
+    mysqli_close($conexion);
 }
 
-function consulta_mysqli_innerjoin($host,$user,$pass,$DB,$select_db,$table_db,$inner,$data,$compare){
-    $conexion = conect_mysqli($host,$user,$pass,$DB);
+function consulta_mysqli_innerjoin($select_db,$table_db,$inner,$data,$compare){
+    $conexion = conect_mysqli();
     $sql = "SELECT $select_db FROM $table_db INNER JOIN $inner ON $compare = $data";
     $resultado = $conexion->query($sql);
     return $resultado->fetch_assoc();
+    mysqli_close($conexion);
 }
 
-function consulta_mysqli_custom_all($host,$user,$pass,$DB,$code){
-    $conexion = conect_mysqli($host,$user,$pass,$DB);
+function consulta_mysqli_custom_all($code){
+    $conexion = conect_mysqli();
     $sql = "$code";
     $resultado = $conexion->query($sql);
     return $resultado->fetch_assoc();
+    mysqli_close($conexion);
 }
+
+function insertar_datos_clasic_mysqli($tabla,$datos,$contenido){
+    $conexion = conect_mysqli();
+    $sql = "INSERT INTO $tabla ($datos) VALUES ($contenido);";
+    mysqli_query($conexion, $sql);
+    mysqli_close($conexion);
+}
+
+function insertar_datos_post_mysqli($tabla,$post){
+    $conexion = conect_mysqli();
+
+    $insert = "INSERT INTO $tabla (";
+    $values = " VALUES (";
+    
+    foreach ( $post as $key => $value ) {
+    $insert .= "$key, ";
+    $values .= " '$value', ";
+    }
+    
+    // Eliminar las ultimas comas y cerrar los parentesis
+    $insert = substr($insert, 0, -2).')';
+    $values = substr($values, 0, -2).')';
+    
+    $sql = $insert.$values; 
+
+    mysqli_query($conexion, $sql);
+
+    mysqli_close($conexion);
+}
+
+function actualizar_datos_mysqli($tabla,$edicion,$where,$dato){
+    global $fecha;
+    $miconexion = conect_mysqli();
+    $sql = "UPDATE `$tabla` SET $edicion, `updated_at` = '$fecha' WHERE `$tabla`.`$where` = $dato";
+
+    /*if ($miconexion->query($sql) === TRUE) {
+        echo "OK";      
+       }else {
+        echo "ERROR";
+       }*/
+    
+    $miconexion -> query($sql);
+    $miconexion -> close();
+
+}
+
+if($_ENV['RECAPTCHA'] == 1){
+
+    function recaptcha(){
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $captcha = $_POST['g-recaptcha-response'];
+        $secretkey = $_ENV['RECAPTCHA_CODE_SECRET'];
+    
+        $respuesta_captcha = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secretkey&response=$captcha&remoteip=$ip");
+    
+        $atributos = json_decode($respuesta_captcha, TRUE);
+    
+        if(!$atributos['success']){
+            if ($_ENV['DEBUG'] == 1){
+                echo "<script>console.log('".$_ENV['NAME_APP']." informa que ha fallado el recaptcha.');</script>";
+                return FALSE;
+            }
+        }
+        if($atributos['success']){
+            return TRUE;
+        }
+    }
+
+}
+
 
 if ($_ENV['PLUGINS'] == 1){
 

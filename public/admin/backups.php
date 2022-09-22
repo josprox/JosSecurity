@@ -2,7 +2,7 @@
 
 include __DIR__ . "/../../jossecurity.php";
 
-login_cookie($host,$user,$pass,$DB,"users");
+login_cookie("users");
 
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: ../");
@@ -15,7 +15,7 @@ if($_ENV['PLUGINS'] != 1){
 }
 
 if(isset($_POST['salir'])){
-  logout($host,$user,$pass,$DB,$iduser,"users");
+  logout($iduser,"users");
   header("Location: ./../");
 }
 
@@ -63,7 +63,7 @@ if(isset($_POST['salir'])){
     <?php
     if(isset($_POST['respaldo_sql'])){
       echo "<p align='center'>El respaldo ha funcionado</p>";
-      $archivo = sql_export($host,$user,$pass,$DB);
+      $archivo = sql_export();
     }
     ?>
 

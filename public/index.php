@@ -6,7 +6,7 @@ if (isset($_SESSION['id_usuario'])) {
     header("Location: ./admin/");
 }
 
-login_cookie($host,$user,$pass,$DB,"users");
+login_cookie("users");
 
 ?>
 <!doctype html>
@@ -87,15 +87,19 @@ login_cookie($host,$user,$pass,$DB,"users");
 
     <?php
     if (isset($_POST["ingresar"])){
-        login($host,$user,$pass,$DB,$_POST['txtCorreo'],$_POST['txtPassword'],"users","./admin/");
-        echo "
-        <script>
-            Swal.fire(
-            'Falló',
-            'El inicio de sesión ha fallado, favor de volver a intentarlo.',
-            'error'
-            )
-        </script>";
+        if(recaptcha() == TRUE){
+            login($_POST['txtCorreo'],$_POST['txtPassword'],"users","./admin/");
+        }
+        if (recaptcha() == FALSE){
+            echo "
+            <script>
+                Swal.fire(
+                'Falló',
+                'El inicio de sesión ha fallado, favor de volver a intentarlo.',
+                'error'
+                )
+            </script>";
+        }
     }
 
     ?>
@@ -124,6 +128,10 @@ login_cookie($host,$user,$pass,$DB,"users");
                             <div class="mb-3">
                                 <label for="txtPassword" class="form-label">Contraseña:</label>
                                 <input type="password" class="form-control" name="txtPassword" id="txtPassword" aria-describedby="helpId" placeholder="Inserta tu contraseña">
+                              </div>
+
+                              <div class="mb-3">
+                                <div class="g-recaptcha" data-sitekey="6LcEDBsiAAAAAM5cR8bTJf-JokXdzAuex4IO-S_Z"></div>
                               </div>
 
                             <button type="submit" name="ingresar" class="btn btn-success">Entrar</button>

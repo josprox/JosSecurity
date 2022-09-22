@@ -2,7 +2,7 @@
 
 include __DIR__ . "/../../jossecurity.php";
 
-login_cookie($host,$user,$pass,$DB,"users");
+login_cookie("users");
 
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: ../");
@@ -10,7 +10,7 @@ if (!isset($_SESSION['id_usuario'])) {
 $iduser = $_SESSION['id_usuario'];
 
 if(isset($_POST['salir'])){
-  logout($host,$user,$pass,$DB,$iduser,"users");
+  logout($iduser,"users");
   header("Location: ./../");
 }
 
@@ -38,8 +38,15 @@ if(isset($_POST['salir'])){
 
     <?php
       if (isset($_POST["registrar"])){
-        registro($host,$user,$pass,$DB,"users",$_POST['name'],$_POST['email'],$_POST['password'],$_POST['rol']);
-          header("Location: registrar");
+        registro("users",$_POST['name'],$_POST['email'],$_POST['password'],$_POST['rol']);
+        echo "
+            <script>
+                Swal.fire(
+                'Completado',
+                'Se ha registrado correctamente el usuario',
+                'success'
+                )
+            </script>";
       }
 
     ?>
@@ -70,6 +77,9 @@ if(isset($_POST['salir'])){
           <select class="form-control" name="rol" id="rol">
             <option selected>¿Cuál rol le corresponde?</option>
             <?php
+
+              $conexion = conect_mysqli();
+
               $rol = "SELECT * FROM `roles`";
 
               if ($resultadosex = mysqli_query($conexion, $rol)) {
@@ -77,6 +87,7 @@ if(isset($_POST['salir'])){
                       echo '<option value="' . $registro1['id'] .'">' . $registro1['rol'] .'</option>';
                   }
               }
+              mysqli_close($conexion);
             ?>
           </select>
         </div>

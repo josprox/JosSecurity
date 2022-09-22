@@ -2,7 +2,7 @@
 
 include __DIR__ . "/../../jossecurity.php";
 
-login_cookie($host,$user,$pass,$DB,"users");
+login_cookie("users");
 
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: ../");
@@ -10,7 +10,7 @@ if (!isset($_SESSION['id_usuario'])) {
 $iduser = $_SESSION['id_usuario'];
 
 if(isset($_POST['salir'])){
-  logout($host,$user,$pass,$DB,$iduser,"users");
+  logout($iduser,"users");
   header("Location: ./../");
 }
 

@@ -6,7 +6,7 @@ if (isset($_SESSION['id_usuario'])) {
     header("Location: ./admin/");
 }
 
-login_cookie($host,$user,$pass,$DB,"users");
+login_cookie("users");
 
 ?>
 <!doctype html>
@@ -87,8 +87,20 @@ login_cookie($host,$user,$pass,$DB,"users");
 
     <?php
     if(isset($_POST['enviar'])){
-        $rest = resetear_contra($host,$user,$pass,$DB,$_POST['txtCorreo']);
-        echo $rest;
+        if(recaptcha() == TRUE){
+            $rest = resetear_contra($_POST['txtCorreo']);
+            header("Location: ./");
+        }
+        if (recaptcha() == FALSE){
+            echo "
+            <script>
+                Swal.fire(
+                'Falló',
+                'No se ha podido resetear la contraseña, favor de volver a intentarlo.',
+                'error'
+                )
+            </script>";
+        }
     }
 
     ?>
@@ -113,6 +125,10 @@ login_cookie($host,$user,$pass,$DB,"users");
                               <label for="txtCorreo" class="form-label">Correo:</label>
                               <input type="email" class="form-control" name="txtCorreo" id="txtCorreo" aria-describedby="helpId" placeholder="Inserta tu correo">
                             </div>
+
+                            <div class="mb-3">
+                                <div class="g-recaptcha" data-sitekey="6LcEDBsiAAAAAM5cR8bTJf-JokXdzAuex4IO-S_Z"></div>
+                              </div>
 
                             <button type="submit" name="enviar" class="btn btn-success">Solicitar contraseña</button>
 

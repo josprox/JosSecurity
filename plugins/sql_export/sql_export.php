@@ -1,7 +1,7 @@
 <?php
 
-function sql_export($host, $user, $pass, $DB)
-{
+function sql_export(){
+    global $host, $user, $pass, $DB;
     set_time_limit(3000);
     $tablasARespaldar = [];
     $mysqli = new mysqli($host, $user, $pass, $DB);
