@@ -173,6 +173,7 @@ function login($login_email,$login_password,$table_DB,$location){
         $table = mysqli_real_escape_string($conexion, $table_DB);
         $usuario = mysqli_real_escape_string($conexion, $email_catch);
         $password = mysqli_real_escape_string($conexion, $password_catch);
+        $ip = $_SERVER['REMOTE_ADDR'];
     
         
         $sql = "SELECT id, password FROM $table WHERE email = '$usuario'";
@@ -181,6 +182,7 @@ function login($login_email,$login_password,$table_DB,$location){
         if ($rows > 0) {
             $row = $resultado->fetch_assoc();
             $password_encriptada = $row['password'];
+            $id = $row['id'];
             if(password_verify($password,$password_encriptada) == TRUE){
 
                 $_SESSION['id_usuario'] = $row['id'];
@@ -190,6 +192,8 @@ function login($login_email,$login_password,$table_DB,$location){
                 setcookie("COOKIE_DATA_INDEFINED_SESSION[user]", $usuario, time()+$_ENV['COOKIE_SESSION'], "/");
                 setcookie("COOKIE_DATA_INDEFINED_SESSION[pass]", $password, time()+$_ENV['COOKIE_SESSION'], "/");
 
+                actualizar_datos_mysqli("users","`last_ip` = '$ip'","id",$id);
+
                 mysqli_close($conexion);
 
                 header("Location: $location");
@@ -197,6 +201,55 @@ function login($login_email,$login_password,$table_DB,$location){
                 }else{
                     mysqli_close($conexion);
                 }
+            }
+        else{
+        mysqli_close($conexion);
+        }
+            
+}
+
+function login_admin($login_email,$login_password,$table_DB,$location){
+
+    $conexion = conect_mysqli();
+
+        $table_DB= $table_DB;
+        $email_catch = $login_email;
+        $password_catch = $login_password;
+        $table = mysqli_real_escape_string($conexion, $table_DB);
+        $usuario = mysqli_real_escape_string($conexion, $email_catch);
+        $password = mysqli_real_escape_string($conexion, $password_catch);
+        $ip = $_SERVER['REMOTE_ADDR'];
+    
+        
+        $sql = "SELECT id, password, id_rol FROM $table WHERE email = '$usuario'";
+        $resultado = $conexion->query($sql);
+        $rows = $resultado->num_rows;
+        if ($rows > 0) {
+            $row = $resultado->fetch_assoc();
+            $password_encriptada = $row['password'];
+            $rol = $row['id_rol'];
+            $id = $row['id'];
+            if($rol == 3 OR $rol == 4 OR $rol == 6){
+
+                if(password_verify($password,$password_encriptada) == TRUE){
+    
+                    $_SESSION['id_usuario'] = $row['id'];
+                    
+                    //Cookie de usuario y contraseña
+                    setcookie("COOKIE_INDEFINED_SESSION", TRUE, time()+$_ENV['COOKIE_SESSION'], "/");
+                    setcookie("COOKIE_DATA_INDEFINED_SESSION[user]", $usuario, time()+$_ENV['COOKIE_SESSION'], "/");
+                    setcookie("COOKIE_DATA_INDEFINED_SESSION[pass]", $password, time()+$_ENV['COOKIE_SESSION'], "/");
+
+                    actualizar_datos_mysqli("users","`last_ip` = '$ip'","id",$id);
+    
+                    mysqli_close($conexion);
+    
+                    header("Location: $location");
+    
+                    }else{
+                        mysqli_close($conexion);
+                    }
+            }
             }
         else{
         mysqli_close($conexion);
@@ -407,6 +460,17 @@ function actualizar_datos_mysqli($tabla,$edicion,$where,$dato){
 
 }
 
+function arreglo_consulta_mysqli_custom_all($code){
+
+    $conexion = conect_mysqli();
+    $sql = "$code";
+    $resultado = $conexion->query($sql);
+    return mysqli_fetch_array($resultado);
+    mysqli_close($conexion);
+
+
+}
+
 if($_ENV['RECAPTCHA'] == 1){
 
     function recaptcha(){
@@ -430,7 +494,6 @@ if($_ENV['RECAPTCHA'] == 1){
     }
 
 }
-
 
 if ($_ENV['PLUGINS'] == 1){
 

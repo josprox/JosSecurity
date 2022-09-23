@@ -8,6 +8,10 @@ if (isset($_SESSION['id_usuario'])) {
 
 login_cookie("users");
 
+if (file_exists("./../installer.php")){
+    unlink('./../installer.php');
+}
+
 ?>
 <!doctype html>
 <html lang="es-MX">
@@ -35,7 +39,7 @@ login_cookie("users");
             <div class="collapse navbar-collapse" id="collapsibleNavId">
                 <ul class="navbar-nav me-auto mt-2 mt-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" href="./" aria-current="page">Inicio</a>
+                        <a class="nav-link active" href="./panel" aria-current="page">Inicio</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="https://josprox.com/">Sitio web</a>
@@ -88,7 +92,7 @@ login_cookie("users");
     <?php
     if (isset($_POST["ingresar"])){
         if(recaptcha() == TRUE){
-            login($_POST['txtCorreo'],$_POST['txtPassword'],"users","./admin/");
+            login_admin($_POST['txtCorreo'],$_POST['txtPassword'],"users","./admin/");
         }
         if (recaptcha() == FALSE){
             echo "

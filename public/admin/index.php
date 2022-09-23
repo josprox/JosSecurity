@@ -5,7 +5,7 @@ include __DIR__ . "/../../jossecurity.php";
 login_cookie("users");
 
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../");
+    header("Location: ../panel");
 }
 
 $iduser = $_SESSION['id_usuario'];
@@ -15,7 +15,7 @@ $row = consulta_mysqli_where("name","users","id",$iduser);
 
 if(isset($_POST['salir'])){
   logout($iduser,"users");
-  header("Location: ./../");
+  header("Location: ./../panel");
 }
 
 ?>

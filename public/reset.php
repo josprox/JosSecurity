@@ -35,7 +35,7 @@ login_cookie("users");
             <div class="collapse navbar-collapse" id="collapsibleNavId">
                 <ul class="navbar-nav me-auto mt-2 mt-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" href="./" aria-current="page">Inicio</a>
+                        <a class="nav-link active" href="./panel" aria-current="page">Inicio</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="https://josprox.com/">Sitio web</a>
@@ -89,7 +89,7 @@ login_cookie("users");
     if(isset($_POST['enviar'])){
         if(recaptcha() == TRUE){
             $rest = resetear_contra($_POST['txtCorreo']);
-            header("Location: ./");
+            header("Location: ./panel");
         }
         if (recaptcha() == FALSE){
             echo "
@@ -137,7 +137,7 @@ login_cookie("users");
                     </div>
                     <div class="card-footer text-muted">
                         JOSPROX MX | Internacional
-                        <a href="./">Iniciar sesión</a>
+                        <a href="./panel">Iniciar sesión</a>
                     </div>
                 </div>
             </div>
