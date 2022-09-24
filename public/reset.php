@@ -127,7 +127,7 @@ login_cookie("users");
                             </div>
 
                             <div class="mb-3">
-                                <div class="g-recaptcha" data-sitekey="6LcEDBsiAAAAAM5cR8bTJf-JokXdzAuex4IO-S_Z"></div>
+                                <div class="g-recaptcha" data-sitekey="<?php echo $_ENV['RECAPTCHA_CODE_PUBLIC']; ?>"></div>
                               </div>
 
                             <button type="submit" name="enviar" class="btn btn-success">Solicitar contraseña</button>
