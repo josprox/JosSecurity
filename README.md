@@ -17,8 +17,11 @@ Por defecto, el sistema puede conectarse de manera automática la base de datos,
 		conect_mysqli();
 -	Conexión PDO.
 		conect_mysql();
+
 También puedes usar recaptcha para integrarla en el formulario sencillo, solo tendrías que llamar a la siguiente función.
+
 		recaptcha();
+
 Podrás consultar más funciones en el archivo “jossecurity.php” o en el sitio web oficial “jossecurity.josprox.com”.
 
 ## ¿Qué contiene?
