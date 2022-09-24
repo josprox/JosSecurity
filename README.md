@@ -1,4 +1,4 @@
-#JosSecurity
+# JosSecurity
 
 <img src="./resourses/img/logo%20azul/cover.png" alt="Cetis Control Web Panel"/>
 
@@ -6,7 +6,7 @@
 
 JosSecurity es un framework y librería al mismo tiempo, debido a que, el sistema lo podrás usar como primer uso o segundo uso en tu proyecto, JosSecurity tiene herramientas para que puedas crear tu sitio web de una manera fácil y sencilla sin tener conocimientos en el back-end.
 
-##¿ Cómo funciona JosSecurity?
+## ¿Cómo funciona JosSecurity?
 
 Al igual que muchas librerías, JosSecurity funciona gracias a los Hooks, en este caso, el sistema de hooks se llama “jossitos”, cada jossito es una funcionalidad de php, si necesitas una consulta en la base de datos básica o hasta la mas compleja, cada jossito se encargará de traerte los datos y tu no necesitarás nada mas que usar la función y llenar los datos.
 
