@@ -51,7 +51,7 @@ if(isset($_POST['salir'])){
     <?php
     
     if(isset($_POST['mail'])){
-        mail_smtp_v1_3_check($_POST['correo']);
+        mail_smtp_v1_3($_POST['nombre'],$_POST['asunto'],$_POST['cuerpo'],$_POST['correo']);
         echo "
         <script>
         Swal.fire(
@@ -66,10 +66,27 @@ if(isset($_POST['salir'])){
     ?>
         <form action="<?php $_SERVER["PHP_SELF"]; ?>" method="post">
         <div class="mb-3 row">
+                <label for="inputName" class="col-4 col-form-label">Nombre</label>
+                <div class="col-8">
+                    <input type="text" class="form-control" name="nombre" id="nombre" placeholder="nombre">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="inputName" class="col-4 col-form-label">Asunto</label>
+                <div class="col-8">
+                    <input type="text" class="form-control" name="asunto" id="asunto" placeholder="asunto">
+                </div>
+            </div>
             <div class="mb-3 row">
                 <label for="inputName" class="col-4 col-form-label">correo</label>
                 <div class="col-8">
                     <input type="email" class="form-control" name="correo" id="correo" placeholder="correo">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="inputName" class="col-4 col-form-label">cuerpo</label>
+                <div class="col-8">
+                    <input type="text" class="form-control" name="cuerpo" id="cuerpo" placeholder="cuerpo">
                 </div>
             </div>
             <div class="mb-3 row">

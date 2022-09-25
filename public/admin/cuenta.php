@@ -45,7 +45,7 @@ $row = consulta_mysqli_clasic("*","users");
 
 if(isset($_POST['salir'])){
   logout($iduser,"users");
-  header("Location: ./../");
+  header("Location: ./../panel");
 }
 
 ?>

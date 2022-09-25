@@ -37,7 +37,7 @@ Por defecto, después de instalar JosSecurity, viene con un panel de control par
 
 ### ¿Cómo instalarlo?
 
-Para poder instalar JosSecurity puedes <a href="https://github.com/josprox/JosSecurity/releases">ve a releases o dando clic aquí</a> y descargar el instalador que viene por defecto.
+Para poder instalar JosSecurity puedes <a href="https://github.com/josprox/JosSecurity/releases">ir a releases o dando clic aquí</a> y descargar el instalador que viene por defecto.
 
 Si trabajas en un servidor:
 - Descomprime el archivo zip, se descomprimirá un archivo php el cuál es el instalador, también tendrás un archivo zip con los archivos necesarios para instalar JosSecurity.

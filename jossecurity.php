@@ -363,6 +363,15 @@ function mail_smtp_v1_3($nombre,$asunto,$cuerpo,$correo){
     }
 }
 
+function mail_smtp_v1_3_check($correo){
+    if($_ENV['SMTP_ACTIVE'] == 1){
+        require __DIR__ . "./config/correo_check.php";
+    }
+    if($_ENV['SMTP_ACTIVE'] != 1){
+        echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
+    }
+}
+
 function consulta_mysqli($select_db,$table_db,$custom,$sentence,$data,$compare,$inner){
     $conexion = conect_mysqli();
     if ($sentence == "clasic"){

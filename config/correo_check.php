@@ -17,7 +17,7 @@ $mail = new PHPMailer(true);
 
 $cuerpo = '
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="es-MX" >
 <head>
   <meta charset="UTF-8">
   <title>CodePen - Recuperar contraseña</title>
@@ -93,7 +93,7 @@ a, a:hover {
 			<!-- Set text color to background color -->
 			<div style="display: none; visibility: hidden; overflow: hidden; opacity: 0; font-size: 1px; line-height: 1px; height: 0; max-height: 0; max-width: 0;
 			color: #F0F0F0;" class="preheader">
-				Gracias por usar JosSecurity, te hemos mandado tu nueva contraseña.</div>
+				Gracias por usar JosSecurity, si te llegó este correo es porque tu sistema funciona correctamente.</div>
 
 			<!-- LOGO -->
 			<!-- Image text color should be opposite to background color. Set your url, image src, alt and title. Alt text should fit the image size. Real image size should be x2. URL format: http://domain.com/?utm_source={{Campaign-Source}}&utm_medium=email&utm_content=logo&utm_campaign={{Campaign-Name}} -->
@@ -151,17 +151,11 @@ a, a:hover {
 			padding-top: 5px;
 			color: #000000;
 			font-family: sans-serif;" class="subheader">
-      Hola
+      Felicidades!!
 		</td>
 	</tr>
                                                  
                                                  <tr>
-		<td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-bottom: 3px; padding-left: 6.25%; padding-right: 6.25%; width: 87.5%; font-size: 18px; font-weight: 300; line-height: 150%;
-			padding-top: 5px;
-			color: #000000;
-			font-family: sans-serif;" class="subheader">
-      '.$name.'
-		</td>
 	</tr>
   
   
@@ -173,7 +167,7 @@ a, a:hover {
 			padding-top: 25px; 
 			color: #000000;
 			font-family: sans-serif;" class="paragraph">
-      Recientemente has solicitado restablecer tu contraseña es por eso que, le hemos mandado su nueva contraseña, podrá modificarla dentro del sistema.<br><br>Su nueva contraseña es: '.$password.'
+				Muchas felicidades, el correo de prueba funciona correctamente.
 		</td>
 	</tr>
 
@@ -292,7 +286,7 @@ try {
 
     //Content
     $mail->isHTML(true);
-    $mail->Subject = "Solicitud de contraseña";
+    $mail->Subject = "Correo de prueba";
     $mail-> CharSet = 'UTF-8';
     $mail->Body    = $cuerpo;
 
