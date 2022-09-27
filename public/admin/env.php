@@ -38,7 +38,6 @@ if(isset($_POST['salir'])){
 
     <?php edit_file("Archivo principal env","../../.env"); ?>
 
-
   </div>
 
   <!-- Bootstrap JavaScript Libraries -->

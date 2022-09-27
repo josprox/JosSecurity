@@ -408,7 +408,7 @@ function consulta_mysqli_where($select_db,$table_db,$data,$compare){
     mysqli_close($conexion);
 }
 
-function consulta_mysqli_innerjoin($select_db,$table_db,$inner,$data,$compare){
+function consulta_mysqli_innerjoin($select_db,$table_db,$inner,$compare,$data){
     $conexion = conect_mysqli();
     $sql = "SELECT $select_db FROM $table_db INNER JOIN $inner ON $compare = $data";
     $resultado = $conexion->query($sql);
@@ -427,6 +427,13 @@ function consulta_mysqli_custom_all($code){
 function insertar_datos_clasic_mysqli($tabla,$datos,$contenido){
     $conexion = conect_mysqli();
     $sql = "INSERT INTO $tabla ($datos) VALUES ($contenido);";
+    mysqli_query($conexion, $sql);
+    mysqli_close($conexion);
+}
+
+function insertar_datos_custom_mysqli($codigo_sql){
+    $conexion = conect_mysqli();
+    $sql = "$codigo_sql";
     mysqli_query($conexion, $sql);
     mysqli_close($conexion);
 }
