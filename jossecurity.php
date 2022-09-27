@@ -24,10 +24,15 @@ if ($_ENV['DEBUG'] == 1) {
     echo "<script>console.log('".$nombre_app." está funcionando.');</script>";
 }
 
-
 function head(){
     if ($_ENV['DEBUG'] == 1){
         echo "<script>console.log('".$_ENV['NAME_APP']." Head está activo.');</script>";
+    }
+    $pagina = nombre_de_pagina();
+    if($pagina == "panel.php" OR $pagina = "reset.php"){
+        echo '<!-- JosSecurity está funcionando -->
+        <link rel="stylesheet" href="./../node_modules/bootstrap/dist/css/bootstrap.min.css">
+        <script src="./../node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>';
     }
     include __DIR__ . "./routes/head/head.php";
 }
@@ -485,6 +490,19 @@ function arreglo_consulta_mysqli_custom_all($code){
     mysqli_close($conexion);
 
 
+}
+
+function reproductor_video($url){
+    echo '<video class="fm-video video-js vjs-16-9 vjs-big-play-centered" style="margin-top: 12px; margin-bottom: 12px;" data-setup="{}" controls id="form-video">
+        <source src="'.$url.'" type="video/mp4">
+    </video>';
+}
+
+function nombre_de_pagina(){
+    $url = explode("/", $_SERVER['SCRIPT_NAME']);
+    $url = array_reverse($url);
+    $url = $url[0];
+    return $url;
 }
 
 if($_ENV['RECAPTCHA'] == 1){

@@ -1,6 +1,6 @@
-<!-- JosSecurity está funcionando -->
-<link rel="stylesheet" href="./../node_modules/bootstrap/dist/css/bootstrap.min.css">
-<script src="./../node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
+<!-- Video.js base CSS -->
+<link href="./../resourses/css/video-js.min.css" rel="stylesheet">
+
 <?php
 
 if($_ENV['RECAPTCHA'] == 1){?>
