@@ -3,7 +3,7 @@
 // JosSecurity, la mejor seguridad al alcance de tus manos.
 
 // NO ELIMINES las lineas 6 a 9 por seguridad, si tu borras esta linea dejará de funcionar JosSecurity.
-require __DIR__ . './vendor/autoload.php';
+include __DIR__ . './vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 session_start();
@@ -326,7 +326,7 @@ function resetear_contra($correo){
     $name = $row['name'];
     
     if($_ENV['SMTP_ACTIVE'] == 1){
-        require __DIR__ . "./config/correo_reset_password.php";
+        include __DIR__ . "./config/correo_reset_password.php";
     }
     if($_ENV['SMTP_ACTIVE'] != 1){
         echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
@@ -361,7 +361,7 @@ function logout($id,$table_DB){
 
 function mail_smtp_v1_3($nombre,$asunto,$cuerpo,$correo){
     if($_ENV['SMTP_ACTIVE'] == 1){
-        require __DIR__ . "./config/correo.php";
+        include __DIR__ . "./config/correo.php";
     }
     if($_ENV['SMTP_ACTIVE'] != 1){
         echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
@@ -370,7 +370,7 @@ function mail_smtp_v1_3($nombre,$asunto,$cuerpo,$correo){
 
 function mail_smtp_v1_3_check($correo){
     if($_ENV['SMTP_ACTIVE'] == 1){
-        require __DIR__ . "./config/correo_check.php";
+        include __DIR__ . "./config/correo_check.php";
     }
     if($_ENV['SMTP_ACTIVE'] != 1){
         echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
@@ -531,7 +531,7 @@ if($_ENV['RECAPTCHA'] == 1){
 
 if ($_ENV['PLUGINS'] == 1){
 
-    require __DIR__ . "./plugins/autoload.php";
+    include __DIR__ . "./plugins/autoload.php";
 
 }
 

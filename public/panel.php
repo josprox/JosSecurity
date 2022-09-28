@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . "./../jossecurity.php";
+include __DIR__ . "./../jossecurity.php";
 
 if (isset($_SESSION['id_usuario'])) {
     header("Location: ./admin/");
