@@ -38,15 +38,7 @@ if(isset($_POST['salir'])){
 
     <?php
       if (isset($_POST["registrar"])){
-        registro("users",$_POST['name'],$_POST['email'],$_POST['password'],$_POST['rol']);
-        echo "
-            <script>
-                Swal.fire(
-                'Completado',
-                'Se ha registrado correctamente el usuario',
-                'success'
-                )
-            </script>";
+        echo registro("users",$_POST['name'],$_POST['email'],$_POST['password'],$_POST['rol']);
       }
 
     ?>

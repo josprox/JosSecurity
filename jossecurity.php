@@ -55,6 +55,20 @@ function footer(){
     if ($_ENV['DEBUG'] == 1){
         echo "<script>console.log('".$_ENV['NAME_APP']." footer está activo.');</script>";
     }
+    $pagina = nombre_de_pagina();
+    if($pagina == "panel.php" OR $pagina = "reset.php"){
+        echo '<!-- JosSecurity está funcionando -->
+        <!-- Bootstrap JavaScript Libraries -->
+        <script src="./../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+        <!-- Video.js base JS -->
+        <script src="./../resourses/js/video.min.js"></script>
+        <!--Funciones del video, desactivar si no se usa-->
+        <script>
+            var reproductor = videojs("form-video", {
+              fluid: true
+            });
+          </script>';
+    }
     include __DIR__ . "./routes/footer/footer.php";
 }
 
@@ -298,12 +312,30 @@ function registro($table_db,$name_user,$email_user,$contra_user,$rol_user){
     $sql_check = "SELECT id FROM $table_db WHERE email = '$email'";
     $sql_rest = $conexion->query($sql_check);
     $filas = $sql_rest -> num_rows;
-
-    if ($filas < 1) {
-        $sql_insert = "INSERT INTO $table_db (name, email, password, id_rol, created_at, updated_at) VALUES ('$nombre', '$email', '$password_encriptada', '$rol', '$fecha', NULL) ";
-        $conexion->query($sql_insert);
-    }
     mysqli_close($conexion);
+
+    if ($filas <= 0) {
+        insertar_datos_clasic_mysqli($table_db,"name, email, password, id_rol, created_at, updated_at","'$nombre', '$email', '$password_encriptada', '$rol', '$fecha', NULL");
+        $success = "
+        <script>
+            Swal.fire(
+            'Completado',
+            'Se ha registrado correctamente el usuario',
+            'success'
+            )
+        </script>";
+        return $success;
+    }elseif($filas >= 1){
+        $error = "
+        <script>
+            Swal.fire(
+            'Falló',
+            'El usuario ya existe',
+            'error'
+            )
+        </script>";
+        return $error;
+    }
 }
 
 function resetear_contra($correo){
@@ -481,15 +513,40 @@ function actualizar_datos_mysqli($tabla,$edicion,$where,$dato){
 
 }
 
-function arreglo_consulta_mysqli_custom_all($code){
+function arreglo_consulta($code){
 
-    $conexion = conect_mysqli();
+    $conexion = conect_mysql();
     $sql = "$code";
-    $resultado = $conexion->query($sql);
-    return mysqli_fetch_array($resultado);
-    mysqli_close($conexion);
+    return $conexion->query($sql);
+    $conexion = null;
 
+}
 
+function eliminar_datos_con_where($tabla,$where,$dato){
+    $conexion = conect_mysqli();
+    $sql = "DELETE FROM $tabla WHERE $where = $dato";
+    if ($conexion->query($sql) === TRUE) {
+        $success = "
+        <script>
+            Swal.fire(
+            'Completado',
+            'Se ha eliminado todo de manera correcta.',
+            'success'
+            )
+        </script>";
+        return $success;    
+       }else {
+        $error = "
+        <script>
+            Swal.fire(
+            'Falló',
+            'No se ha podido eliminar de manera correcta.',
+            'error'
+            )
+        </script>";
+        return $error;
+       }
+    $conexion -> close();
 }
 
 function reproductor_video($url){

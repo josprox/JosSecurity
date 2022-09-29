@@ -43,8 +43,7 @@ if(isset($_POST['salir'])){
   <h1 align="center">Bienvenido a <?php echo $nombre_app; ?></h1>
   <p align="center">Un gusto volver a verte <?php echo $row['name']; ?></p>
   <p align="center">Versión: <?php echo $version_app; ?></p>
-
-
+  
   <div class="card">
     <img class="card-img-top" src="./../../resourses/img/logo azul/cover.png" alt="Title">
   </div>

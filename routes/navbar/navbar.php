@@ -14,6 +14,9 @@
           <a class="nav-link" href="cuenta" aria-current="page">Mi Cuenta</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="usuarios" aria-current="page">Usuarios</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="registrar" aria-current="page">Registrar</a>
         </li>
         <li class="nav-item dropdown">
