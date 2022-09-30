@@ -18,12 +18,12 @@ if (file_exists("./../installer.php")){
 
 <head>
   <title><?php echo $nombre_app," versión: ", $version_app; ?></title>
-  <link rel="shortcut icon" href="./resourses/img/logo transparente/vector/default.svg" type="image/x-icon">
+  <link rel="shortcut icon" href="./../resourses/img/logo transparente/vector/default.svg" type="image/x-icon">
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <?php head(); ?>
+    <?php echo head(); ?>
 
 </head>
 
@@ -174,7 +174,7 @@ if (file_exists("./../installer.php")){
     
     </div>
 
-    <?php footer(); ?>
+    <?php echo footer(); ?>
     
     <script>
       var alertList = document.querySelectorAll('.alert');

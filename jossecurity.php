@@ -29,19 +29,29 @@ function head(){
         echo "<script>console.log('".$_ENV['NAME_APP']." Head está activo.');</script>";
     }
     $pagina = nombre_de_pagina();
-    if($pagina == "panel.php" OR $pagina = "reset.php"){
-        echo '<!-- JosSecurity está funcionando -->
+    if($pagina == "panel.php" OR $pagina == "reset.php"){
+        $head = '<!-- JosSecurity está funcionando -->
         <link rel="stylesheet" href="./../node_modules/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="shortcut icon" href="./../resourses/img/logo transparente/vector/default.svg" type="image/x-icon">
         <script src="./../node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>';
+        if($_ENV['RECAPTCHA'] == 1){
+            $head .= '
+        <script src="https://www.google.com/recaptcha/api.js"></script>
+        ';
+            return $head;
+        }elseif($_ENV['RECAPTCHA'] != 1){
+            return $head;
+        }
+    }elseif($pagina != "panel.php" OR $pagina != "reset.php"){
+        return include __DIR__ . "./routes/head/head.php";
     }
-    include __DIR__ . "./routes/head/head.php";
 }
 
 function head_admin(){
     if ($_ENV['DEBUG'] == 1){
         echo "<script>console.log('".$_ENV['NAME_APP']." Head admin está activo.');</script>";
     }
-    include __DIR__ . "./routes/head/head_admin.php";
+    return include __DIR__ . "./routes/head/head_admin.php";
 }
 
 function navbar_admin(){
@@ -56,8 +66,8 @@ function footer(){
         echo "<script>console.log('".$_ENV['NAME_APP']." footer está activo.');</script>";
     }
     $pagina = nombre_de_pagina();
-    if($pagina == "panel.php" OR $pagina = "reset.php"){
-        echo '<!-- JosSecurity está funcionando -->
+    if($pagina == "panel.php" OR $pagina == "reset.php"){
+        return '<!-- JosSecurity está funcionando -->
         <!-- Bootstrap JavaScript Libraries -->
         <script src="./../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
         <!-- Video.js base JS -->
@@ -69,14 +79,14 @@ function footer(){
             });
           </script>';
     }
-    include __DIR__ . "./routes/footer/footer.php";
+    return include __DIR__ . "./routes/footer/footer.php";
 }
 
 function footer_admin(){
     if ($_ENV['DEBUG'] == 1){
         echo "<script>console.log('".$_ENV['NAME_APP']." footer admin está activo.');</script>";
     }
-    include __DIR__ . "./routes/footer/footer_admin.php";
+    return include __DIR__ . "./routes/footer/footer_admin.php";
 }
 
 function edit_file($titulo,$directorio){
@@ -394,8 +404,7 @@ function logout($id,$table_DB){
 function mail_smtp_v1_3($nombre,$asunto,$cuerpo,$correo){
     if($_ENV['SMTP_ACTIVE'] == 1){
         include __DIR__ . "./config/correo.php";
-    }
-    if($_ENV['SMTP_ACTIVE'] != 1){
+    }elseif($_ENV['SMTP_ACTIVE'] != 1){
         echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
     }
 }
@@ -403,8 +412,7 @@ function mail_smtp_v1_3($nombre,$asunto,$cuerpo,$correo){
 function mail_smtp_v1_3_check($correo){
     if($_ENV['SMTP_ACTIVE'] == 1){
         include __DIR__ . "./config/correo_check.php";
-    }
-    if($_ENV['SMTP_ACTIVE'] != 1){
+    }elseif($_ENV['SMTP_ACTIVE'] != 1){
         echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
     }
 }
@@ -415,13 +423,11 @@ function consulta_mysqli($select_db,$table_db,$custom,$sentence,$data,$compare,$
         $sql = "SELECT $select_db FROM $table_db";
         $resultado = $conexion->query($sql);
         return $resultado->fetch_assoc();
-    }
-    if ($sentence == "where"){
+    }elseif($sentence == "where"){
         $sql = "SELECT $select_db FROM $table_db $custom WHERE $data = $compare";
         $resultado = $conexion->query($sql);
         return $resultado->fetch_assoc();
-    }
-    if ($sentence == "innerjoin"){
+    }elseif($sentence == "innerjoin"){
         $sql = "SELECT $select_db FROM $table_db INNER JOIN $inner ON $compare = $data $custom";
         $resultado = $conexion->query($sql);
         return $resultado->fetch_assoc();

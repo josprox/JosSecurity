@@ -111,7 +111,7 @@ if(isset($_POST['salir'])){
       <div class="mb-3 row">
         <label for="password_new" class="form-label">Pon la nueva contraseña</label>
         <input type="password"
-          class="form-control" name="password_new" id="password_new" aria-describedby="nueva contraseña" placeholder="password_new">
+          class="form-control" name="password_new" id="password_new" aria-describedby="password_new" placeholder="nueva contraseña">
         <small id="password_new" class="form-text text-muted">Escribe la nueva contraseña</small>
       </div>
 

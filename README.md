@@ -19,9 +19,11 @@ Por defecto, el sistema puede conectarse de manera automática la base de datos,
 -	Conexión sencilla.
 
 	conect_mysqli();
+
 -	Conexión PDO.
 
 	conect_mysql();
+
 
 También puedes usar recaptcha para integrarla en el formulario sencillo, solo tendrías que llamar a la siguiente función.
 
