@@ -15,14 +15,17 @@ Puedes consultar cada "jossito" en la documentación, <a href="https://jossecuri
 ## ¿Cuáles son las funciones básicas del sistema?
 
 Por defecto, el sistema puede conectarse de manera automática la base de datos, las funciones son las siguientes:
+
 -	Conexión sencilla.
-		conect_mysqli();
+
+	conect_mysqli();
 -	Conexión PDO.
-		conect_mysql();
+
+	conect_mysql();
 
 También puedes usar recaptcha para integrarla en el formulario sencillo, solo tendrías que llamar a la siguiente función.
 
-		recaptcha();
+	recaptcha();
 
 Podrás consultar más funciones en el archivo “jossecurity.php” o en el sitio web oficial “jossecurity.josprox.com”.
 
@@ -43,7 +46,7 @@ Para poder instalar JosSecurity puedes <a href="https://github.com/josprox/JosSe
 
 También puedes descargarlo via npm con el siguiente código:
 
-		npm i jossecurity
+	npm i jossecurity
 
 En caso de usar npm deberás sacar los archivos "installer.php" y JosSecurity-x.x.x-zip (las x son porque puede variar en la versión) de la carpeta node_modules.
 
