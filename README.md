@@ -10,6 +10,8 @@ JosSecurity es un framework y librería al mismo tiempo, debido a que, el sistem
 
 Al igual que muchas librerías, JosSecurity funciona gracias a los Hooks, en este caso, el sistema de hooks se llama “jossitos”, cada jossito es una funcionalidad de php, si necesitas una consulta en la base de datos básica o hasta la mas compleja, cada jossito se encargará de traerte los datos y tu no necesitarás nada mas que usar la función y llenar los datos.
 
+Puedes consultar cada "jossito" en la documentación, <a href="https://jossecurity.josprox.com/documentacion">da clic aquí</a>.
+
 ## ¿Cuáles son las funciones básicas del sistema?
 
 Por defecto, el sistema puede conectarse de manera automática la base de datos, las funciones son las siguientes:
@@ -37,7 +39,13 @@ Por defecto, después de instalar JosSecurity, viene con un panel de control par
 
 ### ¿Cómo instalarlo?
 
-Para poder instalar JosSecurity puedes <a href="https://github.com/josprox/JosSecurity/releases">ir a releases o dando clic aquí</a> y descargar el instalador que viene por defecto.
+Para poder instalar JosSecurity puedes <a href="https://github.com/josprox/JosSecurity/releases">dar clic aquí</a> y descargar el instalador que viene por defecto.
+
+También puedes descargarlo via npm con el siguiente código:
+
+		npm i jossecurity
+
+En caso de usar npm deberás sacar los archivos "installer.php" y JosSecurity-x.x.x-zip (las x son porque puede variar en la versión) de la carpeta node_modules.
 
 Si trabajas en un servidor:
 - Descomprime el archivo zip, se descomprimirá un archivo php el cuál es el instalador, también tendrás un archivo zip con los archivos necesarios para instalar JosSecurity.
