@@ -38,7 +38,7 @@ Por defecto, después de instalar JosSecurity, viene con un panel de control par
 
 ### Usuario por defecto
 El sistema viene con un usuario de administración, podrás modificarlo o crear uno en el sistema de administración.
-Las suiguientes credenciales es para un login exitoso:
+Las siguientes credenciales es para un login exitoso:
 
 	Usuario:
 	joss@int.josprox.com
