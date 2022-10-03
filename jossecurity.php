@@ -3,7 +3,7 @@
 // JosSecurity, la mejor seguridad al alcance de tus manos.
 
 // NO ELIMINES las lineas 6 a 9 por seguridad, si tu borras esta linea dejará de funcionar JosSecurity.
-include __DIR__ . './vendor/autoload.php';
+require_once (__DIR__ .'/vendor/autoload.php');
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 session_start();
@@ -15,10 +15,10 @@ $fecha = date("Y-m-d H:i:s");
 $nombre_app = $_ENV['NAME_APP'];
 $version_app = $_ENV['VERSION'];
 
-$host = $_ENV['HOST'];
-$user = $_ENV['USUARIO'];
-$pass = $_ENV['CONTRA'];
-$DB = $_ENV['BASE_DE_DATOS'];
+$host = (string)$_ENV['HOST'];
+$user = (string)$_ENV['USUARIO'];
+$pass = (string)$_ENV['CONTRA'];
+$DB = (string)$_ENV['BASE_DE_DATOS'];
 
 if ($_ENV['DEBUG'] == 1) {
     echo "<script>console.log('".$nombre_app." está funcionando.');</script>";
@@ -43,7 +43,8 @@ function head(){
             return $head;
         }
     }elseif($pagina != "panel.php" OR $pagina != "reset.php"){
-        return include __DIR__ . "./routes/head/head.php";
+        return include (__DIR__ . "/routes/head/head.php");
+        correr_not_pay();
     }
 }
 
@@ -51,14 +52,14 @@ function head_admin(){
     if ($_ENV['DEBUG'] == 1){
         echo "<script>console.log('".$_ENV['NAME_APP']." Head admin está activo.');</script>";
     }
-    return include __DIR__ . "./routes/head/head_admin.php";
+    return include (__DIR__ . "/routes/head/head_admin.php");
 }
 
 function navbar_admin(){
     if ($_ENV['DEBUG'] == 1){
         echo "<script>console.log('".$_ENV['NAME_APP']." navbar admin está activo.');</script>";
     }
-    include __DIR__ . "./routes/navbar/navbar.php";
+    include (__DIR__ . "./routes/navbar/navbar.php");
 }
 
 function footer(){
@@ -79,14 +80,14 @@ function footer(){
             });
           </script>';
     }
-    return include __DIR__ . "./routes/footer/footer.php";
+    return include (__DIR__ . "/routes/footer/footer.php");
 }
 
 function footer_admin(){
     if ($_ENV['DEBUG'] == 1){
         echo "<script>console.log('".$_ENV['NAME_APP']." footer admin está activo.');</script>";
     }
-    return include __DIR__ . "./routes/footer/footer_admin.php";
+    return include (__DIR__ . "/routes/footer/footer_admin.php");
 }
 
 function edit_file($titulo,$directorio){
@@ -122,7 +123,7 @@ if ($_ENV['CONECT_DATABASE'] == 1){
 
         function conect_mysqli(){
             global $host,$user,$pass,$DB;
-            $conexion = new mysqli("$host","$user", "$pass","$DB");;
+            $conexion = new mysqli("$host","$user", "$pass","$DB", 3306);
             $conexion->set_charset("utf8");
             
             // AGREGANDO CHARSET UTF8
@@ -368,7 +369,7 @@ function resetear_contra($correo){
     $name = $row['name'];
     
     if($_ENV['SMTP_ACTIVE'] == 1){
-        include __DIR__ . "./config/correo_reset_password.php";
+        include (__DIR__ . "/config/correo_reset_password.php");
     }
     if($_ENV['SMTP_ACTIVE'] != 1){
         echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
@@ -403,7 +404,7 @@ function logout($id,$table_DB){
 
 function mail_smtp_v1_3($nombre,$asunto,$cuerpo,$correo){
     if($_ENV['SMTP_ACTIVE'] == 1){
-        include __DIR__ . "./config/correo.php";
+        include (__DIR__ . "/config/correo.php");
     }elseif($_ENV['SMTP_ACTIVE'] != 1){
         echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
     }
@@ -411,7 +412,7 @@ function mail_smtp_v1_3($nombre,$asunto,$cuerpo,$correo){
 
 function mail_smtp_v1_3_check($correo){
     if($_ENV['SMTP_ACTIVE'] == 1){
-        include __DIR__ . "./config/correo_check.php";
+        include (__DIR__ . "/config/correo_check.php");
     }elseif($_ENV['SMTP_ACTIVE'] != 1){
         echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
     }
@@ -464,6 +465,14 @@ function consulta_mysqli_custom_all($code){
     $sql = "$code";
     $resultado = $conexion->query($sql);
     return $resultado->fetch_assoc();
+    mysqli_close($conexion);
+}
+
+function leer_tablas_mysql_custom($code){
+    $conexion = conect_mysqli();
+    $sql = "$code";
+    $resultado = $conexion->query($sql);
+    return $resultado->num_rows;
     mysqli_close($conexion);
 }
 
@@ -593,9 +602,7 @@ if($_ENV['RECAPTCHA'] == 1){
 }
 
 if ($_ENV['PLUGINS'] == 1){
-
-    include __DIR__ . "./plugins/autoload.php";
-
+    include (__DIR__ . "/plugins/autoload.php");
 }
 
 ?>

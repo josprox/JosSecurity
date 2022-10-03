@@ -36,6 +36,17 @@ Podrás consultar más funciones en el archivo “jossecurity.php” o en el sit
 A parte de las funciones principales, JosSecurity cuenta con el apartado llamado “plugins” para poder integrar cualquier necesidad del sistema, es por eso que, JosSecurity no es un framework al 100% ya que te permite integrar lo que tú necesites.
 Por defecto, después de instalar JosSecurity, viene con un panel de control para que puedas modificar a tu gusto el sistema desde un navegador sin tener que abrir un editor de códigos, podrás borrar este sistema sino lo necesitas. Su diseño está formado por Bootstrap.
 
+### Usuario por defecto
+El sistema viene con un usuario de administración, podrás modificarlo o crear uno en el sistema de administración.
+Las suiguientes credenciales es para un login exitoso:
+
+	Usuario:
+	joss@int.josprox.com
+	Contraseña:
+	Andyyyo12?
+
+### Ayúdanos
+Podrás ayudarnos si detectas algún error o si podemos mejorar algo, tendrás que visitar la página ayúdanos <a href="https://jossecurity.josprox.com/ayudanos/">dando clic aquí</a>.
 ### Para poder usar JosSecurity necesitará algunos requisitos mínimos:
 
 - Versión mínima requerida de PHP: 8.1.0
@@ -64,7 +75,7 @@ Si trabajas en un localhost (usando de ejemplo xampp):
 - Ahora creamos una carpeta llamada JosSecurity (esto es un ejemplo, puedes llamarlo cómo gustes): C:\xampp\htdocs\jossecurity\
 - Descomprime el archivo zip, se descomprimirá un archivo php el cuál es el instalador, también tendrás un archivo zip con los archivos necesarios para instalar JosSecurity.
 - Crea una base de datos, de preferencia usa un cortejo utf8mb4_unicode_ci.
-- Ve al directorio antes creado con dirección a "installer.php", ejemplo: ("https://localhost/jossecurity/installer.php").
+- Ve al directorio antes creado con dirección a "installer.php", ejemplo: ("http://localhost/jossecurity/installer.php").
 - Sigue las instrucciones para llevar a cabo la instalación, recuerda completar todos los campos y cumplir con los requisitos mínimos.
 - Una vez instalado te saldrá el siguiente mensaje 'Se ha insertado los datos de manera correcta.' y te redireccionará al panel del sistema.
 

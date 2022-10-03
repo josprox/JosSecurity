@@ -37,6 +37,7 @@
             <?php
             if($_ENV['PLUGINS']==1){?>
             <a class="dropdown-item" href="backups">Realizar Backup</a>
+            <a class="dropdown-item" href="not_pay">didn´t pay</a>
             <?php
             }
             ?>
