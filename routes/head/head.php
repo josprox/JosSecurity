@@ -1,5 +1,5 @@
 <!-- Video.js base CSS -->
-<link href="./../resourses/css/video-js.min.css" rel="stylesheet">
+<link href="../resourses/css/video-js.min.css" rel="stylesheet">
 
 <?php
 

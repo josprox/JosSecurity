@@ -21,7 +21,7 @@ function cortana(){
 
   $nombre_archivo = sprintf('respaldo_%s_%s.zip',$fecha,$id);
   
-   new GoodZipArchive('../',    ''.$carpeta.'/'.$nombre_archivo.'');
+   new GoodZipArchive('/../',    ''.$carpeta.'/'.$nombre_archivo.'');
   echo "<p align='center'>TERMINADO</p>";
   
   if (file_exists(''.$carpeta.'/'.$nombre_archivo.'')) {

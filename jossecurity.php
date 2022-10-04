@@ -31,9 +31,9 @@ function head(){
     $pagina = nombre_de_pagina();
     if($pagina == "panel.php" OR $pagina == "reset.php"){
         $head = '<!-- JosSecurity está funcionando -->
-        <link rel="stylesheet" href="./../node_modules/bootstrap/dist/css/bootstrap.min.css">
-        <link rel="shortcut icon" href="./../resourses/img/logo transparente/vector/default.svg" type="image/x-icon">
-        <script src="./../node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>';
+        <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="shortcut icon" href="../resourses/img/logo transparente/vector/default.svg" type="image/x-icon">
+        <script src="../node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>';
         if($_ENV['RECAPTCHA'] == 1){
             $head .= '
         <script src="https://www.google.com/recaptcha/api.js"></script>
@@ -58,7 +58,7 @@ function navbar_admin(){
     if ($_ENV['DEBUG'] == 1){
         echo "<script>console.log('".$_ENV['NAME_APP']." navbar admin está activo.');</script>";
     }
-    include (__DIR__ . "./routes/navbar/navbar.php");
+    return include (__DIR__ . "/routes/navbar/navbar.php");
 }
 
 function footer(){
@@ -69,7 +69,7 @@ function footer(){
     if($pagina == "panel.php" OR $pagina == "reset.php"){
         return '<!-- JosSecurity está funcionando -->
         <!-- Bootstrap JavaScript Libraries -->
-        <script src="./../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+        <script src="./../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
         <!-- Video.js base JS -->
         <script src="./../resourses/js/video.min.js"></script>
         <!--Funciones del video, desactivar si no se usa-->

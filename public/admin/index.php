@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__ . "/../../jossecurity.php";
+include (__DIR__ . "/../../jossecurity.php");
 
 login_cookie("users");
 
