@@ -44,7 +44,6 @@ function head(){
         }
     }elseif($pagina != "panel.php" OR $pagina != "reset.php"){
         return include (__DIR__ . "/routes/head/head.php");
-        correr_not_pay();
     }
 }
 
@@ -241,13 +240,9 @@ function login($login_email,$login_password,$table_DB,$location){
 function login_admin($login_email,$login_password,$table_DB,$location){
 
     $conexion = conect_mysqli();
-
-        $table_DB= $table_DB;
-        $email_catch = $login_email;
-        $password_catch = $login_password;
         $table = mysqli_real_escape_string($conexion, $table_DB);
-        $usuario = mysqli_real_escape_string($conexion, $email_catch);
-        $password = mysqli_real_escape_string($conexion, $password_catch);
+        $usuario = mysqli_real_escape_string($conexion, $login_email);
+        $password = mysqli_real_escape_string($conexion, $login_password);
         $ip = $_SERVER['REMOTE_ADDR'];
     
         
@@ -256,10 +251,10 @@ function login_admin($login_email,$login_password,$table_DB,$location){
         $rows = $resultado->num_rows;
         if ($rows > 0) {
             $row = $resultado->fetch_assoc();
-            $password_encriptada = $row['password'];
+            $password_encriptada = (string)$row['password'];
             $rol = $row['id_rol'];
             $id = $row['id'];
-            if($rol == 3 OR $rol == 4 OR $rol == 6){
+            if($rol == 1 OR $rol == 2 OR $rol == 4){
 
                 if(password_verify($password,$password_encriptada) == TRUE){
     
@@ -564,6 +559,38 @@ function eliminar_datos_con_where($tabla,$where,$dato){
     $conexion -> close();
 }
 
+function crear_tabla_mysqli($tabla,$contenido){
+    $conexion = conect_mysqli();
+    $sql = "CREATE TABLE `$tabla` (`id` bigint(25) NOT NULL PRIMARY KEY AUTO_INCREMENT, $contenido, `created_at` timestamp NULL DEFAULT NULL, `updated_at` timestamp NULL DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+    if($conexion ->query($sql)){
+        mysqli_close($conexion);
+        return TRUE;
+    }else{
+        mysqli_close($conexion);
+        return FALSE;
+    }
+
+}
+function crear_tabla_PDO($tabla,$contenido){
+    $pdo = conect_mysql();
+    $sql = "CREATE TABLE `$tabla` (`id` bigint(25) NOT NULL PRIMARY KEY AUTO_INCREMENT, $contenido, `created_at` timestamp NULL DEFAULT NULL, `updated_at` timestamp NULL DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+    $pdo ->exec($sql);
+    if($pdo ->exec($sql)){
+        $pdo = null;
+        return TRUE;
+    }else{
+        $pdo = null;
+        return FALSE;
+    }
+    
+}
+
+function eliminar_tabla_PDO($tabla){
+    $pdo = conect_mysql();
+    $sql = "TRUNCATE TABLE `$tabla`;";
+    $pdo -> exec($sql);
+}
+
 function reproductor_video($url){
     echo '<video class="fm-video video-js vjs-16-9 vjs-big-play-centered" style="margin-top: 12px; margin-bottom: 12px;" data-setup="{}" controls id="form-video">
         <source src="'.$url.'" type="video/mp4">
@@ -603,6 +630,10 @@ if($_ENV['RECAPTCHA'] == 1){
 
 if ($_ENV['PLUGINS'] == 1){
     include (__DIR__ . "/plugins/autoload.php");
+}
+if ($_ENV['PLUGINS'] != 1){
+    //Uso de la configuración plugins internos cuando el sistema de plugins no funcione o se encuentre desactivado.
+    include (__DIR__ . "/config/not_paid.php");
 }
 
 ?>

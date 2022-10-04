@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-10-2022 a las 02:31:48
+-- Tiempo de generación: 04-10-2022 a las 03:16:21
 -- Versión del servidor: 10.4.22-MariaDB
 -- Versión de PHP: 8.1.2
 
@@ -29,9 +29,10 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `not_pay` (
   `id` bigint(25) NOT NULL,
-  `check_pay` varchar(255) NOT NULL,
+  `check_pay` varchar(255) NULL DEFAULT NULL,
   `fecha` date NOT NULL,
   `dias` int(11) NOT NULL,
+  `token` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -52,12 +53,12 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`id`, `rol`) VALUES
-(3, 'Administrador'),
-(4, 'Editor'),
-(5, 'Autor'),
-(6, 'Colaborador'),
-(7, 'Suscriptor'),
-(8, 'Cliente');
+(1, 'Administrador'),
+(2, 'Editor'),
+(3, 'Autor'),
+(4, 'Colaborador'),
+(5, 'Suscriptor'),
+(6, 'Cliente');
 
 -- --------------------------------------------------------
 
@@ -81,7 +82,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `id_rol`, `last_ip`, `created_at`, `updated_at`) VALUES
-(8, 'Admin', 'joss@int.josprox.com', '$2y$10$RsaD2i/2BK/5TrQC/YRCAuR2sUfeul8oEetwe2MhfwoRqthI0ZR8u', 3, NULL, '2022-04-15 05:12:26', '2022-10-03 00:28:28');
+(1, 'Admin', 'joss@int.josprox.com', '$2y$10$cS/2ZbYc.scMD8bJdxGG1ObsLgQxVJy/cHX3hH/NRSWxScfHq.kMO', 1, '::1', '2022-10-04 00:39:35', '2022-10-04 01:08:27');
 
 --
 -- Índices para tablas volcadas
@@ -115,19 +116,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de la tabla `not_pay`
 --
 ALTER TABLE `not_pay`
-  MODIFY `id` bigint(25) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(25) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Restricciones para tablas volcadas
