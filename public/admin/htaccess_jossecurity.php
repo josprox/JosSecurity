@@ -7,12 +7,7 @@ login_cookie("users");
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: ../panel");
 }
-
 $iduser = $_SESSION['id_usuario'];
-
-if($_ENV['PLUGINS'] != 1){
-  header("location: ./");
-}
 
 if(isset($_POST['salir'])){
   logout($iduser,"users");
@@ -41,20 +36,8 @@ if(isset($_POST['salir'])){
 
   <div class="container">
 
-    <h1 align="Center">Sistema de respaldo</h1>
-    <p align="justify">Tener un respaldo garantiza que los datos estén seguros y que la información crítica no se pierda. Esto aplica para proteger configuración, robo de datos o cualquier otro tipo de emergencia.</p>
+    <?php edit_file("Reglas htaccess","./../../.htaccess"); ?>
 
-    <?php
-    if(isset($_POST['allinone'])){
-      echo allinone_backup();
-    }
-    ?>
-
-    <form action="<?php $_SERVER["PHP_SELF"]; ?>" method="post">
-    <center>
-      <button name="allinone" type="submit" class="btn btn-warning">Respaldar</button>
-    </center>
-    </form>
 
   </div>
 

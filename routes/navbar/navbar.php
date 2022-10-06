@@ -23,7 +23,8 @@
           <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Configuraciones</a>
           <div class="dropdown-menu" aria-labelledby="dropdownId">
             <a class="dropdown-item" href="env">Archivo env</a>
-            <a class="dropdown-item" href="htaccess">Archivo htaccess</a>
+            <a class="dropdown-item" href="htaccess_public">Archivo htaccess público</a>
+            <a class="dropdown-item" href="htaccess_jossecurity">Archivo htaccess JosSecurity</a>
           </div>
         </li>
         <li class="nav-item dropdown">

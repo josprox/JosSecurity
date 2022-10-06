@@ -19,6 +19,7 @@ $host = (string)$_ENV['HOST'];
 $user = (string)$_ENV['USUARIO'];
 $pass = (string)$_ENV['CONTRA'];
 $DB = (string)$_ENV['BASE_DE_DATOS'];
+$puerto = (string)$_ENV['PUERTO'];
 
 if ($_ENV['DEBUG'] == 1) {
     echo "<script>console.log('".$nombre_app." está funcionando.');</script>";
@@ -121,8 +122,8 @@ if ($_ENV['CONECT_DATABASE'] == 1){
     if($_ENV['CONECT_MYSQLI'] == 1){
 
         function conect_mysqli(){
-            global $host,$user,$pass,$DB;
-            $conexion = new mysqli("$host","$user", "$pass","$DB", 3306);
+            global $host,$user,$pass,$DB,$puerto;
+            $conexion = new mysqli("$host","$user", "$pass","$DB", $puerto);
             $conexion->set_charset("utf8");
             
             // AGREGANDO CHARSET UTF8
@@ -184,6 +185,10 @@ if ($_ENV['CONECT_DATABASE'] == 1){
         if ($_ENV['DEBUG'] == 1){
             echo "<script>console.log('La conexión mysql está desactivada.');</script>";
         }
+    }
+
+    if ($_ENV['CONECT_POSTGRESQL'] == 1 OR $_ENV['CONECT_POSTGRESQL_PDO'] == 1){
+        include (__DIR__ . "/config/postgresql.php");
     }
 
 }else{
@@ -602,6 +607,29 @@ function nombre_de_pagina(){
     $url = array_reverse($url);
     $url = $url[0];
     return $url;
+}
+
+function borrar_directorio($dirname) {
+	//si es un directorio lo abro
+         if (is_dir($dirname))
+           $dir_handle = opendir($dirname);
+        //si no es un directorio devuelvo false para avisar de que ha habido un error
+	 if (!$dir_handle)
+	      return false;
+        //recorro el contenido del directorio fichero a fichero
+	 while($file = readdir($dir_handle)) {
+	       if ($file != "." && $file != "..") {
+                   //si no es un directorio elemino el fichero con unlink()
+	            if (!is_dir($dirname."/".$file))
+	                 unlink($dirname."/".$file);
+	            else //si es un directorio hago la llamada recursiva con el nombre del directorio
+	                 borrar_directorio($dirname.'/'.$file);
+	       }
+	 }
+	 closedir($dir_handle);
+	//elimino el directorio que ya he vaciado
+	 rmdir($dirname);
+	 return true;
 }
 
 if($_ENV['RECAPTCHA'] == 1){

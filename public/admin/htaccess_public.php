@@ -36,7 +36,7 @@ if(isset($_POST['salir'])){
 
   <div class="container">
 
-    <?php edit_file("Reglas htaccess","../../.htaccess"); ?>
+    <?php edit_file("Reglas htaccess","./../.htaccess"); ?>
 
 
   </div>

@@ -127,7 +127,7 @@ function correr_not_pay(){
 
 function check_not_paid(){
     if(leer_tablas_mysql_custom("SELECT * FROM not_pay")<1){
-
+        
         ?>
 
         <h2 align="center">Vamos a activarlo</h2>
