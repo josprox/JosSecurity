@@ -8,3 +8,9 @@
         fluid: true
       });
     </script>
+  <!-- Uso de richtext -->
+  <script>
+        $(document).ready(function() {
+            $('.textarea').richText();
+        });
+    </script>

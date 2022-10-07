@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '63a59810bb9f52b069a2f6880cc3ca9831f68559',
+        'reference' => '3d6e83b672b711c88207020da48f2def5b7f677d',
         'name' => '__root__',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '63a59810bb9f52b069a2f6880cc3ca9831f68559',
+            'reference' => '3d6e83b672b711c88207020da48f2def5b7f677d',
             'dev_requirement' => false,
         ),
         'graham-campbell/result-type' => array(
@@ -29,12 +29,12 @@
             'dev_requirement' => false,
         ),
         'phpmailer/phpmailer' => array(
-            'pretty_version' => 'v6.6.4',
-            'version' => '6.6.4.0',
+            'pretty_version' => 'v6.6.5',
+            'version' => '6.6.5.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../phpmailer/phpmailer',
             'aliases' => array(),
-            'reference' => 'a94fdebaea6bd17f51be0c2373ab80d3d681269b',
+            'reference' => '8b6386d7417526d1ea4da9edb70b8352f7543627',
             'dev_requirement' => false,
         ),
         'phpoption/phpoption' => array(

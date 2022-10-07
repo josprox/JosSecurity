@@ -33,6 +33,7 @@ function head(){
     if($pagina == "panel.php" OR $pagina == "reset.php"){
         $head = '<!-- JosSecurity está funcionando -->
         <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
         <link rel="shortcut icon" href="../resourses/img/logo transparente/vector/default.svg" type="image/x-icon">
         <script src="../node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>';
         if($_ENV['RECAPTCHA'] == 1){

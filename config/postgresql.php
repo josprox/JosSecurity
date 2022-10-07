@@ -51,4 +51,141 @@ if($_ENV['CONECT_POSTGRESQL_PDO'] != 1){
     }
 }
 
+function crear_tabla_psg($tabla,$contenido){
+    $conexion = conect_pg();
+    $sql = "CREATE TABLE $tabla (
+        id bigint NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+        $contenido,
+        created_at timestamp NULL DEFAULT NULL,
+        updated_at timestamp NULL DEFAULT NULL
+    );";
+    if(pg_query($conexion,$sql)){
+        $success = "
+        <script>
+            Swal.fire(
+            'Completado',
+            'Se ha creado la tabla de manera correcta.',
+            'success'
+            )
+        </script>";
+        return $success;   
+    }else{
+        $error = "
+        <script>
+            Swal.fire(
+            'Falló',
+            'No se ha podido crear la tabla de manera correcta.',
+            'error'
+            )
+        </script>";
+        return $error;
+    }
+}
+
+function insertar_datos_psg($tabla,$valor,$contenido){
+    global $fecha;
+    $conexion = conect_pg();
+    $sql = "INSERT INTO $tabla ($valor,created_at) VALUES ($contenido, '$fecha');";
+    if(pg_query($conexion,$sql)){
+        $success = "
+        <script>
+            Swal.fire(
+            'Completado',
+            'Se han insertado los datos de manera correcta.',
+            'success'
+            )
+        </script>";
+        return $success;   
+    }else{
+        $error = "
+        <script>
+            Swal.fire(
+            'Falló',
+            'No se han insertado los datos de manera correcta.',
+            'error'
+            )
+        </script>";
+        return $error;
+    }
+}
+
+function actualizar_datos_con_where_psg($tabla,$edicion,$data,$comparate){
+    global $fecha;
+    $conexion = conect_pg();
+    $sql = "UPDATE $tabla SET $edicion, updated_at = '$fecha' WHERE $data = $comparate;";
+    if(pg_query($conexion,$sql)){
+        $success = "
+        <script>
+            Swal.fire(
+            'Completado',
+            'Se han actualizado los datos de manera correcta.',
+            'success'
+            )
+        </script>";
+        return $success;   
+    }else{
+        $error = "
+        <script>
+            Swal.fire(
+            'Falló',
+            'No se han actualizado los datos de manera correcta.',
+            'error'
+            )
+        </script>";
+        return $error;
+    }
+}
+
+function eliminar_datos_con_where_psg($tabla,$where,$dato){
+    $conexion = conect_pg();
+    $sql = "DELETE FROM $tabla WHERE $where = $dato;";
+    if (pg_query($conexion,$sql)) {
+        $success = "
+        <script>
+            Swal.fire(
+            'Completado',
+            'Se ha eliminado todo de manera correcta.',
+            'success'
+            )
+        </script>";
+        return $success;    
+       }else {
+        $error = "
+        <script>
+            Swal.fire(
+            'Falló',
+            'No se ha podido eliminar de manera correcta.',
+            'error'
+            )
+        </script>";
+        return $error;
+       }
+}
+
+function eliminar_tabla_psg($tabla){
+    $conexion = conect_pg();
+    $sql = "DROP TABLE $tabla;";
+    if(pg_query($conexion,$sql)){
+        $success = "
+        <script>
+            Swal.fire(
+            'Completado',
+            'Se ha eliminado la tabla de manera correcta.',
+            'success'
+            )
+        </script>";
+        return $success;   
+    }else{
+        $error = "
+        <script>
+            Swal.fire(
+            'Falló',
+            'No se ha podido eliminar la tabla de manera correcta.',
+            'error'
+            )
+        </script>";
+        return $error;
+    }
+}
+
 ?>

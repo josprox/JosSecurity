@@ -26,7 +26,7 @@ login_cookie("users");
 
     <nav class="navbar navbar-expand-sm navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="https://github.com/josprox/JosSecurity"><?php echo $nombre_app; ?></a>
+            <a class="navbar-brand" href="https://github.com/josprox/JosSecurity"><i class="fa-solid fa-shield-halved"></i> <?php echo $nombre_app; ?></a>
             <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavId" aria-controls="collapsibleNavId"
                 aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
