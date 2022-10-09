@@ -45,7 +45,7 @@ if(isset($_POST['salir'])){
     <p align="justify">Agregue opacidad a la etiqueta del cuerpo y disminúyala todos los días hasta que su sitio desaparezca por completo. Establezca una fecha de vencimiento y personalice la cantidad de días que les ofrece hasta que el sitio web desaparezca por completo.</p>
 
       <?php
-      check_not_paid();
+      not_pay();
       ?>
 
 

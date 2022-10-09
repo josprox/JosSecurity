@@ -658,7 +658,14 @@ if($_ENV['RECAPTCHA'] == 1){
 }
 
 if ($_ENV['PLUGINS'] == 1){
-    include (__DIR__ . "/plugins/autoload.php");
+    function all_in_one(){
+        include (__DIR__ . "/plugins/all in one/allinone.php");
+        return allinone_zip_finish();
+    }
+    function not_pay(){
+        include (__DIR__ . "/plugins/dont_pay/index.php");
+        return check_not_paid();
+    }
 }
 if ($_ENV['PLUGINS'] != 1){
     //Uso de la configuración plugins internos cuando el sistema de plugins no funcione o se encuentre desactivado.

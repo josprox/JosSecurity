@@ -46,7 +46,7 @@ if(isset($_POST['salir'])){
 
     <?php
     if(isset($_POST['allinone'])){
-      echo allinone_backup();
+      echo all_in_one();
     }
     ?>
 
