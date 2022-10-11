@@ -10,15 +10,15 @@
 # Lo primero que haremos será crear las carpetas necesarias.
 
 function allinone_backup(){
-    $directorio_principal = ("/respaldos");
-    $directorio_secundario = ("/respaldos/sql");
-    if (!file_exists(__DIR__ . $directorio_principal)) {
-        mkdir(__DIR__ . $directorio_principal);
+    $directorio_principal = (__DIR__ . "/respaldos");
+    $directorio_secundario = (__DIR__ . "/respaldos/sql");
+    if (!file_exists($directorio_principal)) {
+        mkdir($directorio_principal);
     }
-    if (!file_exists(__DIR__ . $directorio_secundario)) {
-        mkdir(__DIR__ . $directorio_secundario);
+    if (!file_exists($directorio_secundario)) {
+        mkdir($directorio_secundario);
     }
-    return allinone_zip_finish();
+    return TRUE;
 }
 
 ## Ahora creamos el script que nos permitirá hacer el backup sql.
@@ -102,9 +102,6 @@ function allinone_zip_all(){
   
     # Se guardará dependiendo del directorio, en una carpeta llamada respaldos
     $carpeta = __DIR__ . "/respaldos";
-    if (!file_exists($carpeta)) {
-        mkdir($carpeta);
-    }
   
         # Calcular un ID único
         $id = uniqid();
@@ -114,7 +111,7 @@ function allinone_zip_all(){
   
     $nombre_archivo = sprintf('respaldo_%s_%s.zip',$fecha,$id);
     
-    new GoodZipArchive('./../../',    $carpeta . '/'. $nombre_archivo) ;
+    new GoodZipArchive(__DIR__ . './../../',    $carpeta . '/'. $nombre_archivo) ;
     
     if (file_exists(''.$carpeta.'/'.$nombre_archivo.'')) {
         $resultado = TRUE;
@@ -127,47 +124,49 @@ function allinone_zip_all(){
   ##Finalmente zipearemos y borraremos los datos.
 
   function allinone_zip_finish(){
-    if (allinone_sql() == TRUE){
-
-        if (allinone_zip_all() == TRUE){
+    if (allinone_backup() == TRUE){
+        if (allinone_sql() == TRUE){
     
-            ini_set('max_execution_time', 9000);
-            ini_set('memory_limit', '-1');
-          
-            # Se guardará dependiendo del directorio, en una carpeta llamada respaldos
-            $carpeta = __DIR__ . "/respaldo_all";
-            if (!file_exists($carpeta)) {
-                mkdir($carpeta);
-            }
-          
-                # Calcular un ID único
-                $id = uniqid();
-          
-                # También la fecha
-                $fecha = date("Y-m-d");
-          
-            $nombre_archivo = sprintf('respaldo_%s_%s.zip',$fecha,$id);
-            
-            new GoodZipArchive('./../../plugins/all in one/respaldos/',    $carpeta . '/'. $nombre_archivo) ;
-            $dirname = "./../../plugins/all in one/respaldos/";
-
-            if(borrar_directorio($dirname) == TRUE){
-
-                if (file_exists(''.$carpeta.'/'.$nombre_archivo.'')) {
-                    $resultado = "<center><p>Proceso Finalizado!!</p><a class='btn btn-success' href='./../../plugins/all in one/respaldo_all/".$nombre_archivo."'>Descargar</a></center><br>";
-                  } else {
-                    $resultado = "<p align='center'>Error, archivo zip no ha sido creado!!</p>";
-                  }
+            if (allinone_zip_all() == TRUE){
+        
+                ini_set('max_execution_time', 9000);
+                ini_set('memory_limit', '-1');
+              
+                # Se guardará dependiendo del directorio, en una carpeta llamada respaldos
+                $carpeta = __DIR__ . "/respaldo_all";
+                if (!file_exists($carpeta)) {
+                    mkdir($carpeta);
+                }
+              
+                    # Calcular un ID único
+                    $id = uniqid();
+              
+                    # También la fecha
+                    $fecha = date("Y-m-d");
+              
+                $nombre_archivo = sprintf('respaldo_%s_%s.zip',$fecha,$id);
                 
+                new GoodZipArchive('./../../plugins/all in one/respaldos/',    $carpeta . '/'. $nombre_archivo) ;
+                $dirname = "./../../plugins/all in one/respaldos/";
+    
+                if(borrar_directorio($dirname) == TRUE){
+    
+                    if (file_exists(''.$carpeta.'/'.$nombre_archivo.'')) {
+                        $resultado = "<center><p>Proceso Finalizado!!</p><a class='btn btn-success' href='./../../plugins/all in one/respaldo_all/".$nombre_archivo."'>Descargar</a></center><br>";
+                      } else {
+                        $resultado = "<p align='center'>Error, archivo zip no ha sido creado!!</p>";
+                      }
+                    
+                    return $resultado;
+                }
+                
+                
+            } else {
+                $resultado = "<p align='center'>Error, archivo zip no ha sido creado!! all in one all</p>";
                 return $resultado;
             }
-            
-            
-        } else {
-            $resultado = "<p align='center'>Error, archivo zip no ha sido creado!! all in one all</p>";
-            return $resultado;
+        
         }
-    
     }
   }
   

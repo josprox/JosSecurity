@@ -4,126 +4,11 @@
 
     Esta es una versión mejorada de did not pay.
     Consulta el código fuente en: https://github.com/kleampa/not-paid
-    El siguiente código está preparado solo para el uso de JosSecurity, no sengarantiza el uso de este plugin en otros sistemas.
+    Función: El siguiente código está preparado solo para el uso de JosSecurity, no sengarantiza el uso de este plugin en otros sistemas.
+    Creador: Melchor Estrada José Luis (JOSPROX MX | Internacional).
+    Web: https://josprox.com
 
 */
-function not_paid_datos(){
-    return consulta_mysqli_clasic("*","not_pay");
-}
-
-if(isset($_POST['create_not_pay'])){
-    $conexion = conect_mysqli();
-    if(isset($_POST['check_pay'])){
-        $check = mysqli_real_escape_string($conexion, $_POST['check_pay']);
-        if ($check == "on"){
-            $check = TRUE;
-        }
-    }else{
-        $check = FALSE;
-    }
-    $fecha_updated = mysqli_real_escape_string($conexion, $_POST['fecha']);
-    if($_POST['dias'] <= 60 OR $_POST['dias'] >= 0){
-        $dias = (int)mysqli_real_escape_string($conexion, $_POST['dias']);
-    }elseif($_POST['dias'] > 60 OR $_POST['dias'] < 0){
-        $dias = (int)60;
-    }
-    $token = password_hash(mysqli_real_escape_string($conexion, $_POST['token']),PASSWORD_BCRYPT,["cost"=>10]);
-
-    mysqli_close($conexion);
-
-    insertar_datos_clasic_mysqli("not_pay","check_pay, fecha, dias, token, created_at, updated_at"," '$check', '$fecha_updated', '$dias','$token', '$fecha', NULL");
-}
-
-if(isset($_POST['receptor_not_paid'])){
-    $conexion = conect_mysqli();
-    $id = mysqli_real_escape_string($conexion, $_POST['id']);
-    if(isset($_POST['check_pay'])){
-        $check = mysqli_real_escape_string($conexion, $_POST['check_pay']);
-        if ($check == "on"){
-            $check = TRUE;
-        }
-    }else{
-        $check = FALSE;
-    }
-    $fecha_updated = mysqli_real_escape_string($conexion, $_POST['fecha']);
-    if($_POST['dias'] <= 60 OR $_POST['dias'] >= 0){
-        $dias = (int)mysqli_real_escape_string($conexion, $_POST['dias']);
-    }elseif($_POST['dias'] > 60 OR $_POST['dias'] < 0){
-        $dias = (int)60;
-    }
-    $token = mysqli_real_escape_string($conexion, $_POST['token']);
-
-    mysqli_close($conexion);
-
-    $row = consulta_mysqli_where("token","not_pay","id",$id);
-
-    $token_encriptado = $row['token'];
-
-    if(password_verify($token,$token_encriptado) == TRUE){
-        actualizar_datos_mysqli("not_pay"," `check_pay` = '$check', `fecha` = '$fecha_updated', `dias` = '$dias'","id",$id);
-    }
-
-
-}
-
-if(isset($_POST['eliminar_not_paid'])){
-    $conexion = conect_mysqli();
-    $pdo = conect_mysql();
-    $id = mysqli_real_escape_string($conexion, $_POST['id']);
-    $token = mysqli_real_escape_string($conexion, $_POST['token']);
-
-    mysqli_close($conexion);
-
-    $row = consulta_mysqli_where("token","not_pay","id",$id);
-
-    $token_encriptado = $row['token'];
-
-    if(password_verify($token,$token_encriptado) == TRUE){
-        eliminar_datos_con_where("not_pay","id",$id);
-    }
-
-
-}
-
-
-function correr_not_pay(){
-
-    if (leer_tablas_mysql_custom("SELECT * FROM not_pay")>=1){
-
-        $datos = not_paid_datos();
-
-        if($datos['check_pay'] == TRUE){?>
-
-
-        <script type="text/javascript">
-
-            (function(){
-                var due_date = new Date('<?php echo $datos['fecha']; ?>');
-                var days_deadline = <?php echo $datos['dias']; ?>;
-                
-                var current_date = new Date();
-                var utc1 = Date.UTC(due_date.getFullYear(), due_date.getMonth(), due_date.getDate());
-                var utc2 = Date.UTC(current_date.getFullYear(), current_date.getMonth(), current_date.getDate());
-                var days = Math.floor((utc2 - utc1) / (1000 * 60 * 60 * 24));
-                
-                if(days > 0) {
-                    var days_late = days_deadline-days;
-                    var opacity = (days_late*100/days_deadline)/100;
-                        opacity = (opacity < 0) ? 0 : opacity;
-                        opacity = (opacity > 1) ? 1 : opacity;
-                    if(opacity >= 0 && opacity <= 1) {
-                        document.getElementsByTagName("BODY")[0].style.opacity = opacity;
-                    }
-                }
-            })();
-        </script>
-
-        <?php }
-
-    }?>
-
-    <?php
-}
 
 function check_not_paid(){
     if(leer_tablas_mysql_custom("SELECT * FROM not_pay")<1){
@@ -161,6 +46,40 @@ function check_not_paid(){
 
         <?php
 
+        if(isset($_POST['create_not_pay'])){
+            global $fecha;
+            $conexion = conect_mysqli();
+            if(isset($_POST['check_pay'])){
+                $check = mysqli_real_escape_string($conexion, $_POST['check_pay']);
+                if ($check == "on"){
+                    $check = TRUE;
+                }
+            }else{
+                $check = FALSE;
+            }
+            $fecha_updated = mysqli_real_escape_string($conexion, $_POST['fecha']);
+            if($_POST['dias'] <= 60 OR $_POST['dias'] >= 0){
+                $dias = (int)mysqli_real_escape_string($conexion, $_POST['dias']);
+            }elseif($_POST['dias'] > 60 OR $_POST['dias'] < 0){
+                $dias = (int)60;
+            }
+            $token = password_hash(mysqli_real_escape_string($conexion, $_POST['token']),PASSWORD_BCRYPT,["cost"=>10]);
+
+            mysqli_close($conexion);
+
+            insertar_datos_clasic_mysqli("not_pay","check_pay, fecha, dias, token, created_at, updated_at"," '$check', '$fecha_updated', '$dias','$token', '$fecha', NULL");
+            echo "
+            <script>
+            Swal.fire(
+                'Ya está',
+                'Se configuró todo con éxito.',
+                'success'
+            );
+            window.location.href = 'not_pay';
+            </script>
+            ";
+        }
+
     }elseif(leer_tablas_mysql_custom("SELECT * FROM not_pay")>=1){ ?>
     <form action="<?php $_SERVER["PHP_SELF"]; ?>" method="post">
     <?php
@@ -169,12 +88,100 @@ function check_not_paid(){
         not_paid_dias();
         not_paid_token();
         not_paid_submit();
+        if(isset($_POST['receptor_not_paid'])){
+            $conexion = conect_mysqli();
+            $id = mysqli_real_escape_string($conexion, $_POST['id']);
+            if(isset($_POST['check_pay'])){
+                $check = mysqli_real_escape_string($conexion, $_POST['check_pay']);
+                if ($check == "on"){
+                    $check = TRUE;
+                }
+            }else{
+                $check = FALSE;
+            }
+            $fecha_updated = mysqli_real_escape_string($conexion, $_POST['fecha']);
+            if($_POST['dias'] <= 60 OR $_POST['dias'] >= 0){
+                $dias = (int)mysqli_real_escape_string($conexion, $_POST['dias']);
+            }elseif($_POST['dias'] > 60 OR $_POST['dias'] < 0){
+                $dias = (int)60;
+            }
+            $token = mysqli_real_escape_string($conexion, $_POST['token']);
+        
+            mysqli_close($conexion);
+        
+            $row = consulta_mysqli_where("token","not_pay","id",$id);
+        
+            $token_encriptado = $row['token'];
+        
+            if(password_verify($token,$token_encriptado) == TRUE){
+                actualizar_datos_mysqli("not_pay"," `check_pay` = '$check', `fecha` = '$fecha_updated', `dias` = '$dias'","id",$id);
+                echo "
+                <script>
+                Swal.fire(
+                    'Ya está',
+                    'Se actualizó todo con éxito.',
+                    'success'
+                );
+                window.location.href = 'not_pay';
+                </script>
+                ";
+                
+            }else{
+                echo "
+                <script>
+                Swal.fire(
+                    'Error',
+                    'Tuvimos un error al actualizar la información, favor de checar el token',
+                    'error'
+                );
+                </script>
+                ";
+            }
+        }
         ?>
     </form>
     <form action="<?php $_SERVER["PHP_SELF"]; ?>" method="post">
         <?php 
         not_paid_token();
-        not_paid_delete(); 
+        not_paid_delete();
+        if(isset($_POST['eliminar_not_paid'])){
+            $conexion = conect_mysqli();
+            $pdo = conect_mysql();
+            $id = mysqli_real_escape_string($conexion, $_POST['id']);
+            $token = mysqli_real_escape_string($conexion, $_POST['token']);
+        
+            mysqli_close($conexion);
+        
+            $row = consulta_mysqli_where("token","not_pay","id",$id);
+        
+            $token_encriptado = $row['token'];
+        
+            if(password_verify($token,$token_encriptado) == TRUE){
+                eliminar_datos_con_where("not_pay","id",$id);
+                echo "
+                <script>
+                Swal.fire(
+                    'Ya está',
+                    'Se eliminó con éxito.',
+                    'success'
+                );
+                window.location.href = 'not_pay';
+                </script>
+                ";
+            }else{
+                echo "
+                <script>
+                Swal.fire(
+                    'Oh no',
+                    'No ha podido borrarlo, favor de checar el token.',
+                    'error'
+                );
+                </script>
+                ";
+            }
+        
+        
+        }
         ?>
     </form>
         <?php

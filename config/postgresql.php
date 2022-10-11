@@ -68,6 +68,7 @@ function crear_tabla_psg($tabla,$contenido){
             'success'
             )
         </script>";
+        pg_close($conexion);
         return $success;   
     }else{
         $error = "
@@ -78,6 +79,7 @@ function crear_tabla_psg($tabla,$contenido){
             'error'
             )
         </script>";
+        pg_close($conexion);
         return $error;
     }
 }
@@ -95,6 +97,7 @@ function insertar_datos_psg($tabla,$valor,$contenido){
             'success'
             )
         </script>";
+        pg_close($conexion);
         return $success;   
     }else{
         $error = "
@@ -105,8 +108,30 @@ function insertar_datos_psg($tabla,$valor,$contenido){
             'error'
             )
         </script>";
+        pg_close($conexion);
         return $error;
     }
+}
+
+function consulta_psg_clasic($datos,$tabla){
+    $conexion = conect_pg();
+    $sql = "SELECT $datos FROM $tabla";
+    return pg_query($conexion,$sql);
+    pg_close($conexion);
+}
+
+function consulta_psg_where($select_db,$table_db,$data,$compare){
+    $conexion = conect_pg();
+    $sql = "SELECT $select_db FROM $table_db WHERE $data = $compare";
+    return pg_query($conexion,$sql);
+    pg_close($conexion);
+}
+
+function consulta_psg_custom($sql){
+    $conexion = conect_pg();
+    $sql = "$sql";
+    return pg_query($conexion,$sql);
+    pg_close($conexion);
 }
 
 function actualizar_datos_con_where_psg($tabla,$edicion,$data,$comparate){
@@ -122,6 +147,7 @@ function actualizar_datos_con_where_psg($tabla,$edicion,$data,$comparate){
             'success'
             )
         </script>";
+        pg_close($conexion);
         return $success;   
     }else{
         $error = "
@@ -132,6 +158,7 @@ function actualizar_datos_con_where_psg($tabla,$edicion,$data,$comparate){
             'error'
             )
         </script>";
+        pg_close($conexion);
         return $error;
     }
 }
@@ -149,6 +176,7 @@ function eliminar_datos_con_where_psg($tabla,$where,$dato){
             )
         </script>";
         return $success;    
+        pg_close($conexion);
        }else {
         $error = "
         <script>
@@ -158,6 +186,7 @@ function eliminar_datos_con_where_psg($tabla,$where,$dato){
             'error'
             )
         </script>";
+        pg_close($conexion);
         return $error;
        }
 }
@@ -174,6 +203,7 @@ function eliminar_tabla_psg($tabla){
             'success'
             )
         </script>";
+        pg_close($conexion);
         return $success;   
     }else{
         $error = "
@@ -184,6 +214,7 @@ function eliminar_tabla_psg($tabla){
             'error'
             )
         </script>";
+        pg_close($conexion);
         return $error;
     }
 }

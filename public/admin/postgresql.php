@@ -10,7 +10,7 @@ if (!isset($_SESSION['id_usuario'])) {
 
 $iduser = $_SESSION['id_usuario'];
 
-if($_ENV['PLUGINS'] != 1){
+if($_ENV['CONECT_POSTGRESQL'] != 1){
   header("location: ./");
 }
 
@@ -51,8 +51,10 @@ if(isset($_POST['salir'])){
           <select multiple class="form-select form-select-lg" name="usos" id="usos">
             <option selected>Selecciona alguna acción</option>
             <option value="1">Crear una Tabla</option>
-            <option value="2">Insertar datos</option>
-            <option value="3">Eliminar tabla</option>
+            <option value="2">seleccionar tabla</option>
+            <option value="3">seleccionar tabla con condición</option>
+            <option value="4">Insertar datos</option>
+            <option value="5">Eliminar tabla</option>
           </select>
         </div>
       </div>
@@ -76,6 +78,18 @@ if(isset($_POST['salir'])){
       $valores = $_POST['valores'];
       $contenido = $_POST['contenido'];
       echo insertar_datos_psg($tabla,$valores,$contenido);
+    }
+    if(isset($_POST['consulta'])){
+      $tabla = $_POST['tabla'];
+      $consulta = $_POST['consulta'];
+      echo consulta_psg_clasic($consulta,$tabla);
+    }
+    if(isset($_POST['consulta_where'])){
+      $tabla = $_POST['tabla'];
+      $consulta = $_POST['consulta'];
+      $comparar = $_POST['comparar'];
+      $valores = $_POST['valores'];
+      echo consulta_psg_where($consulta,$tabla,$comparar,$valores);
     }
 
     if (isset($_POST['ejecutar'])){
@@ -111,6 +125,88 @@ if(isset($_POST['salir'])){
         </form>
         <?php
       }elseif($opcion == 2){
+        ?>
+
+        <form action="<?php $_SERVER["PHP_SELF"]; ?>" method="post">
+
+          <div class="row justify-content-center">
+
+            <div class="col-5">
+              <div class="mb-3">
+                <label for="tabla" class="form-label">Nombre de la tabla</label>
+                <input type="text"
+                  class="form-control" name="tabla" id="tabla" aria-describedby="tabla" placeholder="Pon el nombre">
+                <small id="tabla" class="form-text text-muted">Inserta el nombre de la tabla por consultar</small>
+              </div>
+            </div>
+
+            <div class="col-5">
+              <div class="mb-3">
+                <label for="consulta" class="form-label">Consulta</label>
+                <input type="text"
+                  class="form-control" name="consulta" id="consulta" aria-describedby="consulta" placeholder="Pon aquí lo que vas a consultar">
+                <small id="consulta" class="form-text text-muted">Pon los valores a consultar en la base de datos</small>
+              </div>
+            </div>
+
+            <div class="col-auto">
+              <button name ="consulta" type="submit" class="btn btn-primary">Consultar</button>
+            </div>
+
+          </div>
+
+        </form>
+
+        <?php
+      }elseif($opcion == 3){
+        ?>
+        <form action="<?php $_SERVER["PHP_SELF"]; ?>" method="post">
+          <div class="row justify-content-center">
+          
+          <div class="col-5">
+              <div class="mb-3">
+                <label for="tabla" class="form-label">Nombre de la tabla</label>
+                <input type="text"
+                  class="form-control" name="tabla" id="tabla" aria-describedby="tabla" placeholder="Pon el nombre">
+                <small id="tabla" class="form-text text-muted">Inserta el nombre de la tabla por consultar</small>
+              </div>
+            </div>
+
+            <div class="col-5">
+              <div class="mb-3">
+                <label for="consulta" class="form-label">Consulta</label>
+                <input type="text"
+                  class="form-control" name="consulta" id="consulta" aria-describedby="consulta" placeholder="Pon aquí lo que vas a consultar">
+                <small id="consulta" class="form-text text-muted">Pon los valores a consultar en la base de datos</small>
+              </div>
+            </div>
+
+            <div class="col-5">
+              <div class="mb-3">
+                <label for="comparar" class="form-label">Pon la comparación</label>
+                <input type="text"
+                  class="form-control" name="comparar" id="comparar" aria-describedby="comparar" placeholder="Pon la comparación">
+                <small id="comparar" class="form-text text-muted">Aquí pones lo que vas a comparar, por ejemplo el id</small>
+              </div>
+            </div>
+
+            <div class="col-5">
+              <div class="mb-3">
+                <label for="valor" class="form-label">Valor</label>
+                <input type="text"
+                  class="form-control" name="valor" id="valor" aria-describedby="valor" placeholder="Pon aquí el valor a comparar">
+                <small id="valor" class="form-text text-muted">Aquí pones el valor con el cuál vas a comparar, por ejemplo 1</small>
+              </div>
+            </div>
+
+            <div class="col-auto">
+              <button name ="consulta_where" type="submit" class="btn btn-primary">Consultar</button>
+            </div>
+
+          </div>
+        </form>
+        <?php
+      }elseif($opcion == 4){
         ?>
         <form action="<?php $_SERVER["PHP_SELF"]; ?>" method="post">
 
@@ -149,7 +245,7 @@ if(isset($_POST['salir'])){
 
         </form>
       <?php
-      }elseif($opcion == 3){
+      }elseif($opcion == 5){
         ?>
         <form action="<?php $_SERVER["PHP_SELF"]; ?>" method="post">
 

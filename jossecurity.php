@@ -91,6 +91,8 @@ function footer_admin(){
     return include (__DIR__ . "/routes/footer/footer_admin.php");
 }
 
+// JosSecurity
+
 function edit_file($titulo,$directorio){
     $archivo = strip_tags($directorio);
     if(isset($_POST['enviar'])){
@@ -667,9 +669,6 @@ if ($_ENV['PLUGINS'] == 1){
         return check_not_paid();
     }
 }
-if ($_ENV['PLUGINS'] != 1){
-    //Uso de la configuración plugins internos cuando el sistema de plugins no funcione o se encuentre desactivado.
-    include (__DIR__ . "/config/not_paid.php");
-}
 
-?>
+// Uso de la configuración plugins internos cuando el sistema de plugins no funcione o se encuentre desactivado.
+include (__DIR__ . "/config/not_paid.php");
