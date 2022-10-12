@@ -28,7 +28,7 @@
           </div>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-gear"></i> Herramientas</a>
+          <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-toolbox"></i> Herramientas</a>
           <div class="dropdown-menu" aria-labelledby="dropdownId">
             <a class="dropdown-item" href="head"><i class="fa-solid fa-file-arrow-up"></i> Head global</a>
             <a class="dropdown-item" href="footer"><i class="fa-solid fa-file-arrow-down"></i> Footer global</a>

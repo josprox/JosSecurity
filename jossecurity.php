@@ -211,7 +211,11 @@ function login($login_email,$login_password,$table_DB,$location){
         $usuario = mysqli_real_escape_string($conexion, $email_catch);
         $password = mysqli_real_escape_string($conexion, $password_catch);
         $ip = $_SERVER['REMOTE_ADDR'];
-    
+        if(isset($_POST['cookie'])){
+            $cookies = TRUE;
+        }else{
+            $cookies = FALSE;
+        }
         
         $sql = "SELECT id, password FROM $table WHERE email = '$usuario'";
         $resultado = $conexion->query($sql);
@@ -223,11 +227,14 @@ function login($login_email,$login_password,$table_DB,$location){
             if(password_verify($password,$password_encriptada) == TRUE){
 
                 $_SESSION['id_usuario'] = $row['id'];
+
+                if ($cookies == TRUE){
+                    //Cookie de usuario y contraseña
+                    setcookie("COOKIE_INDEFINED_SESSION", TRUE, time()+$_ENV['COOKIE_SESSION'], "/");
+                    setcookie("COOKIE_DATA_INDEFINED_SESSION[user]", $usuario, time()+$_ENV['COOKIE_SESSION'], "/");
+                    setcookie("COOKIE_DATA_INDEFINED_SESSION[pass]", $password, time()+$_ENV['COOKIE_SESSION'], "/");
+                }
                 
-                //Cookie de usuario y contraseña
-                setcookie("COOKIE_INDEFINED_SESSION", TRUE, time()+$_ENV['COOKIE_SESSION'], "/");
-                setcookie("COOKIE_DATA_INDEFINED_SESSION[user]", $usuario, time()+$_ENV['COOKIE_SESSION'], "/");
-                setcookie("COOKIE_DATA_INDEFINED_SESSION[pass]", $password, time()+$_ENV['COOKIE_SESSION'], "/");
 
                 actualizar_datos_mysqli("users","`last_ip` = '$ip'","id",$id);
 
@@ -252,6 +259,11 @@ function login_admin($login_email,$login_password,$table_DB,$location){
         $usuario = mysqli_real_escape_string($conexion, $login_email);
         $password = mysqli_real_escape_string($conexion, $login_password);
         $ip = $_SERVER['REMOTE_ADDR'];
+        if(isset($_POST['cookie'])){
+            $cookies = TRUE;
+        }else{
+            $cookies = FALSE;
+        }
     
         
         $sql = "SELECT id, password, id_rol FROM $table WHERE email = '$usuario'";
@@ -268,10 +280,12 @@ function login_admin($login_email,$login_password,$table_DB,$location){
     
                     $_SESSION['id_usuario'] = $row['id'];
                     
-                    //Cookie de usuario y contraseña
-                    setcookie("COOKIE_INDEFINED_SESSION", TRUE, time()+$_ENV['COOKIE_SESSION'], "/");
-                    setcookie("COOKIE_DATA_INDEFINED_SESSION[user]", $usuario, time()+$_ENV['COOKIE_SESSION'], "/");
-                    setcookie("COOKIE_DATA_INDEFINED_SESSION[pass]", $password, time()+$_ENV['COOKIE_SESSION'], "/");
+                    if ($cookies == TRUE){
+                        //Cookie de usuario y contraseña
+                        setcookie("COOKIE_INDEFINED_SESSION", TRUE, time()+$_ENV['COOKIE_SESSION'], "/");
+                        setcookie("COOKIE_DATA_INDEFINED_SESSION[user]", $usuario, time()+$_ENV['COOKIE_SESSION'], "/");
+                        setcookie("COOKIE_DATA_INDEFINED_SESSION[pass]", $password, time()+$_ENV['COOKIE_SESSION'], "/");
+                    }
 
                     actualizar_datos_mysqli("users","`last_ip` = '$ip'","id",$id);
     

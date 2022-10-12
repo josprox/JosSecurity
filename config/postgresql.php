@@ -116,25 +116,36 @@ function insertar_datos_psg($tabla,$valor,$contenido){
 function consulta_psg_clasic($datos,$tabla){
     $conexion = conect_pg();
     $sql = "SELECT $datos FROM $tabla";
-    return pg_query($conexion,$sql);
+    $consulta = pg_query($conexion,$sql);
+    return pg_fetch_object($consulta);
     pg_close($conexion);
 }
 
 function consulta_psg_where($select_db,$table_db,$data,$compare){
     $conexion = conect_pg();
     $sql = "SELECT $select_db FROM $table_db WHERE $data = $compare";
-    return pg_query($conexion,$sql);
+    $consulta = pg_query($conexion,$sql);
+    return pg_fetch_object($consulta);
     pg_close($conexion);
 }
 
 function consulta_psg_custom($sql){
     $conexion = conect_pg();
     $sql = "$sql";
-    return pg_query($conexion,$sql);
+    $consulta = pg_query($conexion,$sql);
+    return pg_fetch_object($consulta);
     pg_close($conexion);
 }
 
-function actualizar_datos_con_where_psg($tabla,$edicion,$data,$comparate){
+function leer_tablas_psg_custom($sql){
+    $conexion = conect_pg();
+    $sql = "$sql";
+    $consulta = pg_query($conexion,$sql);
+    return pg_num_rows($consulta);
+    pg_close($conexion);
+}
+
+function actualizar_datos_psg($tabla,$edicion,$data,$comparate){
     global $fecha;
     $conexion = conect_pg();
     $sql = "UPDATE $tabla SET $edicion, updated_at = '$fecha' WHERE $data = $comparate;";

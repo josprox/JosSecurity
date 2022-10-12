@@ -110,10 +110,12 @@ function allinone_zip_all(){
         $fecha = date("Y-m-d");
   
     $nombre_archivo = sprintf('respaldo_%s_%s.zip',$fecha,$id);
+
+    $homedir = __DIR__ . "\\..\\..\\.\\";
     
-    new GoodZipArchive(__DIR__ . './../../',    $carpeta . '/'. $nombre_archivo) ;
+    new GoodZipArchive($homedir,    $carpeta . '/'. $nombre_archivo) ;
     
-    if (file_exists(''.$carpeta.'/'.$nombre_archivo.'')) {
+    if (file_exists(''.$carpeta.'/'.$nombre_archivo.'')){
         $resultado = TRUE;
       } else {
         $resultado = FALSE;
@@ -146,7 +148,7 @@ function allinone_zip_all(){
               
                 $nombre_archivo = sprintf('respaldo_%s_%s.zip',$fecha,$id);
                 
-                new GoodZipArchive('./../../plugins/all in one/respaldos/',    $carpeta . '/'. $nombre_archivo) ;
+                new GoodZipArchive(__DIR__ .'./respaldos/',    $carpeta . '/'. $nombre_archivo) ;
                 $dirname = "./../../plugins/all in one/respaldos/";
     
                 if(borrar_directorio($dirname) == TRUE){

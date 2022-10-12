@@ -133,7 +133,14 @@ if (file_exists("./../installer.php")){
                             <div class="mb-3">
                                 <label for="txtPassword" class="form-label">Contraseña:</label>
                                 <input type="password" class="form-control" name="txtPassword" id="txtPassword" aria-describedby="helpId" placeholder="Inserta tu contraseña">
-                              </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="cookie">
+                                    <label class="form-check-label" for="flexSwitchCheckDefault">¿Deseas mantener la sesión activa?</label>
+                                  </div>
+                            </div>
 
                               <div class="mb-3">
                                 <div class="g-recaptcha" data-sitekey="<?php echo $_ENV['RECAPTCHA_CODE_PUBLIC']; ?>"></div>
