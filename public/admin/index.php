@@ -9,14 +9,9 @@ if (!isset($_SESSION['id_usuario'])) {
 }
 
 $iduser = $_SESSION['id_usuario'];
+secure_auth_admin($iduser,"../");
 
-//$row = consulta_mysqli($host,$user,$pass,$DB,"name","users","","where","id",$iduser,"");
 $row = consulta_mysqli_where("name","users","id",$iduser);
-
-if(isset($_POST['salir'])){
-  logout($iduser,"users");
-  header("Location: ./../panel");
-}
 
 ?>
 

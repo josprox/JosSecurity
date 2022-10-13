@@ -111,7 +111,7 @@ function allinone_zip_all(){
   
     $nombre_archivo = sprintf('respaldo_%s_%s.zip',$fecha,$id);
 
-    $homedir = __DIR__ . "\\..\\..\\.\\";
+    $homedir = __DIR__ . "./../../";
     
     new GoodZipArchive($homedir,    $carpeta . '/'. $nombre_archivo) ;
     

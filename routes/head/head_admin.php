@@ -1,6 +1,6 @@
 <!-- JosSecurity está funcionando -->
 <!-- JQUERY -->
-<link rel="stylesheet" href="../../node_modules/jquery/dist/jquery.min.js">
+<script src="../../node_modules/jquery/dist/jquery.min.js"></script>
 
 <link rel="shortcut icon" href="../../resourses/img/logo transparente/vector/default.svg" type="image/x-icon">
 <!-- Bootstrap -->

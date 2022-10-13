@@ -9,8 +9,8 @@ if (!isset($_SESSION['id_usuario'])) {
 }
 
 $iduser = $_SESSION['id_usuario'];
+secure_auth_admin($iduser,"../");
 
-//$row = consulta_mysqli($host,$user,$pass,$DB,"*","users","","clasic","","","");
 if(isset($_POST['actualizar_info'])){
 
   $conexion = conect_mysqli();
@@ -42,11 +42,6 @@ if(isset($_POST['update_password'])){
 }
 
 $row = consulta_mysqli_clasic("*","users");
-
-if(isset($_POST['salir'])){
-  logout($iduser,"users");
-  header("Location: ./../panel");
-}
 
 ?>
 

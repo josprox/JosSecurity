@@ -8,11 +8,7 @@ if (!isset($_SESSION['id_usuario'])) {
     header("Location: ../panel");
 }
 $iduser = $_SESSION['id_usuario'];
-
-if(isset($_POST['salir'])){
-  logout($iduser,"users");
-  header("Location: ./../panel");
-}
+secure_auth_admin($iduser,"../");
 
 ?>
 
@@ -51,7 +47,7 @@ if(isset($_POST['salir'])){
     <?php
     
     if(isset($_POST['mail'])){
-        mail_smtp_v1_3($_POST['nombre'],$_POST['asunto'],$_POST['cuerpo'],$_POST['correo']);
+        mail_smtp_v1_3($_POST['nombre'],$_POST['asunto'],$_POST['contenido'],$_POST['correo']);
         echo "
         <script>
         Swal.fire(
@@ -83,10 +79,10 @@ if(isset($_POST['salir'])){
                     <input type="email" class="form-control" name="correo" id="correo" placeholder="correo">
                 </div>
             </div>
-            <div class="mb-3 row">
-                <label for="inputName" class="col-4 col-form-label">cuerpo</label>
-                <div class="col-8">
-                    <input type="text" class="form-control" name="cuerpo" id="cuerpo" placeholder="cuerpo">
+            <div class="col-auto">
+                <div class="mb-3">
+                  <label for="contenido" class="form-label">Cuerpo</label>
+                  <textarea class="form-control textarea" name="contenido" id="contenido" rows="3"></textarea>
                 </div>
             </div>
             <div class="mb-3 row">

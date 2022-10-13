@@ -8,11 +8,7 @@ if (!isset($_SESSION['id_usuario'])) {
     header("Location: ../panel");
 }
 $iduser = $_SESSION['id_usuario'];
-
-if(isset($_POST['salir'])){
-  logout($iduser,"users");
-  header("Location: ./../panel");
-}
+secure_auth_admin($iduser,"../");
 
 ?>
 

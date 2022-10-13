@@ -12,8 +12,8 @@ session_start();
 //Configuración por defecto de JosSecurity
 date_default_timezone_set($_ENV['ZONA_HORARIA']);
 $fecha = date("Y-m-d H:i:s");
-$nombre_app = $_ENV['NAME_APP'];
-$version_app = $_ENV['VERSION'];
+$nombre_app = (string)$_ENV['NAME_APP'];
+$version_app = (string)$_ENV['VERSION'];
 
 $host = (string)$_ENV['HOST'];
 $user = (string)$_ENV['USUARIO'];
@@ -419,7 +419,7 @@ function logout($id,$table_DB){
 
 }
 
-function mail_smtp_v1_3($nombre,$asunto,$cuerpo,$correo){
+function mail_smtp_v1_3($nombre,$asunto,$contenido,$correo){
     if($_ENV['SMTP_ACTIVE'] == 1){
         include (__DIR__ . "/config/correo.php");
     }elseif($_ENV['SMTP_ACTIVE'] != 1){
@@ -619,6 +619,15 @@ function reproductor_video($url){
     </video>';
 }
 
+function secure_auth_admin($iduser,$location){
+    $rol = consulta_mysqli_where("id_rol","users","id",$iduser);
+    $check_user = $rol['id_rol'];
+    if($check_user != 1 && $check_user != 2 && $check_user != 4){
+        logout($iduser,"users");
+        header("location: $location");
+    }
+}
+
 function nombre_de_pagina(){
     $url = explode("/", $_SERVER['SCRIPT_NAME']);
     $url = array_reverse($url);
@@ -671,6 +680,11 @@ if($_ENV['RECAPTCHA'] == 1){
         }
     }
 
+}
+
+if(isset($_POST['salir'])){
+    logout($iduser,"users");
+    header("Location: ./../panel");
 }
 
 if ($_ENV['PLUGINS'] == 1){

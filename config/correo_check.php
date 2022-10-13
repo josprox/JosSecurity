@@ -20,7 +20,7 @@ $cuerpo = '
 <html lang="es-MX" >
 <head>
   <meta charset="UTF-8">
-  <title>CodePen - Recuperar contraseña</title>
+  <title>Recuperar contraseña</title>
   
 
 </head>
@@ -61,7 +61,7 @@ a, a:hover {
  	</style>
 
 	<!-- MESSAGE SUBJECT -->
-	<title>Get this responsive email template</title>
+	<title>Correo de prueba</title>
 
 </head>
 

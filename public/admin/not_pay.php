@@ -9,14 +9,10 @@ if (!isset($_SESSION['id_usuario'])) {
 }
 
 $iduser = $_SESSION['id_usuario'];
+secure_auth_admin($iduser,"../");
 
 if($_ENV['PLUGINS'] != 1){
   header("location: ./");
-}
-
-if(isset($_POST['salir'])){
-  logout($iduser,"users");
-  header("Location: ./../panel");
 }
 
 ?>

@@ -8,11 +8,7 @@ if (!isset($_SESSION['id_usuario'])) {
     header("Location: ../panel");
 }
 $iduser = $_SESSION['id_usuario'];
-
-if(isset($_POST['salir'])){
-  logout($iduser,"users");
-  header("Location: ./../panel");
-}
+secure_auth_admin($iduser,"../");
 
 ?>
 
@@ -36,7 +32,7 @@ if(isset($_POST['salir'])){
 
   <div class="container">
 
-    <?php edit_file("Reglas htaccess","./../.htaccess"); ?>
+    <?php edit_file("Reglas htaccess pública","./../.htaccess"); ?>
 
 
   </div>

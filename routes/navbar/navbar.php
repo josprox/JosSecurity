@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-sm navbar-light bg-light">
+<nav class="navbar navbar-expand-sm fixed-top navbar-dark bg-primary">
     <div class="container">
     <a class="navbar-brand" href="https://github.com/josprox/JosSecurity" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-shield-halved"></i> JS</a>
     <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavId" aria-controls="collapsibleNavId"
@@ -35,6 +35,7 @@
             <a class="dropdown-item" href="head_admin"><i class="fa-solid fa-file-arrow-up"></i> Head del administrador</a>
             <a class="dropdown-item" href="footer_admin"><i class="fa-solid fa-file-arrow-down"></i> Footer del administrador</a>
             <a class="dropdown-item" href="correo_prueba"><i class="fa-solid fa-envelope"></i> Probar email</a>
+            <a class="dropdown-item" href="correo_personalizado"><i class="fa-solid fa-envelope"></i> Enviar email personalizado</a>
             <?php
             if ($_ENV['CONECT_POSTGRESQL'] == 1 OR $_ENV['CONECT_POSTGRESQL_PDO'] == 1){?>
               <a class="dropdown-item" href="postgresql"><i class="fa-solid fa-database"></i> PostgreSQL</a>
@@ -59,13 +60,13 @@
         </li>
       </ul>
       <form class="d-flex my-2 my-lg-0" action="<?php $_SERVER["PHP_SELF"]; ?>" method="post">
-        <button class="btn btn-outline-success my-2 my-sm-0" name ="salir" type="submit">Salir</button>
+        <button class="btn btn-outline-light my-2 my-sm-0" name ="salir" type="submit">Salir</button>
       </form>
     </div>
   </div>
 </nav>
 
-<br>
+<br><br>
 
 <div class="container">
 <?php
