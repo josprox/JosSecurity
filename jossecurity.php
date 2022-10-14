@@ -56,11 +56,18 @@ function head_admin(){
     return include (__DIR__ . "/routes/head/head_admin.php");
 }
 
+function navbar(){
+    if ($_ENV['DEBUG'] == 1){
+        echo "<script>console.log('".$_ENV['NAME_APP']." navbar está activo.');</script>";
+    }
+    return include (__DIR__ . "/routes/navbar/navbar.php");
+}
+
 function navbar_admin(){
     if ($_ENV['DEBUG'] == 1){
         echo "<script>console.log('".$_ENV['NAME_APP']." navbar admin está activo.');</script>";
     }
-    return include (__DIR__ . "/routes/navbar/navbar.php");
+    return include (__DIR__ . "/routes/navbar/navbar_admin.php");
 }
 
 function footer(){
@@ -422,6 +429,14 @@ function logout($id,$table_DB){
 function mail_smtp_v1_3($nombre,$asunto,$contenido,$correo){
     if($_ENV['SMTP_ACTIVE'] == 1){
         include (__DIR__ . "/config/correo.php");
+    }elseif($_ENV['SMTP_ACTIVE'] != 1){
+        echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
+    }
+}
+
+function mail_smtp_v1_3_recibir($nombre,$asunto,$contenido,$correo){
+    if($_ENV['SMTP_ACTIVE'] == 1){
+        include (__DIR__ . "/config/correo_recibir.php");
     }elseif($_ENV['SMTP_ACTIVE'] != 1){
         echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
     }
