@@ -1,9 +1,9 @@
-<nav class="navbar navbar-expand-sm fixed-top navbar-dark bg-primary">
+<nav class="navbar navbar-expand-sm fixed-top navbar-transparent">
     <div class="container">
     <a class="navbar-brand" href="https://github.com/josprox/JosSecurity" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-shield-halved"></i> JS</a>
     <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavId" aria-controls="collapsibleNavId"
       aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+      <i class="fa-solid fa-chart-simple"></i>
     </button>
     <div class="collapse navbar-collapse" id="collapsibleNavId">
       <ul class="navbar-nav me-auto mt-2 mt-lg-0">
@@ -66,6 +66,7 @@
           <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-code"></i> Avanzado</a>
           <div class="dropdown-menu" aria-labelledby="dropdownId">
             <a class="dropdown-item" href="directorio_admin"><i class="fa-solid fa-folder-tree"></i> Directorios</a>
+            <a class="dropdown-item" href="crear_jossito"><i class="fa-solid fa-plus"></i> Crear un jossito</a>
             <a class="dropdown-item" href="edit_jossecurity"><i class="fa-solid fa-signs-post"></i> Editar funciones</a>
           </div>
         </li>

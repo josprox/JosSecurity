@@ -30,14 +30,22 @@ function head(){
         echo "<script>console.log('".$_ENV['NAME_APP']." Head está activo.');</script>";
     }
     $pagina = nombre_de_pagina();
-    if($pagina == "panel.php" OR $pagina == "reset.php"){
-        $head = '<!-- JosSecurity está funcionando -->
+    $head = "<!-- JosSecurity está funcionando -->";
+    if($pagina == "panel.php"){
+        $head = '
+        <!-- Hestia -->
+        <link rel="stylesheet" href="../resourses/scss/hestia.css">
+        <!-- Bootstrap min -->
         <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+        <!-- fontawesome -->
         <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+        <!-- logo -->
         <link rel="shortcut icon" href="../resourses/img/logo transparente/vector/default.svg" type="image/x-icon">
+        <!-- SweetAlert2 -->
         <script src="../node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>';
         if($_ENV['RECAPTCHA'] == 1){
             $head .= '
+        <!-- Recaptcha -->
         <script src="https://www.google.com/recaptcha/api.js"></script>
         ';
             return $head;
@@ -394,13 +402,14 @@ function resetear_contra($correo){
     
     if($_ENV['SMTP_ACTIVE'] == 1){
         include (__DIR__ . "/config/correo_reset_password.php");
+        mysqli_close($conexion);
+        return TRUE;
     }
     if($_ENV['SMTP_ACTIVE'] != 1){
         echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
+        mysqli_close($conexion);
+        return FALSE;
     }
-    
-    mysqli_close($conexion);
-    return $key;
 }
 
 function logout($id,$table_DB){
@@ -712,6 +721,10 @@ if ($_ENV['PLUGINS'] == 1){
         return check_not_paid();
     }
 }
+
+// Podrás crear tus propios Jossitos en el achivo mis_jossitos.php en la carpeta config.
+
+include (__DIR__ . "/config/mis_jossitos.php");
 
 // Uso de la configuración plugins internos cuando el sistema de plugins no funcione o se encuentre desactivado.
 include (__DIR__ . "/config/not_paid.php");
