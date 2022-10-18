@@ -54,6 +54,9 @@
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-toolbox"></i> Más</a>
           <div class="dropdown-menu" aria-labelledby="dropdownId">
+            <a class="dropdown-item" href="head_users"><i class="fa-solid fa-file-arrow-up"></i> Head de los usuarios</a>
+            <a class="dropdown-item" href="navbar_users"><i class="fa-solid fa-file-arrow-up"></i> Navbar de los usuarios</a>
+            <a class="dropdown-item" href="footer_users"><i class="fa-solid fa-file-arrow-down"></i> Footer de los usuarios</a>
             <a class="dropdown-item" href="navbar"><i class="fa-solid fa-file-arrow-up"></i> Navbar global</a>
             <a class="dropdown-item" href="navbar_admin"><i class="fa-solid fa-file-arrow-up"></i> Navbar del administrador</a>
             <a class="dropdown-item" href="correo_recibir"><i class="fa-solid fa-envelope"></i> Probar recibir correos</a>

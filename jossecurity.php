@@ -57,6 +57,13 @@ function head(){
     }
 }
 
+function head_users(){
+    if ($_ENV['DEBUG'] == 1){
+        echo "<script>console.log('".$_ENV['NAME_APP']." Head admin está activo.');</script>";
+    }
+    return include (__DIR__ . "/routes/head/head_users.php");
+}
+
 function head_admin(){
     if ($_ENV['DEBUG'] == 1){
         echo "<script>console.log('".$_ENV['NAME_APP']." Head admin está activo.');</script>";
@@ -69,6 +76,13 @@ function navbar(){
         echo "<script>console.log('".$_ENV['NAME_APP']." navbar está activo.');</script>";
     }
     return include (__DIR__ . "/routes/navbar/navbar.php");
+}
+
+function navbar_users(){
+    if ($_ENV['DEBUG'] == 1){
+        echo "<script>console.log('".$_ENV['NAME_APP']." navbar users está activo.');</script>";
+    }
+    return include (__DIR__ . "/routes/navbar/navbar_users.php");
 }
 
 function navbar_admin(){
@@ -97,6 +111,13 @@ function footer(){
           </script>';
     }
     return include (__DIR__ . "/routes/footer/footer.php");
+}
+
+function footer_users(){
+    if ($_ENV['DEBUG'] == 1){
+        echo "<script>console.log('".$_ENV['NAME_APP']." footer admin está activo.');</script>";
+    }
+    return include (__DIR__ . "/routes/footer/footer_admin.php");
 }
 
 function footer_admin(){
@@ -212,6 +233,20 @@ if ($_ENV['CONECT_DATABASE'] == 1){
 }else{
     if ($_ENV['DEBUG'] == 1){
         echo "<script>console.log('Se ha desactivado el uso de bases de datos.');</script>";
+    }
+}
+
+function logins($correo,$contra,$tabla,$localizacion_admin,$localizacion_users){
+    $conexion = conect_mysqli();
+    $tabla = mysqli_real_escape_string($conexion, $tabla);
+    $correo = mysqli_real_escape_string($conexion, $correo);
+    mysqli_close($conexion);
+    $consulta = consulta_mysqli_where("id_rol","$tabla","email","'$correo'");
+    $resultado = $consulta['id_rol'];
+    if($resultado == 1 OR $resultado == 2 OR $resultado == 4){
+        login_admin($correo,$contra,"$tabla","$localizacion_admin");
+    }elseif($resultado != 1 && $resultado != 2 && $resultado != 4){
+        login($correo,$contra,$tabla,$localizacion_users);
     }
 }
 

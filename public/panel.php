@@ -26,7 +26,7 @@ if (file_exists("./../installer.php")){
     <?php
     if (isset($_POST["ingresar"])){
         if(recaptcha() == TRUE){
-            login_admin($_POST['txtCorreo'],$_POST['txtPassword'],"users","./admin/");
+            logins($_POST['txtCorreo'],$_POST['txtPassword'],"users","./admin/","./users/");
         }
         if (recaptcha() == FALSE){
             echo "
@@ -58,6 +58,11 @@ if (file_exists("./../installer.php")){
                         )
                     </script>";
             }
+        }
+    }
+    if(isset($_POST['registrar'])){
+        if(recaptcha() == TRUE){
+            echo registro("users",$_POST['txtName'],$_POST['txtCorreo'],$_POST['txtPassword'],6);
         }
     }
     ?>
@@ -99,10 +104,12 @@ if (file_exists("./../installer.php")){
             <div class="login_register">
                 <div class="form">
                     <div class="check">
-                        <button class="boton_login" onclick="ocultarForm();">Iniciar sesión</button>
-                        <button class="boton_register" onclick="mostrarForm();">Olvidé mi contraseña</button>
+                        <button class="boton_login" onclick="iniciarForm();">Iniciar sesión</button>
+                        <button class="boton_register" onclick="registerForm();">Registrarme</button>
+                        <button class="boton_reset" onclick="resetForm();">Olvidé mi contraseña</button>
                     </div>
-                    <div id="mostrar">
+
+                    <div id="login">
                         <h1 class="text-center">Iniciar sesión</h1>
                         <form action="" method="post">
 
@@ -138,7 +145,43 @@ if (file_exists("./../installer.php")){
                             </div>
                         </form>
                     </div>
-                    <div id="ocultar">
+
+                    <div id="register">
+                        <h1 class="text-center">Regístrate</h1>
+                            <form action="" method="post">
+
+                                <div class="forms">
+
+                                    <div class="grid_1_auto">
+                                        <label for="">¿Cúál es tu nombre completo?</label>
+                                        <input type="text" name="txtName" placeholder="Por favor pon tu nombre" required>
+                                    </div>
+                                    <div class="grid_1_auto">
+                                        <label for="">¿Cuál es tu correo?</label>
+                                        <input type="email" name="txtCorreo" placeholder="Por favor pon tu correo" required>
+                                    </div>
+                                    <div class="grid_1_auto">
+                                        <label for="">Crea una contraseña</label>
+                                        <input type="password" name="txtPassword" placeholder="Por favor pon tu contraseña" required>
+                                    </div>
+                                    <div class="flex_center">
+                                        <div class="mb-3">
+                                            <div class="g-recaptcha" data-sitekey="<?php echo $_ENV['RECAPTCHA_CODE_PUBLIC']; ?>"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex_center">
+                                        <div class="grid_1_auto">
+                                            <button type="submit" name="registrar" class="btn btn-success">Registrarme</button>
+                                        </div>
+                                    </div>
+
+                                    </button>
+
+                                </div>
+                            </form>
+                    </div>
+
+                    <div id="reset">
                         <h1 class="text-center">Olvidé mi contraseña</h1>
                         <form action="" method="post">
 
@@ -164,6 +207,7 @@ if (file_exists("./../installer.php")){
                             </div>
                         </form>
                     </div>
+
                 </div>
                 <div class="presentacion">
                     <img src="../resourses/img/logo transparente/default.png" alt="">
@@ -190,13 +234,20 @@ if (file_exists("./../installer.php")){
     </script>
 
     <script>
-        function mostrarForm(){
-            document.getElementById('ocultar').style.display = 'block';
-            document.getElementById('mostrar').style.display = 'none';
+        function resetForm(){
+            document.getElementById('reset').style.display = 'block';
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('register').style.display = 'none';
         }
-        function ocultarForm(){
-            document.getElementById('ocultar').style.display = 'none';
-            document.getElementById('mostrar').style.display = 'block';
+        function registerForm(){
+            document.getElementById('reset').style.display = 'none';
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('register').style.display = 'block';
+        }
+        function iniciarForm(){
+            document.getElementById('reset').style.display = 'none';
+            document.getElementById('register').style.display = 'none';
+            document.getElementById('login').style.display = 'block';
         }
     </script>
     

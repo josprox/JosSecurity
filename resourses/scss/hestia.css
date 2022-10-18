@@ -146,12 +146,12 @@ button {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
   grid-template-rows: minmax(50px, auto);
-  grid-template-areas: "login" "register";
+  grid-template-areas: "login" "register" "reset";
 }
 @media screen and (min-width: 600px) {
   .check {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-areas: "login register";
+    grid-template-areas: "login register" "reset reset";
   }
 }
 .check .boton_login {
@@ -167,6 +167,14 @@ button {
   padding: 8px;
   border-radius: 12px;
   background-color: var(--bs-pink);
+  color: var(--bs-white);
+}
+.check .boton_reset {
+  grid-area: reset;
+  margin: 12px 8px;
+  padding: 8px;
+  border-radius: 12px;
+  background-color: #282b3a;
   color: var(--bs-white);
 }
 
@@ -244,12 +252,8 @@ button {
   min-width: 60px;
   width: auto;
   border-radius: 12px;
-  background-color: var(--bs-green);
   color: #fff;
   transition: 0.2s all;
-}
-.btn:hover {
-  background-color: var(--bs-cyan);
 }
 
 .login_register {
@@ -290,10 +294,10 @@ button {
   }
 }
 
-#mostrar {
+#login {
   display: block;
 }
 
-#ocultar {
+#register, #reset {
   display: none;
 }/*# sourceMappingURL=hestia.css.map */
