@@ -26,6 +26,7 @@ if ($_ENV['DEBUG'] == 1) {
 }
 
 function head(){
+    global $nombre_app;
     if ($_ENV['DEBUG'] == 1){
         echo "<script>console.log('".$_ENV['NAME_APP']." Head está activo.');</script>";
     }
@@ -33,6 +34,8 @@ function head(){
     $head = "<!-- JosSecurity está funcionando -->";
     if($pagina == "panel.php"){
         $head = '
+        <!-- Meta descripcion -->
+        <meta name="description" content="Inicia sesión de una manera rápida y segura con '.$nombre_app.', un sistema fácil de usar.">
         <!-- Hestia -->
         <link rel="stylesheet" href="../resourses/scss/hestia.css">
         <!-- Bootstrap min -->
@@ -416,25 +419,28 @@ function registro($table_db,$name_user,$email_user,$contra_user,$rol_user){
     }
 }
 
-function resetear_contra($correo){
-    $conexion = conect_mysqli();
+function generar_llave_alteratorio($caracteres){
     $key = "";
     $pattern = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
     $max = strlen($pattern)-1;
-    for($i = 0; $i < 16; $i++){
+    for($i = 0; $i < $caracteres; $i++){
         $key .= substr($pattern, mt_rand(0,$max), 1);
     }
-    $password = $key;
+    return $key;
+}
+
+function resetear_contra($correo){
+    global $fecha;
+    $conexion = conect_mysqli();
+    $key = generar_llave_alteratorio(16);
     $password_encriptada = password_hash($key,PASSWORD_BCRYPT,["cost"=>10]);
-    date_default_timezone_set($_ENV['ZONA_HORARIA']);
-    $fecha = date("Y-m-d H:i:s");
-    $insert = "UPDATE `users` SET `password` = '$password_encriptada' WHERE `users`.`email` = '$correo'";
+    $insert = "UPDATE `users` SET `password` = '$password_encriptada', `updated_at` = '$fecha' WHERE `users`.`email` = '$correo'";
     mysqli_query($conexion, $insert);
-    
+
     $row = consulta_mysqli_where("name","users","email","'$correo'");
-    
+
     $name = $row['name'];
-    
+
     if($_ENV['SMTP_ACTIVE'] == 1){
         include (__DIR__ . "/config/correo_reset_password.php");
         mysqli_close($conexion);
@@ -450,7 +456,6 @@ function resetear_contra($correo){
 function logout($id,$table_DB){
 
     $conexion = conect_mysqli();
-    $table_DB= $table_DB;
     $table = mysqli_real_escape_string($conexion, $table_DB);
     $sql = "SELECT email,password FROM $table WHERE id = '$id'";
     $resultado = $conexion->query($sql);
@@ -468,6 +473,22 @@ function logout($id,$table_DB){
     session_destroy();
     mysqli_close($conexion);
 
+}
+
+function eliminar_cuenta($id,$table_DB,$redireccion){
+    if (eliminar_datos_con_where($table_DB,"id",$id)) {
+        return header("Location: $redireccion");
+       }else {
+        $error = "
+        <script>
+            Swal.fire(
+            'Falló',
+            'No se ha podido eliminar de manera correcta.',
+            'error'
+            )
+        </script>";
+        return $error;
+       }
 }
 
 function mail_smtp_v1_3($nombre,$asunto,$contenido,$correo){
@@ -499,57 +520,67 @@ function consulta_mysqli($select_db,$table_db,$custom,$sentence,$data,$compare,$
     if ($sentence == "clasic"){
         $sql = "SELECT $select_db FROM $table_db";
         $resultado = $conexion->query($sql);
-        return $resultado->fetch_assoc();
+        $fetch = $resultado->fetch_assoc();
+        mysqli_close($conexion);
+        return $fetch;
     }elseif($sentence == "where"){
         $sql = "SELECT $select_db FROM $table_db $custom WHERE $data = $compare";
         $resultado = $conexion->query($sql);
-        return $resultado->fetch_assoc();
+        $fetch = $resultado->fetch_assoc();
+        mysqli_close($conexion);
+        return $fetch;
     }elseif($sentence == "innerjoin"){
         $sql = "SELECT $select_db FROM $table_db INNER JOIN $inner ON $compare = $data $custom";
         $resultado = $conexion->query($sql);
-        return $resultado->fetch_assoc();
+        $fetch = $resultado->fetch_assoc();
+        mysqli_close($conexion);
+        return $fetch;
     }
-    mysqli_close($conexion);
 }
 
 function consulta_mysqli_clasic($select_db,$table_db){
     $conexion = conect_mysqli();
     $sql = "SELECT $select_db FROM $table_db";
     $resultado = $conexion->query($sql);
-    return $resultado->fetch_assoc();
+    $fetch = $resultado->fetch_assoc();
     mysqli_close($conexion);
+    return $fetch;
 }
 
 function consulta_mysqli_where($select_db,$table_db,$data,$compare){
     $conexion = conect_mysqli();
     $sql = "SELECT $select_db FROM $table_db WHERE $data = $compare";
     $resultado = $conexion->query($sql);
-    return $resultado->fetch_assoc();
+    $fetch = $resultado->fetch_assoc();
     mysqli_close($conexion);
+    return $fetch;
 }
 
 function consulta_mysqli_innerjoin($select_db,$table_db,$inner,$compare,$data){
     $conexion = conect_mysqli();
     $sql = "SELECT $select_db FROM $table_db INNER JOIN $inner ON $compare = $data";
     $resultado = $conexion->query($sql);
-    return $resultado->fetch_assoc();
+    $fetch = $resultado->fetch_assoc();
     mysqli_close($conexion);
+    return $fetch;
 }
 
 function consulta_mysqli_custom_all($code){
     $conexion = conect_mysqli();
     $sql = "$code";
     $resultado = $conexion->query($sql);
-    return $resultado->fetch_assoc();
+    $fetch = $resultado->fetch_assoc();
     mysqli_close($conexion);
+    return $fetch;
 }
 
 function leer_tablas_mysql_custom($code){
     $conexion = conect_mysqli();
     $sql = "$code";
     $resultado = $conexion->query($sql);
-    return $resultado->num_rows;
+    $rows = $resultado->num_rows;
     mysqli_close($conexion);
+    return $rows;
 }
 
 function insertar_datos_clasic_mysqli($tabla,$datos,$contenido){
@@ -592,13 +623,6 @@ function actualizar_datos_mysqli($tabla,$edicion,$where,$dato){
     global $fecha;
     $miconexion = conect_mysqli();
     $sql = "UPDATE `$tabla` SET $edicion, `updated_at` = '$fecha' WHERE `$tabla`.`$where` = $dato";
-
-    /*if ($miconexion->query($sql) === TRUE) {
-        echo "OK";      
-       }else {
-        echo "ERROR";
-       }*/
-    
     $miconexion -> query($sql);
     $miconexion -> close();
 
@@ -608,14 +632,15 @@ function arreglo_consulta($code){
 
     $conexion = conect_mysql();
     $sql = "$code";
-    return $conexion->query($sql);
+    $query = $conexion->query($sql);
     $conexion = null;
+    return $query;
 
 }
 
 function eliminar_datos_con_where($tabla,$where,$dato){
     $conexion = conect_mysqli();
-    $sql = "DELETE FROM $tabla WHERE $where = $dato";
+    $sql = "DELETE FROM `$tabla` WHERE `$tabla`.`$where` = $dato";
     if ($conexion->query($sql) === TRUE) {
         $success = "
         <script>
@@ -625,7 +650,8 @@ function eliminar_datos_con_where($tabla,$where,$dato){
             'success'
             )
         </script>";
-        return $success;    
+        $conexion -> close();
+        return $success;
        }else {
         $error = "
         <script>
@@ -635,9 +661,37 @@ function eliminar_datos_con_where($tabla,$where,$dato){
             'error'
             )
         </script>";
+        $conexion -> close();
         return $error;
        }
-    $conexion -> close();
+}
+
+function eliminar_datos_custom_mysqli($sql_codigo){
+    $conexion = conect_mysqli();
+    $sql = "$sql_codigo";
+    if ($conexion->query($sql) === TRUE) {
+        $success = "
+        <script>
+            Swal.fire(
+            'Completado',
+            'Se ha eliminado todo de manera correcta.',
+            'success'
+            )
+        </script>";
+        $conexion -> close();
+        return $success;    
+       }else {
+        $error = "
+        <script>
+            Swal.fire(
+            'Falló',
+            'No se ha podido eliminar de manera correcta.',
+            'error'
+            )
+            </script>";
+        $conexion -> close();
+        return $error;
+       }
 }
 
 function crear_tabla_mysqli($tabla,$contenido){
@@ -655,7 +709,6 @@ function crear_tabla_mysqli($tabla,$contenido){
 function crear_tabla_PDO($tabla,$contenido){
     $pdo = conect_mysql();
     $sql = "CREATE TABLE `$tabla` (`id` bigint(25) NOT NULL PRIMARY KEY AUTO_INCREMENT, $contenido, `created_at` timestamp NULL DEFAULT NULL, `updated_at` timestamp NULL DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
-    $pdo ->exec($sql);
     if($pdo ->exec($sql)){
         $pdo = null;
         return TRUE;
@@ -754,6 +807,9 @@ if ($_ENV['PLUGINS'] == 1){
     function not_pay(){
         include (__DIR__ . "/plugins/dont_pay/index.php");
         return check_not_paid();
+    }
+    if($_ENV['MERCADO_PAGO'] == 1){
+        include (__DIR__ . "/plugins/mercado_pago/sdk.php");
     }
 }
 
