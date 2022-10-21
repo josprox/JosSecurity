@@ -7,7 +7,7 @@ function mercado_pago($titulo_del_producto,$cantidad,$precio,$moneda,$ruta_pago_
     $preferencia->back_urls=array(
         "success" => $_ENV['DOMINIO']."/".$ruta_pago_completado,
         "failure" => $_ENV['DOMINIO']. "/" . $ruta_pago_fallido,
-        "pending" => $_ENV['DOMINIO'] . "/" . $$ruta_pago_pendiente
+        "pending" => $_ENV['DOMINIO'] . "/" . $ruta_pago_pendiente
     );
     $preferencia -> auto_return = "approved";
     $productos = [];
