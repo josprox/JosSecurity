@@ -87,6 +87,10 @@ Si trabajas en un localhost (usando de ejemplo xampp):
 - En caso de pruebas y mejoras, se recomienda usar XAMPP con php 8.1.0 o superior, debido a que, fue programado con esa versión.
 - Para tener un buen funcionamiento, se recomienda que, una vez subidos los archivos, ponle los todos los permisos de leer, escribir y ejecutar (permiso 750).
 
+#### Donaciones.
+
+Tú puedes donar a través de <a href="https://www.patreon.com/jossestrada">patreon</a>, <a href="https://mpago.la/2gsWWYW">Mercado Pago</a> y <a href="http://paypal.me/JOSPROXMX">Paypal</a>, si deseas hacerlo solo da clic en el que te parezca más conveniente.
+
 #### Licencia.
 
 Un programa creado por JOSPROX MX/ JOSPROX Internacional.
