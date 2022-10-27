@@ -72,7 +72,7 @@ Si trabajas en un localhost (usando de ejemplo xampp):
 - Sigue las instrucciones para llevar a cabo la instalación, recuerda completar todos los campos y cumplir con los requisitos mínimos.
 - Una vez instalado te saldrá el siguiente mensaje 'Se ha insertado los datos de manera correcta.' y te redireccionará al panel del sistema.
 
-### ¿Cómo puedo instalarlo si descargo el archivo en github?
+### ¿Cómo puedo instalarlo si descargo el archivo por NPM?
 
 También puedes descargar JosSecurity por medio de npm con el siguiente código:
 
