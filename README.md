@@ -81,17 +81,14 @@ También puedes descargar JosSecurity por medio de npm con el siguiente código:
 JosSecurity por defecto viene con algunas dependencias y con una interfaz para poder usarlo, tu podrás usar este sistema para tener una base, para ello tendrás que extraer los archivos de JosSecurity que vienen dentro de las carpetas /node_modules/jossecurity/ y ponerlos en la raíz del archivo. Listo, ahora puedes usar JosSecurity y, si hay una actualización recibirás todos los archivos actualizados de JosSecurity dentro de /node_modules/jossecurity/, de esta manera aseguras que, solo actualizarás los archivos que tu desees actualizar.
 
 Si trabajas en un servidor:
-- Descarga el archivo comprimido y ponlo en tu directorio, si usas cpanel, hestia cp u otro accede a tu dominio y a la carpeta public_html, ahora descomprime el archivo zip.
 - Crea una base de datos, de preferencia usa un cortejo utf8mb4_unicode_ci.
 - accede a tu dominio y al archivo correspondiente "installer.php", ejemplo: ("https://tudominio.com/installer.php").
 - Sigue las instrucciones para llevar a cabo la instalación, recuerda completar todos los campos y cumplir con los requisitos mínimos.
 - Una vez instalado te saldrá el siguiente mensaje 'Se ha insertado los datos de manera correcta.' y te redireccionará a tu panel con la versión de JosSecurity instalado.
 
 Si trabajas en un localhost (usando de ejemplo xampp):
-- Descarga el archivo comprimido, ahora crea una carpeta y guárdalo en una raíz de documentos de tú servidor. Si ocupas XAMPP puede ser: C:\xampp\htdocs\
-- Ahora descomprimiremos el zip en la carpeta creada, en este caso creamos una carpeta llamada jossecurity (esto es un ejemplo, puedes llamarlo cómo gustes): C:\xampp\htdocs\jossecurity\
 - Crea una base de datos, de preferencia usa un cortejo utf8mb4_unicode_ci.
-- Ve al directorio antes creado con dirección a "installer.php", ejemplo: ("http://localhost/jossecurity/installer.php").
+- Accede al directorio donde instalaste JosSecurity y ponle un acceso a "installer.php", ejemplo: ("http://localhost/jossecurity/installer.php").
 - Sigue las instrucciones para llevar a cabo la instalación, recuerda completar todos los campos y cumplir con los requisitos mínimos.
 - Una vez instalado te saldrá el siguiente mensaje 'Se ha insertado los datos de manera correcta.' y te redireccionará al panel del sistema.
 
