@@ -244,12 +244,14 @@ function logins($correo,$contra,$tabla,$localizacion_admin,$localizacion_users){
     $tabla = mysqli_real_escape_string($conexion, $tabla);
     $correo = mysqli_real_escape_string($conexion, $correo);
     mysqli_close($conexion);
-    $consulta = consulta_mysqli_where("id_rol","$tabla","email","'$correo'");
-    $resultado = $consulta['id_rol'];
-    if($resultado == 1 OR $resultado == 2 OR $resultado == 4){
-        login_admin($correo,$contra,"$tabla","$localizacion_admin");
-    }elseif($resultado != 1 && $resultado != 2 && $resultado != 4){
-        login($correo,$contra,$tabla,$localizacion_users);
+    if(leer_tablas_mysql_custom("SELECT id FROM $tabla WHERE email = '$correo'")>= 1){
+        $consulta = consulta_mysqli_where("id_rol","$tabla","email","'$correo'");
+        $resultado = $consulta['id_rol'];
+        if($resultado == 1 OR $resultado == 2 OR $resultado == 4){
+            login_admin($correo,$contra,"$tabla","$localizacion_admin");
+        }elseif($resultado != 1 && $resultado != 2 && $resultado != 4){
+            login($correo,$contra,$tabla,$localizacion_users);
+        }
     }
 }
 
@@ -792,8 +794,7 @@ if($_ENV['RECAPTCHA'] == 1){
         $atributos = json_decode($respuesta_captcha, TRUE);
     
         if(!$atributos['success']){
-            if ($_ENV['DEBUG'] == 1){
-                echo "<script>console.log('".$_ENV['NAME_APP']." informa que ha fallado el recaptcha.');</script>";
+            if ($_ENV['DEBUG'] != 1){
                 return FALSE;
             }
         }
