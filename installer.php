@@ -48,6 +48,17 @@ if(isset($_POST['instalar'])){
   $smtp_port = $_POST['smtp_port'];
   //Dominio web
   $dominio = $_POST['dominio'];
+  //Homedir
+  if($_POST['dir'] == ""){
+    $dir = "/";
+  }else{
+    $dir = "/".$_POST['dir']."/";
+  }
+  if(isset($_POST['homedir'])){
+    $homedir = "";
+  }else{
+    $homedir = "public/";
+  }
   //Installer
   $conexion = new mysqli("$servidor_db","$usuariodb", "$password_db","$db");
   $query = "";
@@ -161,17 +172,34 @@ if(isset($_POST['instalar'])){
   fwrite($env_create, "# Dominio registrado\n");
   fwrite($env_create, "DOMINIO=".$dominio."\n\n");
 
+  fwrite($env_create, "# Directorio\n");
+  fwrite($env_create, "HOMEDIR=".$dir.$homedir."\n\n");
+
   fwrite($env_create, "# Zona horaria.\n");
   fwrite($env_create, "ZONA_HORARIA=America/Mexico_City\n\n");
 
   fwrite($env_create, "# Funcionamiento de cookies.\n");
   fwrite($env_create, "COOKIE_SESSION=31622400\n\n");
   fclose($env_create);
+
+  if(isset($_POST['homedir'])){
+    if(file_exists("./.htaccess")){
+      $delete_htaccess = unlink('./.htaccess');
+      $htaccess_create = fopen('./.htaccess', 'w');
+      fwrite($htaccess_create, "<IfModule mod_rewrite.c>\nRewriteEngine On\nRewriteRule ^(.*)$ public/$1 [L]\n</IfModule>\n<Files .htaccess>\norder allow,deny\ndeny from all\n</Files>\n\n<Files .env>\norder allow,deny\ndeny from all\n</Files>");
+      fclose($htaccess_create);
+    }
+    echo "<script>
+    alert('Se ha insertado los datos de manera correcta, ahora será redireccionado al panel de control, gracias por instalar JosSecurity.😁');
+    window.location= './panel';
+    </script>";
+  }else{
+    echo "<script>
+    alert('Se ha insertado los datos de manera correcta, ahora será redireccionado al panel de control, gracias por instalar JosSecurity.😁');
+    window.location= './public/panel';
+    </script>";
+  }
   
-  echo "<script>
-  alert('Se ha insertado los datos de manera correcta, ahora será redireccionado al panel de control, gracias por instalar JosSecurity.😁');
-  window.location= './public/panel';
-  </script>";
 
 }
 
@@ -438,11 +466,27 @@ if(isset($_POST['instalar'])){
               <div class="row justify-content-center">
 
                 <div class="col-auto">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="homedir" name="homedir">
+                    <label class="form-check-label" for="homedir">Deseas activar el modo producción</label>
+                  </div>
+                </div>
+                <div class="col-auto">
                   <div class="mb-3">
                     <label for="dominio" class="form-label">Nombre del dominio</label>
                     <input type="text"
-                      class="form-control" name="dominio" id="dominio" aria-describedby="dominio" placeholder="example.com">
+                      class="form-control" name="dominio" id="dominio" aria-describedby="dominio" value="<?php echo $_SERVER [ 'SERVER_NAME' ]; ?>" placeholder="example.com">
                     <small id="dominio" class="form-text text-muted">Por favor inserta tu dominio web.</small>
+                  </div>
+                </div>
+
+
+                <div class="col-auto">
+                  <div class="mb-3">
+                    <label for="" class="form-label">Directorio de la carpeta</label>
+                    <input type="text"
+                      class="form-control" name="dir" id="dir" aria-describedby="helpId" placeholder="jossecurity">
+                    <small id="helpId" class="form-text text-muted">Pon el directorio de la carpeta, solo llenarlo en un entorno de pruebas como localhost. Si llenas este enlace tu resultado podría ser "/jossecurity/public/"</small>
                   </div>
                 </div>
 

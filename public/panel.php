@@ -195,7 +195,7 @@ login_cookie("users");
                                 </div>
                                 <div class="flex_center">
                                     <div class="grid_1_auto">
-                                        <button type="submit" name="reset" class="btn btn-success">Iniciar sesión</button>
+                                        <button type="submit" name="reset" class="btn btn-success">Restaurar</button>
                                     </div>
                                 </div>
 

@@ -8,7 +8,6 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 session_start();
 
-
 //Configuración por defecto de JosSecurity
 date_default_timezone_set($_ENV['ZONA_HORARIA']);
 $fecha = date("Y-m-d H:i:s");
@@ -447,7 +446,7 @@ function resetear_contra($correo){
     $key = generar_llave_alteratorio(16);
     $password_encriptada = password_hash($key,PASSWORD_BCRYPT,["cost"=>10]);
     $insert = "UPDATE `users` SET `password` = '$password_encriptada', `updated_at` = '$fecha' WHERE `users`.`email` = '$correo'";
-    mysqli_query($conexion, $insert);
+    $conexion -> query($insert);
 
     $row = consulta_mysqli_where("name","users","email","'$correo'");
 
@@ -598,14 +597,14 @@ function leer_tablas_mysql_custom($code){
 function insertar_datos_clasic_mysqli($tabla,$datos,$contenido){
     $conexion = conect_mysqli();
     $sql = "INSERT INTO $tabla ($datos) VALUES ($contenido);";
-    mysqli_query($conexion, $sql);
+    $conexion -> query($sql);
     mysqli_close($conexion);
 }
 
 function insertar_datos_custom_mysqli($codigo_sql){
     $conexion = conect_mysqli();
     $sql = "$codigo_sql";
-    mysqli_query($conexion, $sql);
+    $conexion -> query($sql);
     mysqli_close($conexion);
 }
 
@@ -831,3 +830,5 @@ include (__DIR__ . "/config/mis_jossitos.php");
 
 // Uso de la configuración plugins internos cuando el sistema de plugins no funcione o se encuentre desactivado.
 include (__DIR__ . "/config/not_paid.php");
+
+?>
