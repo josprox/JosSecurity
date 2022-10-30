@@ -4,10 +4,6 @@ $name_app_default = "JosSecurity";
 
 $version_app_default = "1.5";
 
-if(file_exists("./README.md")){
-  $delete_readme = unlink('./README.md');
-}
-
 if(isset($_POST['instalar'])){
 
   //Sistema básico
