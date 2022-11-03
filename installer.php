@@ -487,6 +487,7 @@ if(isset($_POST['instalar'])){
                 </div>
 
               </div>
+              
               <h2 align="center">Felicidades!!</h2>
               <p align="center">Si llenaste todos los datos dale clic en "instalar sitio web" y deja que nosotros nos encarguemos de instalar el sistema.</p>
               <div class="row justify-content-center align-items-center g-2">
