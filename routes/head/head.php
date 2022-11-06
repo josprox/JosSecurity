@@ -24,9 +24,21 @@ if ($pagina  == "panel.php"){
   <!-- Aquí va el código del head propio -->
   <?php
 }
-?>
 
-<?php
+if($_ENV['PWA'] == 1){
+  ?>
+  <!-- PWA -->
+  <meta name="theme-color" content="#99eb91">
+  <meta name="MobileOptimized" content="width">
+  <meta name="HandheldFriendly" content="true">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="../resourses/img/logo transparente/default.png">
+  <link rel="apple-touch-startup-image" href="../resourses/img/logo transparente/default.png">
+  <link rel="manifest" href="./PWA/manifest.php">
+
+  <?php
+}
 
 if($_ENV['RECAPTCHA'] == 1){?>
 

@@ -3,7 +3,7 @@
 // JosSecurity, la mejor seguridad al alcance de tus manos.
 
 // NO ELIMINES las lineas 6 a 9 por seguridad, si tu borras estas linea dejará de funcionar JosSecurity.
-require_once (__DIR__ .'/vendor/autoload.php');
+require_once (__DIR__ . '/vendor/autoload.php');
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 session_start();
@@ -187,7 +187,7 @@ if ($_ENV['CONECT_DATABASE'] == 1){
     }
 
     if ($_ENV['CONECT_POSTGRESQL'] == 1 OR $_ENV['CONECT_POSTGRESQL_PDO'] == 1){
-        include (__DIR__ . "/config/postgresql.php");
+        include (__DIR__ . "/config/extension/postgresql.php");
     }
 
 }else{
@@ -411,7 +411,7 @@ function resetear_contra($correo){
     $name = $row['name'];
 
     if($_ENV['SMTP_ACTIVE'] == 1){
-        include (__DIR__ . "/config/correo_reset_password.php");
+        include (__DIR__ . "/config/correo/correo_reset_password.php");
         mysqli_close($conexion);
         return TRUE;
     }
@@ -489,7 +489,7 @@ function eliminar_cuenta_con_cookies($id,$table_DB,$redireccion){
 
 function mail_smtp_v1_3($nombre,$asunto,$contenido,$correo){
     if($_ENV['SMTP_ACTIVE'] == 1){
-        include (__DIR__ . "/config/correo.php");
+        include (__DIR__ . "/config/correo/correo.php");
     }elseif($_ENV['SMTP_ACTIVE'] != 1){
         echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
     }
@@ -497,7 +497,7 @@ function mail_smtp_v1_3($nombre,$asunto,$contenido,$correo){
 
 function mail_smtp_v1_3_recibir($nombre,$asunto,$contenido,$correo){
     if($_ENV['SMTP_ACTIVE'] == 1){
-        include (__DIR__ . "/config/correo_recibir.php");
+        include (__DIR__ . "/config/correo/correo_recibir.php");
     }elseif($_ENV['SMTP_ACTIVE'] != 1){
         echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
     }
@@ -505,7 +505,7 @@ function mail_smtp_v1_3_recibir($nombre,$asunto,$contenido,$correo){
 
 function mail_smtp_v1_3_check($correo){
     if($_ENV['SMTP_ACTIVE'] == 1){
-        include (__DIR__ . "/config/correo_check.php");
+        include (__DIR__ . "/config/correo/correo_check.php");
     }elseif($_ENV['SMTP_ACTIVE'] != 1){
         echo "<p>No puedes enviar correos porque no está activado en el sistema.</p>";
     }
