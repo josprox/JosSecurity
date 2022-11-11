@@ -47,3 +47,5 @@ if($_ENV['RECAPTCHA'] == 1){?>
 <?php
   }
 ?>
+<!-- Metas generales -->
+<meta name="viewport" content= "width=device-width, user-scalable=no">
