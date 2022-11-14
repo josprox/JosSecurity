@@ -98,7 +98,7 @@ Si trabajas en un localhost (usando de ejemplo xampp):
 - Se recomienda ejecutarse con seguridad usando el protocolo ssl / tls.
 - Se recomienda usar un panel de control para administrar el servidor, puede usar sin problemas Cpanel y Hestia Control Panel. De preferencia debería usar <a href="https://hestiacp.com/">Hestia Control Panel</a>.
 - En caso de pruebas y mejoras, se recomienda usar XAMPP con php 8.1.0 o superior, debido a que, fue programado con esa versión.
-- Para tener un buen funcionamiento, se recomienda que, una vez subidos los archivos, ponle los todos los permisos de leer, escribir y ejecutar (permiso 750).
+- Para tener un buen funcionamiento, se recomienda que, una vez subidos los archivos, ponle todos los permisos de leer, escribir y ejecutar (permiso 750).
 
 #### Donaciones.
 

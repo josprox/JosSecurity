@@ -265,7 +265,7 @@ if(isset($_POST['instalar'])){
                 <div class="mb-3">
                   <label for="nameapp" class="form-label">Nombre de la aplicación</label>
                   <input type="text"
-                    class="form-control" name="nameapp" id="nameapp" aria-describedby="nameapp" value="<?php echo $name_app_default; ?>" placeholder="JosSecurity">
+                    class="form-control" name="nameapp" id="nameapp" aria-describedby="nameapp" value="<?php echo $name_app_default; ?>" placeholder="JosSecurity" required>
                   <small id="nameapp" class="form-text text-muted">Ingresa el nombre de la aplicación.</small>
                 </div>
               </div>
@@ -273,7 +273,7 @@ if(isset($_POST['instalar'])){
                 <div class="mb-3">
                   <label for="version" class="form-label">Versión de la aplicación</label>
                   <input type="number" step="any" value="<?php echo $version_app_default; ?>"
-                    class="form-control" name="version" id="version" aria-describedby="version" placeholder="1.24">
+                    class="form-control" name="version" id="version" aria-describedby="version" required>
                   <small id="version" class="form-text text-muted">Ingresa el número de la aplicación.</small>
                 </div>
               </div>
@@ -288,7 +288,7 @@ if(isset($_POST['instalar'])){
                   <div class="mb-3">
                     <label for="usuariodb" class="form-label">Usuario para base de datos</label>
                     <input type="text"
-                      class="form-control" name="usuariodb" id="usuariodb" aria-describedby="usuariodb" placeholder="usuario">
+                      class="form-control" name="usuariodb" id="usuariodb" aria-describedby="usuariodb" placeholder="usuario" required>
                     <small id="usuariodb" class="form-text text-muted">Inserta el usuario para conectarnos a la base de datos.</small>
                   </div>
                 </div>
@@ -306,7 +306,7 @@ if(isset($_POST['instalar'])){
                     <div class="mb-3">
                       <label for="db" class="form-label">Inserta la base de datos</label>
                       <input type="text"
-                        class="form-control" name="db" id="db" aria-describedby="db" placeholder="Base de datos">
+                        class="form-control" name="db" id="db" aria-describedby="db" placeholder="Base de datos" required>
                       <small id="db" class="form-text text-muted">Pon la base de datos en la cual nos conectaremos.</small>
                     </div>
                 </div>
@@ -315,7 +315,7 @@ if(isset($_POST['instalar'])){
                   <div class="mb-3">
                     <label for="servidor_db" class="form-label">Inserta el servidor</label>
                     <input type="text"
-                      class="form-control" name="servidor_db" id="servidor_db" aria-describedby="servidor_db" placeholder="localhost">
+                      class="form-control" name="servidor_db" id="servidor_db" aria-describedby="servidor_db" placeholder="localhost" required>
                     <small id="servidor_db" class="form-text text-muted">Por favor ayudanos a conectarnos a la base de datos, puedes poner localhost.</small>
                   </div>
                 </div>
@@ -324,7 +324,7 @@ if(isset($_POST['instalar'])){
                   <div class="mb-3">
                     <label for="puerto_mysql" class="form-label">Puerto</label>
                     <input type="text"
-                      class="form-control" name="puerto_mysql" id="puerto_mysql" aria-describedby="puerto_mysql" placeholder="Por favor selecciona el puerto de MySQL" value="3306">
+                      class="form-control" name="puerto_mysql" id="puerto_mysql" aria-describedby="puerto_mysql" placeholder="Por favor selecciona el puerto de MySQL" value="3306" required>
                     <small id="puerto_mysql" class="form-text text-muted">Por favor, pon el puerto para conectarte en MySQL. Por defecto es el 3306</small>
                   </div>
                 </div>
@@ -399,7 +399,7 @@ if(isset($_POST['instalar'])){
                   <div class="mb-3">
                     <label for="RCP" class="form-label">Codigo público</label>
                     <input type="text"
-                      class="form-control" name="RCP" id="RCP" aria-describedby="RCP" placeholder="recaptcha llave pública">
+                      class="form-control" name="RCP" id="RCP" aria-describedby="RCP" placeholder="recaptcha llave pública" required>
                     <small id="RCP" class="form-text text-muted">Inserta la llave pública.</small>
                   </div>
                   
@@ -407,7 +407,7 @@ if(isset($_POST['instalar'])){
                 <div class="col-5">
                   <div class="mb-3">
                     <label for="RCS" class="form-label">Código privado</label>
-                    <input type="text" class="form-control" name="RCS" id="RCS" aria-describedby="RCS" placeholder="recaptcha llave privada">
+                    <input type="text" class="form-control" name="RCS" id="RCS" aria-describedby="RCS" placeholder="recaptcha llave privada" required>
                     <small id="RCS" class="form-text text-muted">Inserta la llave privada.</small>
                   </div>
                 </div>
@@ -422,7 +422,7 @@ if(isset($_POST['instalar'])){
                   <div class="mb-3">
                     <label for="user_smtp" class="form-label">Usuario de acceso</label>
                     <input type="text"
-                      class="form-control" name="user_smtp" id="user_smtp" aria-describedby="user_smtp" placeholder="Pon el usuario de acceso">
+                      class="form-control" name="user_smtp" id="user_smtp" aria-describedby="user_smtp" placeholder="Pon el usuario de acceso" required>
                     <small id="user_smtp" class="form-text text-muted">Pon las credenciales para acceder al correo.</small>
                   </div>
                 </div>
@@ -431,7 +431,7 @@ if(isset($_POST['instalar'])){
                   <div class="mb-3">
                     <label for="pass_smtp" class="form-label">Contraseña de acceso</label>
                     <input type="password"
-                      class="form-control" name="pass_smtp" id="pass_smtp" aria-describedby="pass_smtp" placeholder="Pon la contraseña de acceso">
+                      class="form-control" name="pass_smtp" id="pass_smtp" aria-describedby="pass_smtp" placeholder="Pon la contraseña de acceso" required>
                     <small id="pass_smtp" class="form-text text-muted">Pon las credenciales para acceder al correo.</small>
                   </div>
                 </div>
@@ -440,7 +440,7 @@ if(isset($_POST['instalar'])){
                   <div class="mb-3">
                     <label for="server_smtp" class="form-label">Servidor de uso</label>
                     <input type="text"
-                      class="form-control" name="server_smtp" id="server_smtp" aria-describedby="server_smtp" placeholder="smtp.google.com">
+                      class="form-control" name="server_smtp" id="server_smtp" aria-describedby="server_smtp" placeholder="smtp.google.com" required>
                     <small id="server_smtp" class="form-text text-muted">necesitamos conectarnos al servidor de correos, sino lo conoces ponte en contacto con tu provedor de correos.</small>
                   </div>
                 </div>
@@ -449,7 +449,7 @@ if(isset($_POST['instalar'])){
                   <div class="mb-3">
                     <label for="smtp_port" class="form-label">Puerto del servidor</label>
                     <input type="text"
-                      class="form-control" name="smtp_port" id="smtp_port" aria-describedby="smtp_port" placeholder="587">
+                      class="form-control" name="smtp_port" id="smtp_port" aria-describedby="smtp_port" placeholder="587" required>
                     <small id="smtp_port" class="form-text text-muted">Pon el puero que escucha el servidor.</small>
                   </div>
                 </div>
@@ -501,7 +501,7 @@ if(isset($_POST['instalar'])){
                   <div class="mb-3">
                     <label for="dominio" class="form-label">Nombre del dominio</label>
                     <input type="text"
-                      class="form-control" name="dominio" id="dominio" aria-describedby="dominio" value="<?php echo $_SERVER [ 'SERVER_NAME' ]; ?>" placeholder="example.com">
+                      class="form-control" name="dominio" id="dominio" aria-describedby="dominio" value="<?php echo $_SERVER [ 'SERVER_NAME' ]; ?>" placeholder="example.com" required>
                     <small id="dominio" class="form-text text-muted">Por favor inserta tu dominio web.</small>
                   </div>
                 </div>
