@@ -29,14 +29,23 @@ if(!isset($_ENV['API']) OR $_ENV['API'] != 1){
             eliminar_cuenta($_GET['arg1'], $_GET['arg2'],"");
             echo "\tCodigo insertado.";
         }elseif($_GET['cmd'] == "v-test-smtp"){
-            mail_smtp_v1_3_check($_GET['arg1']);
-            echo "\tCodigo insertado.";
+            if(mail_smtp_v1_3_check($_GET['arg1']) == TRUE){
+                echo "\tCodigo insertado.";
+            }else{
+                echo "\tCodigo fallido.";
+            }
         }elseif($_GET['cmd'] == "v-send-smtp"){
-            mail_smtp_v1_3($_GET['arg1'],$_GET['arg2'],$_GET['arg3'],$_GET['arg4']);
-            echo "\tCodigo insertado.";
+            if(mail_smtp_v1_3($_GET['arg1'],$_GET['arg2'],$_GET['arg3'],$_GET['arg4']) == TRUE){
+                echo "\tCodigo insertado.";
+            }else{
+                echo "\tCodigo fallido.";
+            }
         }elseif($_GET['cmd'] == "v-receive-smtp"){
-            mail_smtp_v1_3_recibir($_GET['arg1'],$_GET['arg2'],$_GET['arg3'],$_GET['arg4']);
-            echo "\tCodigo insertado.";
+            if(mail_smtp_v1_3_recibir($_GET['arg1'],$_GET['arg2'],$_GET['arg3'],$_GET['arg4']) == TRUE){
+                echo "\tCodigo insertado.";
+            }else{
+                echo "\tCodigo fallido.";
+            }
         }elseif($_GET['cmd'] == "v-insert-data-mysqli"){
             insertar_datos_custom_mysqli($_GET['arg1']);
             echo "\tCodigo insertado.";
