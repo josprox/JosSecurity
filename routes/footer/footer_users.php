@@ -1,3 +1,1 @@
-<?php
-// Aquí va el footer_users
-?>
+<!-- Footer users -->

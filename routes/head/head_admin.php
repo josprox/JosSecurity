@@ -1,5 +1,3 @@
-<!-- JosSecurity está funcionando -->
-
 <!-- JQUERY -->
 <script src="../../node_modules/jquery/dist/jquery.min.js"></script>
 
@@ -21,13 +19,3 @@
 <script src="../../node_modules/richtext_for_npm/src/jquery.richtext.min.js"></script>
 
 <meta name="viewport" content= "width=device-width, user-scalable=no">
-
-<?php
-
-if($_ENV['RECAPTCHA'] == 1){?>
-
-<script src="https://www.google.com/recaptcha/api.js"></script>
-
-<?php
-  }
-?>
