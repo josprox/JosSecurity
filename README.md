@@ -92,6 +92,26 @@ Si trabajas en un localhost (usando de ejemplo xampp):
 - Sigue las instrucciones para llevar a cabo la instalación, recuerda completar todos los campos y cumplir con los requisitos mínimos.
 - Una vez instalado te saldrá el siguiente mensaje 'Se ha insertado los datos de manera correcta.' y te redireccionará al panel del sistema.
 
+### ¿Cómo puedo instalarlo si descargo el archivo por Composer?
+
+También puedes descargar JosSecurity por medio de composer con el siguiente código:
+
+	composer require josprox/jossecurity
+
+JosSecurity por defecto viene con algunas dependencias y con una interfaz para poder usarlo, tu podrás usar este sistema para tener una base, para ello tendrás que extraer los archivos de JosSecurity que vienen dentro de las carpetas /vendor/josprox/jossecurity/ y ponerlos en la raíz del archivo. Listo, ahora puedes usar JosSecurity y, si hay una actualización recibirás todos los archivos actualizados de JosSecurity dentro de /vendor/josprox/jossecurity/, de esta manera aseguras que, solo actualizarás los archivos que tu desees actualizar.
+
+Si trabajas en un servidor:
+- Crea una base de datos, de preferencia usa un cortejo utf8mb4_unicode_ci.
+- accede a tu dominio y al archivo correspondiente "installer.php", ejemplo: ("https://tudominio.com/installer.php").
+- Sigue las instrucciones para llevar a cabo la instalación, recuerda completar todos los campos y cumplir con los requisitos mínimos.
+- Una vez instalado te saldrá el siguiente mensaje 'Se ha insertado los datos de manera correcta.' y te redireccionará a tu panel con la versión de JosSecurity instalado.
+
+Si trabajas en un localhost (usando de ejemplo xampp):
+- Crea una base de datos, de preferencia usa un cortejo utf8mb4_unicode_ci.
+- Accede al directorio donde instalaste JosSecurity y ponle un acceso a "installer.php", ejemplo: ("http://localhost/jossecurity/installer.php").
+- Sigue las instrucciones para llevar a cabo la instalación, recuerda completar todos los campos y cumplir con los requisitos mínimos.
+- Una vez instalado te saldrá el siguiente mensaje 'Se ha insertado los datos de manera correcta.' y te redireccionará al panel del sistema.
+
 ### Recomendaciones:
 
 - Usar un servidor privado (VPS).
