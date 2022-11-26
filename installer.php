@@ -90,6 +90,7 @@ if(isset($_POST['instalar'])){
             ');
             $query= '';             
     }
+  }
   if(file_exists("./.gitignore")){
     $delete_gitignore = unlink('./.gitignore');
   }
@@ -211,9 +212,6 @@ if(isset($_POST['instalar'])){
     window.location= './public/panel';
     </script>";
   }
-  
-
-}
 
 
 }
