@@ -109,6 +109,9 @@ if(isset($_POST['instalar'])){
   if(file_exists("./JosSecurity.postman_collection.json")){
     $delete_licence = unlink('./JosSecurity.postman_collection.json');
   }
+  if(file_exists("./rector.php")){
+    $delete_licence = unlink('./rector.php');
+  }
 
   $zip_installer = glob('./*.zip'); //obtenemos todos los nombres de los ficheros
   foreach($zip_installer as $file){

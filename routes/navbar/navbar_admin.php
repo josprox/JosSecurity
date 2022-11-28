@@ -7,17 +7,14 @@
     </button>
     <div class="collapse navbar-collapse" id="collapsibleNavId">
       <ul class="navbar-nav me-auto mt-2 mt-lg-0">
-        <li class="nav-item">
-          <a class="nav-link" href="./" aria-current="page"><i class="fa-solid fa-house"></i> Inicio</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="cuenta" aria-current="page"><i class="fa-solid fa-user"></i> Mi Cuenta</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="usuarios" aria-current="page"><i class="fa-solid fa-users"></i> Usuarios</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="registrar" aria-current="page"><i class="fa-solid fa-plus"></i> Registrar</a>
+      <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-trowel-bricks"></i> Básico</a>
+          <div class="dropdown-menu" aria-labelledby="dropdownId">
+            <a class="dropdown-item" href="./"><i class="fa-solid fa-house"></i> Inicio</a>
+            <a class="dropdown-item" href="cuenta"><i class="fa-solid fa-user"></i> Mi Cuenta</a>
+            <a class="dropdown-item" href="usuarios"><i class="fa-solid fa-users"></i> Usuarios</a>
+            <a class="dropdown-item" href="registrar"><i class="fa-solid fa-plus"></i> Registrar</a>
+          </div>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-gear"></i> Configuraciones</a>

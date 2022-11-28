@@ -70,7 +70,6 @@ $row = consulta_mysqli_where("name","users","id",$iduser);
 
   <!-- Bootstrap JavaScript Libraries -->
   <?php footer_admin(); ?>
-  <script src="../node_modules/jquery/dist/jquery.min.js"></script>
 </body>
 
 </html>
