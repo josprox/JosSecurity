@@ -73,6 +73,9 @@
         </li>
         <?php
         }
+        if(file_exists(__DIR__ . "/../../../routes/navbar/navbar_admin.php")){
+          include (__DIR__ . "/../../../routes/navbar/navbar_admin.php");
+        }
         ?>
       </ul>
       <form class="d-flex my-2 my-lg-0" action="<?php $_SERVER["PHP_SELF"]; ?>" method="post">

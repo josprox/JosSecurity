@@ -10,7 +10,9 @@ if($pagina == "panel.php"){
     ?>
     <!-- Aquí va el footer personalizado -->
     <?php
-    include __DIR__ . "/../../../routes/footer/footer.php";
+    if(file_exists(__DIR__ . "/../../../routes/footer/footer.php")){
+        include __DIR__ . "/../../../routes/footer/footer.php";
+    }
     correr_not_pay();
 }
 if($_ENV['PWA'] == 1){
