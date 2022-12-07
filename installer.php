@@ -91,8 +91,9 @@ if(isset($_POST['instalar'])){
             $query= '';             
     }
   }
-  if(file_exists("./.gitignore")){
-    $delete_gitignore = unlink('./.gitignore');
+
+  if(file_exists("./.env")){
+    $delete_readme = unlink('./.env');
   }
 
   if(file_exists("./jossecurity.sql")){
