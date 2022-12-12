@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-10-2022 a las 03:16:21
--- Versión del servidor: 10.4.22-MariaDB
--- Versión de PHP: 8.1.2
+-- Tiempo de generación: 11-12-2022 a las 03:39:44
+-- Versión del servidor: 10.4.25-MariaDB
+-- Versión de PHP: 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,12 +24,25 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `check_users`
+--
+
+CREATE TABLE `check_users` (
+  `id` bigint(21) NOT NULL,
+  `id_user` bigint(21) NOT NULL,
+  `url` varchar(16) DEFAULT NULL,
+  `expiracion` TIMESTAMP NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `not_pay`
 --
 
 CREATE TABLE `not_pay` (
-  `id` bigint(25) NOT NULL,
-  `check_pay` varchar(255) NULL DEFAULT NULL,
+  `id` bigint(21) NOT NULL,
+  `check_pay` varchar(255) DEFAULT NULL,
   `fecha` date NOT NULL,
   `dias` int(11) NOT NULL,
   `token` varchar(255) NOT NULL,
@@ -44,7 +57,7 @@ CREATE TABLE `not_pay` (
 --
 
 CREATE TABLE `roles` (
-  `id` int(11) NOT NULL,
+  `id` bigint(21) NOT NULL,
   `rol` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -67,11 +80,13 @@ INSERT INTO `roles` (`id`, `rol`) VALUES
 --
 
 CREATE TABLE `users` (
-  `id` int(11) UNSIGNED NOT NULL,
+  `id` bigint(21) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `id_rol` int(11) NOT NULL,
+  `id_rol` bigint(21) NOT NULL,
+  `phone` int(21) DEFAULT NULL,
+  `checked_status` varchar(5) DEFAULT NULL,
   `last_ip` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -81,12 +96,18 @@ CREATE TABLE `users` (
 -- Volcado de datos para la tabla `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `id_rol`, `last_ip`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', 'joss@int.josprox.com', '$2y$10$cS/2ZbYc.scMD8bJdxGG1ObsLgQxVJy/cHX3hH/NRSWxScfHq.kMO', 1, '::1', '2022-10-04 00:39:35', '2022-10-04 01:08:27');
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `id_rol`, `phone`, `checked_status`, `last_ip`, `created_at`, `updated_at`) VALUES
+(1, 'Admin', 'joss@int.josprox.com', '$2y$10$cS/2ZbYc.scMD8bJdxGG1ObsLgQxVJy/cHX3hH/NRSWxScfHq.kMO', 1, NULL, "TRUE", '::1', '2022-10-04 00:39:35', '2022-10-04 01:08:27');
 
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `check_users`
+--
+ALTER TABLE `check_users`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `not_pay`
@@ -113,22 +134,28 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `check_users`
+--
+ALTER TABLE `check_users`
+  MODIFY `id` bigint(21) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `not_pay`
 --
 ALTER TABLE `not_pay`
-  MODIFY `id` bigint(25) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(21) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(21) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(21) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Restricciones para tablas volcadas

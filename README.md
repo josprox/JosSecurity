@@ -1,6 +1,6 @@
 # JosSecurity
 
-<img src="./resourses/img/logo%20azul/cover.png" alt="Cetis Control Web Panel"/>
+<img src="./resourses/img/logo%20azul/cover.png" alt="JosSecurity seguridad a tu alcance."/>
 
 ## ¿Qué es JosSecurity?
 
@@ -49,9 +49,9 @@ Las siguientes credenciales es para un login exitoso:
 Podrás ayudarnos si detectas algún error o si podemos mejorar algo, tendrás que visitar la página ayúdanos <a href="https://jossecurity.josprox.com/ayudanos/">dando clic aquí</a>.
 ### Para poder usar JosSecurity necesitará algunos requisitos mínimos:
 
-- Versión mínima requerida de PHP: 8.1.0
-- Espacio requerido en disco: 10 mb.
-- Transferencia de red recomendada del servidor: 5 mb.
+- Versión mínima requerida de PHP: 8.2.0
+- Espacio requerido para instalación en disco: 137 mb, se recomienda tener 200 mb, finalmente se necesitarán entre 80 a 120 mb, el peso zipeado es de 66 mb.
+- Transferencia de red recomendada del servidor: 1.5 mb.
 
 ### ¿Cómo puedo instalarlo si descargo el archivo en github?
 
@@ -127,17 +127,14 @@ Tú puedes donar a través de <a href="https://www.patreon.com/jossestrada">patr
 #### Licencia.
 
 Un programa creado por JOSPROX MX/ JOSPROX Internacional.
-Licencia: Creative Commons (Atribución-NoComercial 4.0 Internacional - Compartir igual).
+Licencia: CC BY-NC 4.0.
 
-<img src="./resourses/img/byncsa.jpg" alt="Atribución-NoComercial 4.0 Internacional - Compartir igual"/>
+<img src="./resourses/img/byncsa.jpg" alt="Creative Commons Attribution 4.0 International"/>
 
-Reconocimiento - Compartir Igual (by-sa)
-Esta licencia permite el uso comercial de la obra y de las posibles obras derivadas, pero la distribución de éstas se debe hacer con una licencia igual a la que regula la obra original, es decir, la obra derivada que se lleve a cabo a partir de la obra original deberá ser explotada bajo la misma licencia.
-
-Atribución-NoComercial 4.0 Internacional (CC BY-NC 4.0)
+Creative Commons Attribution 4.0 International
 Usted es libre de:
 - Compartir — copiar y redistribuir el material en cualquier medio o formato.
-- Adaptar — remezclar, transformar y construir a partir del material.
-Bajo los siguientes términos:
-- Atribución — Usted debe dar crédito de manera adecuada, brindar un enlace a la licencia, e indicar si se han realizado cambios. Puede hacerlo en cualquier forma razonable, pero no de forma tal que sugiera que usted o su uso tienen el apoyo de la licencia.
-- NoComercial — Usted no puede hacer uso del material con propósitos comerciales.
+- Adaptar — remezclar, transformar y construir a partir del material para cualquier propósito, incluso comercialmente.
+Bajo a los siguientes términos:
+Atribución — Usted debe dar crédito de manera adecuada, brindar un enlace a la licencia, e indicar si se han realizado cambios. Puede hacerlo en cualquier forma razonable, pero no de forma tal que sugiera que usted o su uso tienen el apoyo de la licenciante.
+Para mas información <a href="https://spdx.org/licenses/CC-BY-4.0.html">da clic aquí</a>.

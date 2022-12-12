@@ -634,6 +634,44 @@
 				"description": "Sistema API sencillo de JosSecurity."
 			},
 			"response": []
+		},
+		{
+			"name": "JosSecurity API cron",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/jossecurity/api/?email=joss@int.josprox.com&password=Andyyyo12?&cmd=cron",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"jossecurity",
+						"api",
+						""
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "joss@int.josprox.com",
+							"description": "Pon el correo de administración"
+						},
+						{
+							"key": "password",
+							"value": "Andyyyo12?",
+							"description": "Pon la contraseña del correo"
+						},
+						{
+							"key": "cmd",
+							"value": "cron",
+							"description": "Aquí deberás poner el comando"
+						}
+					]
+				},
+				"description": "Sistema API sencillo de JosSecurity."
+			},
+			"response": []
 		}
 	]
 }

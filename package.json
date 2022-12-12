@@ -7,7 +7,7 @@
     "sweetalert2": "^11.6.15"
   },
   "name": "jossecurity",
-  "version": "1.7.7",
+  "version": "1.8.0",
   "description": "JosSecurity es un framework y librería al mismo tiempo, debido a que, el sistema lo podrás usar como primer uso o segundo uso en tu proyecto, JosSecurity tiene herramientas para que puedas crear tu sitio web de una manera fácil y sencilla sin tener conocimientos en el back-end.",
   "keywords": [
     "JosSecurity",
@@ -17,7 +17,7 @@
     "CMS"
   ],
   "author": "JOSPROX MX | Internacional",
-  "license": "Creative Commons (Atribución-NoComercial 4.0 Internacional - Compartir igual)",
+  "license": "CC-BY-4.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
