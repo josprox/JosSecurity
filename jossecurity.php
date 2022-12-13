@@ -926,7 +926,7 @@ if(isset($_POST['salir'])){
     header("Location: ./../panel");
 }
 
-if ($_ENV['PLUGINS'] == 1 OR !isset($_ENV['PLUGINS'])){
+if ($_ENV['PLUGINS'] != 1 OR !isset($_ENV['PLUGINS'])){
     if($_ENV['DEBUG']){
         echo "<script>console.log('".$_ENV['NAME_APP']." tiene desactivado el sistema de plugins.');</script>";
     }
