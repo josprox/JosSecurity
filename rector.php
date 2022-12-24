@@ -12,7 +12,6 @@ return static function (RectorConfig $rectorConfig): void {
         __DIR__ . '/config',
         __DIR__ . '/plugins',
         __DIR__ . '/public',
-        __DIR__ . '/routes',
     ]);
 
     // register a single rule

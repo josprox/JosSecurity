@@ -45,8 +45,14 @@ Las siguientes credenciales es para un login exitoso:
 	Contraseña:
 	Andyyyo12?
 
+## Usos
+
+* Sistema JosSecurity & Wordpress disponible, da <a href="https://github.com/josprox/JosSecurity-WordPress">clic aqui</a>.
+* Plugin JosSecurity & Wordpress disponible, da <a href="https://github.com/josprox/JosSecurity_Plugin">clic aqui</a>.
+
 ### Ayúdanos
 Podrás ayudarnos si detectas algún error o si podemos mejorar algo, tendrás que visitar la página ayúdanos <a href="https://jossecurity.josprox.com/ayudanos/">dando clic aquí</a>.
+
 ### Para poder usar JosSecurity necesitará algunos requisitos mínimos:
 
 - Versión mínima requerida de PHP: 8.2.0
@@ -127,7 +133,7 @@ Tú puedes donar a través de <a href="https://www.patreon.com/jossestrada">patr
 #### Licencia.
 
 Un programa creado por JOSPROX MX/ JOSPROX Internacional.
-Licencia: CC BY-NC 4.0.
+Licencia: CC BY 4.0.
 
 <img src="./resourses/img/byncsa.jpg" alt="Creative Commons Attribution 4.0 International"/>
 
