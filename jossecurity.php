@@ -880,6 +880,7 @@ function nombre_de_pagina(){
     $url = $url[0];
     return $url;
 }
+
 function crear_archivo($directorio,$contenido_C){
     $dirname = __DIR__ . DIRECTORY_SEPARATOR . $directorio;
     $create = fopen($dirname, 'w');
@@ -887,6 +888,7 @@ function crear_archivo($directorio,$contenido_C){
     fclose($create);
     return TRUE;
 }
+
 function copiar_archivo($archivo_original,$archivo_copiado){
     if(!@copy(__DIR__ . DIRECTORY_SEPARATOR . $archivo_original,__DIR__ . DIRECTORY_SEPARATOR . $archivo_copiado))
         {
@@ -897,6 +899,7 @@ function copiar_archivo($archivo_original,$archivo_copiado){
             return TRUE;
         }
 }
+
 function borrar_directorio($dirname) {
          //si es un directorio lo abro
          if (is_dir($dirname))
@@ -919,6 +922,15 @@ function borrar_directorio($dirname) {
 	 rmdir($dirname);
 	 return true;
 }
+
+function check_http(){
+    if($_ENV['DOMINIO'] != "localhost"){
+        return "https://";
+    }elseif($_ENV['DOMINIO'] == "localhost" OR $_ENV['DOMINIO'] == "127.0.0.1"){
+        return "http://";
+    }
+}
+
 if($_ENV['RECAPTCHA'] != 1 OR !isset($_ENV['RECAPTCHA'])){
     echo "<script>console.log('".$_ENV['NAME_APP']." tiene desactivado el sistema de recaptcha.');</script>";
 }elseif($_ENV['RECAPTCHA'] == 1){
