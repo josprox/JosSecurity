@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-12-2022 a las 03:39:44
+-- Tiempo de generación: 04-01-2023 a las 00:49:43
 -- Versión del servidor: 10.4.25-MariaDB
 -- Versión de PHP: 8.2.0
 
@@ -30,8 +30,9 @@ SET time_zone = "+00:00";
 CREATE TABLE `check_users` (
   `id` bigint(21) NOT NULL,
   `id_user` bigint(21) NOT NULL,
+  `accion` varchar(60) DEFAULT NULL,
   `url` varchar(16) DEFAULT NULL,
-  `expiracion` TIMESTAMP NOT NULL
+  `expiracion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -85,7 +86,7 @@ CREATE TABLE `users` (
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `id_rol` bigint(21) NOT NULL,
-  `phone` int(21) DEFAULT NULL,
+  `phone` varchar(21) DEFAULT NULL,
   `checked_status` varchar(5) DEFAULT NULL,
   `last_ip` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -97,7 +98,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `id_rol`, `phone`, `checked_status`, `last_ip`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', 'joss@int.josprox.com', '$2y$10$cS/2ZbYc.scMD8bJdxGG1ObsLgQxVJy/cHX3hH/NRSWxScfHq.kMO', 1, NULL, "TRUE", '::1', '2022-10-04 00:39:35', '2022-10-04 01:08:27');
+(1, 'Admin', 'joss@int.josprox.com', '$2y$10$cS/2ZbYc.scMD8bJdxGG1ObsLgQxVJy/cHX3hH/NRSWxScfHq.kMO', 1, NULL, 'TRUE', '::1', '2022-10-04 00:39:35', '2022-10-04 01:08:27');
 
 --
 -- Índices para tablas volcadas
