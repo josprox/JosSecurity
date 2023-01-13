@@ -80,7 +80,7 @@ $row = consulta_mysqli_where("name","users","id",$iduser);
   $control -> cerrar();
   ?>
   <br>
-  <p align="center">Este sistema fue creado por JOSPROX MX | Internacional, visita nuestra <a href="https://jossecurity.josprox.com/" role="button">documentacion</a> para saber cómo usar el sistema de JosSecurity.</p>
+  <p align="center">Este sistema fue creado por JOSPROX MX | Internacional, visita nuestra <a href="https://jossecurity.josprox.com/" role="button">documentación</a> para saber cómo usar el sistema de JosSecurity.</p>
 
 
   </div>

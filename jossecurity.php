@@ -1002,6 +1002,10 @@ if ($_ENV['PLUGINS'] != 1 OR !isset($_ENV['PLUGINS'])){
         if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . "plugins/twilio/SDK.php")){
             include (__DIR__ . DIRECTORY_SEPARATOR . "plugins/twilio/SDK.php");
         }
+    }if(isset($_ENV['ONESIGNAL']) && $_ENV['ONESIGNAL'] == 1){
+        if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . "plugins/onesignal/SDK.php")){
+            include (__DIR__ . DIRECTORY_SEPARATOR . "plugins/onesignal/SDK.php");
+        }
     }
 }
 
