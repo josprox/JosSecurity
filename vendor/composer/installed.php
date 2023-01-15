@@ -3,7 +3,7 @@
         'name' => 'josprox/jossecurity',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '67c6dde30b79f1b46e2675ee2fe7e8b8b67ee489',
+        'reference' => 'da5c0311b45bb24a3302005042b74d3c484aecce',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -112,7 +112,7 @@
         'josprox/jossecurity' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '67c6dde30b79f1b46e2675ee2fe7e8b8b67ee489',
+            'reference' => 'da5c0311b45bb24a3302005042b74d3c484aecce',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
