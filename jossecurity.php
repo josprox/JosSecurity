@@ -549,6 +549,11 @@ function actualizar_contra($id, $nueva_contra){
 
 function logout($id,$table_DB){
 
+    if($id == ""){
+        global $iduser;
+        $id = $iduser;
+    }
+
     $conexion = conect_mysqli();
     $table = mysqli_real_escape_string($conexion, (string) $table_DB);
     $sql = "SELECT email,password FROM $table WHERE id = '$id'";
@@ -982,6 +987,9 @@ function evento_programado($task_name, $schedule, $interval) {
 }
 
 if($_ENV['RECAPTCHA'] != 1 OR !isset($_ENV['RECAPTCHA'])){
+    function recaptcha(){
+        return true;
+    }
     echo "<script>console.log('".$_ENV['NAME_APP']." tiene desactivado el sistema de recaptcha.');</script>";
 }elseif($_ENV['RECAPTCHA'] == 1){
 
@@ -1007,7 +1015,7 @@ if($_ENV['RECAPTCHA'] != 1 OR !isset($_ENV['RECAPTCHA'])){
 }
 
 if(isset($_POST['salir'])){
-    logout($iduser,"users");
+    logout("","users");
     header("Location: ./../panel");
 }
 
