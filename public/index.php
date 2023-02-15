@@ -9,6 +9,7 @@ include (__DIR__ . "/../jossecurity.php");
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<link rel="stylesheet" href="./../resourses/scss/cookies.css">
 <title>Próximamente</title>
 <style type="text/css">
     body {
@@ -117,6 +118,6 @@ include (__DIR__ . "/../jossecurity.php");
     </div>
 </div>
 
-<?php footer(); ?>
+<?php cookie(); footer();?>
 </body>
 </html>

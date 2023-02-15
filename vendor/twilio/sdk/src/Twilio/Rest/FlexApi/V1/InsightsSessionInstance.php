@@ -16,15 +16,17 @@ use Twilio\Values;
 use Twilio\Version;
 
 /**
+ * PLEASE NOTE that this class contains preview products that are subject to change. Use them with caution. If you currently do not have developer preview access, please contact help@twilio.com.
+ *
  * @property string $workspaceId
  * @property string $sessionExpiry
  * @property string $sessionId
  * @property string $baseUrl
  * @property string $url
  */
-class GoodDataInstance extends InstanceResource {
+class InsightsSessionInstance extends InstanceResource {
     /**
-     * Initialize the GoodDataInstance
+     * Initialize the InsightsSessionInstance
      *
      * @param Version $version Version that contains the resource
      * @param mixed[] $payload The response payload
@@ -48,24 +50,24 @@ class GoodDataInstance extends InstanceResource {
      * Generate an instance context for the instance, the context is capable of
      * performing various actions.  All instance actions are proxied to the context
      *
-     * @return GoodDataContext Context for this GoodDataInstance
+     * @return InsightsSessionContext Context for this InsightsSessionInstance
      */
-    protected function proxy(): GoodDataContext {
+    protected function proxy(): InsightsSessionContext {
         if (!$this->context) {
-            $this->context = new GoodDataContext($this->version);
+            $this->context = new InsightsSessionContext($this->version);
         }
 
         return $this->context;
     }
 
     /**
-     * Create the GoodDataInstance
+     * Create the InsightsSessionInstance
      *
      * @param array|Options $options Optional Arguments
-     * @return GoodDataInstance Created GoodDataInstance
+     * @return InsightsSessionInstance Created InsightsSessionInstance
      * @throws TwilioException When an HTTP error occurs.
      */
-    public function create(array $options = []): GoodDataInstance {
+    public function create(array $options = []): InsightsSessionInstance {
         return $this->proxy()->create($options);
     }
 
@@ -99,6 +101,6 @@ class GoodDataInstance extends InstanceResource {
         foreach ($this->solution as $key => $value) {
             $context[] = "$key=$value";
         }
-        return '[Twilio.FlexApi.V1.GoodDataInstance ' . \implode(' ', $context) . ']';
+        return '[Twilio.FlexApi.V1.InsightsSessionInstance ' . \implode(' ', $context) . ']';
     }
 }
