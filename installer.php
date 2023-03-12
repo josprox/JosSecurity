@@ -2,7 +2,7 @@
 
 $name_app_default = "JosSecurity";
 
-$version_app_default = "2.1";
+$version_app_default = "2.2";
 
 if(isset($_POST['instalar'])){
 

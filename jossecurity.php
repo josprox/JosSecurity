@@ -197,7 +197,7 @@ if ($_ENV['CONECT_DATABASE'] == 1){
         }
     }
 
-    if ($_ENV['CONECT_POSTGRESQL'] == 1 OR $_ENV['CONECT_POSTGRESQL_PDO'] == 1){
+    if ($_ENV['CONECT_POSTGRESQL'] == 1 || $_ENV['CONECT_POSTGRESQL_PDO'] == 1){
         include (__DIR__ . "/config/extension/postgresql.php");
     }
 
@@ -215,7 +215,7 @@ function logins($correo,$contra,$tabla,$localizacion_admin,$localizacion_users,$
     if(leer_tablas_mysql_custom("SELECT id FROM $tabla WHERE email = '$correo'")>= 1){
         $consulta = consulta_mysqli_where("id_rol","$tabla","email","'$correo'");
         $resultado = $consulta['id_rol'];
-        if($resultado == 1 OR $resultado == 2 OR $resultado == 4){
+        if($resultado == 1 || $resultado == 2 || $resultado == 4){
             $check = login_admin($correo,$contra,"$tabla","$localizacion_admin",$check_user);
             if($check == false){
                 return false;
@@ -243,7 +243,7 @@ function login($login_email,$login_password,$table_DB,$location,$check_user = "p
         }else{
             $cookies = FALSE;
         }
-        if(!isset($_ENV['CHECK_USER']) OR $_ENV['CHECK_USER'] != 1){
+        if(!isset($_ENV['CHECK_USER']) || $_ENV['CHECK_USER'] != 1){
             $sql = "SELECT id, name, password FROM $table WHERE email = '$usuario'";
         }else{
             $sql = "SELECT id, name, password, checked_status FROM $table WHERE email = '$usuario'";
@@ -254,7 +254,7 @@ function login($login_email,$login_password,$table_DB,$location,$check_user = "p
             $row = $resultado->fetch_assoc();
             $password_encriptada = $row['password'];
             $id = $row['id'];
-            if(!isset($_ENV['CHECK_USER']) OR $_ENV['CHECK_USER'] != 1){
+            if(!isset($_ENV['CHECK_USER']) || $_ENV['CHECK_USER'] != 1){
                 $check = TRUE;
             }else{
                 $check = $row['checked_status'];
@@ -328,7 +328,7 @@ function login_admin($login_email,$login_password,$table_DB,$location,$check_use
             $cookies = FALSE;
         }
     
-        if(!isset($_ENV['CHECK_USER']) OR $_ENV['CHECK_USER'] != 1){
+        if(!isset($_ENV['CHECK_USER']) || $_ENV['CHECK_USER'] != 1){
             $sql = "SELECT id, name, password, id_rol FROM $table WHERE email = '$usuario'";
         }else{
             $sql = "SELECT id, name, password, id_rol,checked_status FROM $table WHERE email = '$usuario'";
@@ -340,13 +340,13 @@ function login_admin($login_email,$login_password,$table_DB,$location,$check_use
             $password_encriptada = (string)$row['password'];
             $rol = $row['id_rol'];
             $id = $row['id'];
-            if(!isset($_ENV['CHECK_USER']) OR $_ENV['CHECK_USER'] != 1){
+            if(!isset($_ENV['CHECK_USER']) || $_ENV['CHECK_USER'] != 1){
                 $check = TRUE;
             }else{
                 $check = $row['checked_status'];
             }
             if($check == TRUE){
-                if($rol == 1 OR $rol == 2 OR $rol == 4){
+                if($rol == 1 || $rol == 2 || $rol == 4){
     
                     if(password_verify($password,$password_encriptada) == TRUE){
         
@@ -403,7 +403,7 @@ function login_admin($login_email,$login_password,$table_DB,$location,$check_use
 function cookie_session($sesion,$localizacion_admin,$localizacion_users){
     $consulta = consulta_mysqli_where("id_rol","users","id",$sesion);
     $resultado = $consulta["id_rol"];
-    if ($resultado == 1 OR $resultado == 2 OR $resultado == 4){
+    if ($resultado == 1 || $resultado == 2 || $resultado == 4){
         header("Location: $localizacion_admin");
     }elseif($resultado != 1 && $resultado != 2 && $resultado != 4){
         header("Location: $localizacion_users");
@@ -452,7 +452,7 @@ function registro($table_db,$name_user,$email_user,$contra_user,$rol_user){
         global $nombre_app;
         $key = generar_llave_alteratorio(16);
         insertar_datos_clasic_mysqli($table_db,"name, email, password, id_rol, created_at, updated_at","'$nombre', '$email', '$password_encriptada', '$rol', '$fecha', NULL");
-        if(!isset($_ENV['CHECK_USER']) OR $_ENV['CHECK_USER'] != 1){
+        if(!isset($_ENV['CHECK_USER']) || $_ENV['CHECK_USER'] != 1){
             $cuerpo_de_correo = "<div><p align='justify'>Te has registrado de manera correcta en ". $nombre_app .", esperamos sea de tu agrado.😊</p></div><div><p>Bienvenido $nombre.</p></div>";
             mail_smtp_v1_3($nombre,"Su registro ha sido exitoso!!",$cuerpo_de_correo,$email);
         }else{
@@ -637,7 +637,7 @@ function mail_smtp_v1_3($nombre,$asunto,$contenido,$correo){
 }
 
 function mail_WP( $to, $subject, $message, $headers = '', $attachments  = [] ){
-    if($_ENV['SMTP_ACTIVE'] != 1 OR !isset($_ENV['SMTP_ACTIVE'])){
+    if($_ENV['SMTP_ACTIVE'] != 1 || !isset($_ENV['SMTP_ACTIVE'])){
         return false;
     }elseif($_ENV['SMTP_ACTIVE'] == 1){
         include (__DIR__ . DIRECTORY_SEPARATOR ."config/correo/correo_wp.php");
@@ -971,10 +971,13 @@ function borrar_directorio($dirname) {
 }
 
 function check_http(){
-    if($_ENV['DOMINIO'] != "localhost"){
-        return "https://";
-    }elseif($_ENV['DOMINIO'] == "localhost" OR $_ENV['DOMINIO'] == "127.0.0.1"){
-        return "http://";
+    $domain = $_ENV['DOMINIO'];
+    if (isset($domain) && $domain !== 'localhost' && isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        return 'https://';
+    } elseif (!isset($domain) || $domain === 'localhost' || !isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
+        return 'http://';
+    } else {
+        return '';
     }
 }
 
@@ -1026,7 +1029,7 @@ class fecha_cliente{
     }
 }
 
-if($_ENV['RECAPTCHA'] != 1 OR !isset($_ENV['RECAPTCHA'])){
+if($_ENV['RECAPTCHA'] != 1 || !isset($_ENV['RECAPTCHA'])){
     function recaptcha(){
         return true;
     }
@@ -1051,7 +1054,7 @@ if($_ENV['RECAPTCHA'] != 1 OR !isset($_ENV['RECAPTCHA'])){
             return TRUE;
         }
     }
-
+    
 }
 
 if(isset($_POST['salir'])){
@@ -1059,15 +1062,19 @@ if(isset($_POST['salir'])){
     header("Location: ./../panel");
 }
 
-if ($_ENV['PLUGINS'] != 1 OR !isset($_ENV['PLUGINS'])){
+if ($_ENV['PLUGINS'] != 1 || !isset($_ENV['PLUGINS'])){
     if($_ENV['DEBUG']){
         echo "<script>console.log('".$_ENV['NAME_APP']." tiene desactivado el sistema de plugins.');</script>";
     }
 }elseif($_ENV['PLUGINS'] == 1){
     function all_in_one($select){
         $select = (int)$select;
-        include (__DIR__ . "/plugins/all in one/allinone.php");
-        return allinone_zip_finish($select);
+        if(!file_exists(__DIR__ . DIRECTORY_SEPARATOR . "plugins/all in one/allinone.php")){
+            return FALSE;
+        }else{
+            include_once (__DIR__ . DIRECTORY_SEPARATOR . "plugins/all in one/allinone.php");
+            return allinone_zip_finish($select);
+        }
     }
     function not_pay(){
         include (__DIR__ . "/plugins/dont_pay/index.php");
@@ -1103,7 +1110,13 @@ if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . "config/not_paid.php")){
     include (__DIR__ . DIRECTORY_SEPARATOR . "config/not_paid.php");
 }
 
+// Tareas programadas.
 if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . "config/extension/task.php")){
     include (__DIR__ . DIRECTORY_SEPARATOR . "config/extension/task.php");
+}
+
+// SysNAND
+if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . "config/sistema/system_JosSecurity_config.php")){
+    include (__DIR__ . DIRECTORY_SEPARATOR . "config/sistema/system_JosSecurity_config.php");
 }
 ?>

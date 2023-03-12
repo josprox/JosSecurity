@@ -23,6 +23,15 @@ abstract class InsightsSegmentsOptions {
     public static function fetch(string $token = Values::NONE): FetchInsightsSegmentsOptions {
         return new FetchInsightsSegmentsOptions($token);
     }
+
+    /**
+     * @param string[] $reservationId List of reservation Ids
+     * @param string $token The Token HTTP request header
+     * @return ReadInsightsSegmentsOptions Options builder
+     */
+    public static function read(array $reservationId = Values::ARRAY_NONE, string $token = Values::NONE): ReadInsightsSegmentsOptions {
+        return new ReadInsightsSegmentsOptions($reservationId, $token);
+    }
 }
 
 class FetchInsightsSegmentsOptions extends Options {
@@ -52,5 +61,48 @@ class FetchInsightsSegmentsOptions extends Options {
     public function __toString(): string {
         $options = \http_build_query(Values::of($this->options), '', ' ');
         return '[Twilio.FlexApi.V1.FetchInsightsSegmentsOptions ' . $options . ']';
+    }
+}
+
+class ReadInsightsSegmentsOptions extends Options {
+    /**
+     * @param string[] $reservationId List of reservation Ids
+     * @param string $token The Token HTTP request header
+     */
+    public function __construct(array $reservationId = Values::ARRAY_NONE, string $token = Values::NONE) {
+        $this->options['reservationId'] = $reservationId;
+        $this->options['token'] = $token;
+    }
+
+    /**
+     * The list of reservation Ids
+     *
+     * @param string[] $reservationId List of reservation Ids
+     * @return $this Fluent Builder
+     */
+    public function setReservationId(array $reservationId): self {
+        $this->options['reservationId'] = $reservationId;
+        return $this;
+    }
+
+    /**
+     * The Token HTTP request header
+     *
+     * @param string $token The Token HTTP request header
+     * @return $this Fluent Builder
+     */
+    public function setToken(string $token): self {
+        $this->options['token'] = $token;
+        return $this;
+    }
+
+    /**
+     * Provide a friendly representation
+     *
+     * @return string Machine friendly representation
+     */
+    public function __toString(): string {
+        $options = \http_build_query(Values::of($this->options), '', ' ');
+        return '[Twilio.FlexApi.V1.ReadInsightsSegmentsOptions ' . $options . ']';
     }
 }
