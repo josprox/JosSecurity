@@ -13,15 +13,14 @@ if (!isset($_SESSION['id_usuario'])) {
 $iduser = $_SESSION['id_usuario'];
 secure_auth_admin($iduser,"../");
 
-//$row = consulta_mysqli_where("name","users","id",$iduser);
 $row = new GranMySQL();
-$row -> seleccion = "name";
+$row -> seleccion = "name, email";
 $row -> tabla = "users";
 $row -> comparar = "id";
 $row -> comparable = $iduser;
 $consulta = $row -> where();
-$sistema = new SysJosSecurity\SysNAND();
 
+$sistema = new SysJosSecurity\SysNAND();
 ?>
 
 <!doctype html>
