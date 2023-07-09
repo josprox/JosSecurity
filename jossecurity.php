@@ -171,10 +171,6 @@ if ($_ENV['CONECT_DATABASE'] == 1){
 
         function conect_mysqli(){
             try {
-                // Configurar el nivel de informe de errores de PHP
-                error_reporting(0); // Desactiva todos los informes de errores
-                ini_set('display_errors', 0); // Desactiva la visualización de errores en pantalla
-        
                 $host = (string)$_ENV['HOST'];
                 $user = (string)$_ENV['USUARIO'];
                 $pass = (string)$_ENV['CONTRA'];
@@ -198,11 +194,6 @@ if ($_ENV['CONECT_DATABASE'] == 1){
                         echo "<script>console.log('La conexión mysqli ha fallado.');</script>";
                     }
                 }
-            
-                // Restaurar la configuración original del informe de errores de PHP
-                error_reporting(E_ALL); // Restaura todos los informes de errores
-                ini_set('display_errors', 1); // Restaura la visualización de errores en pantalla
-        
                 return $conexion;
             } catch (Exception $e) {
                 // Manejo del error
@@ -231,16 +222,8 @@ if ($_ENV['CONECT_DATABASE'] == 1){
             $puerto = (string)$_ENV['PUERTO'];
 
             try {
-                // Desactivar la visualización de errores en pantalla
-                ini_set('display_errors', 0);
-                
                 $pdo = new PDO('mysql:host='.$host.';port='.$puerto.';dbname='.$DB.'', $user, $pass);
-                
-                // Restaurar la visualización de errores en pantalla
-                ini_set('display_errors', 1);
             } catch (PDOException $e) {
-                // Restaurar la visualización de errores en pantalla
-                ini_set('display_errors', 1);
                 echo "¡Error al conectar a la base de datos!: " . $e->getMessage();
                 return null; // O cualquier otro manejo que desees darle al error
             }
@@ -286,8 +269,6 @@ function FA($correo, $contra, $clave, $cookies="si", $redireccion = "panel"){
     $consulta = consulta_mysqli_where("id, name, phone, fa, type_fa, two_fa, last_ip","users", "email", "'$correo'");
     if($consulta['fa'] != "A" || $consulta['last_ip'] == $_SERVER['REMOTE_ADDR']){
         return logins($correo,$contra,"users",$cookies);
-    }elseif($consulta['fa'] == "GG"){
-        //Proximamente acceso por 2FA
     }else{
         $generador = generar_llave_alteratorio(16);
         $fecha = fecha_1_day;
@@ -1191,9 +1172,6 @@ if ($_ENV['PLUGINS'] != 1 || !isset($_ENV['PLUGINS'])){
     if(file_exists(__DIR__ . "/plugins/Visibility_Logic/Visibility_Logic.php")){
         include (__DIR__ . "/plugins/Visibility_Logic/Visibility_Logic.php");
     }
-    if(file_exists(__DIR__ . "/plugins/granmysql/gran_mysql.php")){
-        include (__DIR__ . "/plugins/granmysql/gran_mysql.php");
-    }
     if(isset($_ENV['TWILIO']) && $_ENV['TWILIO'] == 1){
         if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . "plugins/twilio/SDK.php")){
             include (__DIR__ . DIRECTORY_SEPARATOR . "plugins/twilio/SDK.php");
@@ -1203,6 +1181,11 @@ if ($_ENV['PLUGINS'] != 1 || !isset($_ENV['PLUGINS'])){
             include (__DIR__ . DIRECTORY_SEPARATOR . "plugins/onesignal/SDK.php");
         }
     }
+}
+
+// Se ha integrado Gran MySQL como una herramienta completa, dejando de ser solo un plugin.
+if(file_exists(__DIR__ . "/config/extension/granmysql/gran_mysql.php")){
+    include (__DIR__ . "/config/extension/granmysql/gran_mysql.php");
 }
 
 // Podrás crear tus propios Jossitos en el achivo mis_jossitos.php en la carpeta config.
