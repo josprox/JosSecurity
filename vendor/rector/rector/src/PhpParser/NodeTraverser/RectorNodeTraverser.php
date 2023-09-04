@@ -5,41 +5,50 @@ namespace Rector\Core\PhpParser\NodeTraverser;
 
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
-use Rector\Core\Contract\Rector\PhpRectorInterface;
+use Rector\Core\Contract\Rector\RectorInterface;
 use Rector\VersionBonding\PhpVersionedFilter;
 final class RectorNodeTraverser extends NodeTraverser
 {
     /**
-     * @var bool
+     * @var RectorInterface[]
      */
-    private $areNodeVisitorsPrepared = \false;
-    /**
-     * @var PhpRectorInterface[]
-     * @readonly
-     */
-    private $phpRectors;
+    private $rectors;
     /**
      * @readonly
      * @var \Rector\VersionBonding\PhpVersionedFilter
      */
     private $phpVersionedFilter;
     /**
-     * @param PhpRectorInterface[] $phpRectors
+     * @var bool
      */
-    public function __construct(array $phpRectors, PhpVersionedFilter $phpVersionedFilter)
+    private $areNodeVisitorsPrepared = \false;
+    /**
+     * @param RectorInterface[] $rectors
+     */
+    public function __construct(array $rectors, PhpVersionedFilter $phpVersionedFilter)
     {
-        $this->phpRectors = $phpRectors;
+        $this->rectors = $rectors;
         $this->phpVersionedFilter = $phpVersionedFilter;
+        parent::__construct();
     }
     /**
-     * @template TNode as Node
-     * @param TNode[] $nodes
-     * @return TNode[]
+     * @param Node[] $nodes
+     * @return Node[]
      */
     public function traverse(array $nodes) : array
     {
         $this->prepareNodeVisitors();
         return parent::traverse($nodes);
+    }
+    /**
+     * @param RectorInterface[] $rectors
+     * @api used in tests to update the active rules
+     */
+    public function refreshPhpRectors(array $rectors) : void
+    {
+        $this->rectors = $rectors;
+        $this->visitors = [];
+        $this->areNodeVisitorsPrepared = \false;
     }
     /**
      * This must happen after $this->configuration is set after ProcessCommand::execute() is run,
@@ -53,7 +62,7 @@ final class RectorNodeTraverser extends NodeTraverser
             return;
         }
         // filer out by version
-        $activePhpRectors = $this->phpVersionedFilter->filter($this->phpRectors);
+        $activePhpRectors = $this->phpVersionedFilter->filter($this->rectors);
         $this->visitors = $this->visitors === [] ? $activePhpRectors : \array_merge($this->visitors, $activePhpRectors);
         $this->areNodeVisitorsPrepared = \true;
     }

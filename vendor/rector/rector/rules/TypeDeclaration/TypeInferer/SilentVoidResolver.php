@@ -3,21 +3,22 @@
 declare (strict_types=1);
 namespace Rector\TypeDeclaration\TypeInferer;
 
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\ArrowFunction;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\Yield_;
 use PhpParser\Node\FunctionLike;
 use PhpParser\Node\Stmt;
-use PhpParser\Node\Stmt\ClassLike;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Function_;
-use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\Node\Stmt\Switch_;
 use PhpParser\Node\Stmt\Throw_;
 use PhpParser\Node\Stmt\TryCatch;
+use PHPStan\Reflection\ClassReflection;
 use Rector\Core\PhpParser\Node\BetterNodeFinder;
+use Rector\Core\Reflection\ReflectionResolver;
 final class SilentVoidResolver
 {
     /**
@@ -25,17 +26,23 @@ final class SilentVoidResolver
      * @var \Rector\Core\PhpParser\Node\BetterNodeFinder
      */
     private $betterNodeFinder;
-    public function __construct(BetterNodeFinder $betterNodeFinder)
+    /**
+     * @readonly
+     * @var \Rector\Core\Reflection\ReflectionResolver
+     */
+    private $reflectionResolver;
+    public function __construct(BetterNodeFinder $betterNodeFinder, ReflectionResolver $reflectionResolver)
     {
         $this->betterNodeFinder = $betterNodeFinder;
+        $this->reflectionResolver = $reflectionResolver;
     }
     /**
      * @param \PhpParser\Node\Stmt\ClassMethod|\PhpParser\Node\Expr\Closure|\PhpParser\Node\Stmt\Function_ $functionLike
      */
     public function hasExclusiveVoid($functionLike) : bool
     {
-        $classLike = $this->betterNodeFinder->findParentType($functionLike, ClassLike::class);
-        if ($classLike instanceof Interface_) {
+        $classReflection = $this->reflectionResolver->resolveClassReflection($functionLike);
+        if ($classReflection instanceof ClassReflection && $classReflection->isInterface()) {
             return \false;
         }
         if ($this->hasNeverType($functionLike)) {
@@ -47,7 +54,7 @@ final class SilentVoidResolver
         /** @var Return_[] $returns */
         $returns = $this->betterNodeFinder->findInstancesOfInFunctionLikeScoped($functionLike, Return_::class);
         foreach ($returns as $return) {
-            if ($return->expr !== null) {
+            if ($return->expr instanceof Expr) {
                 return \false;
             }
         }
@@ -96,7 +103,7 @@ final class SilentVoidResolver
     {
         $hasDefault = \false;
         foreach ($switch->cases as $case) {
-            if ($case->cond === null) {
+            if (!$case->cond instanceof Expr) {
                 $hasDefault = \true;
                 break;
             }

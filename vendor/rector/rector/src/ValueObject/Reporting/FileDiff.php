@@ -3,23 +3,14 @@
 declare (strict_types=1);
 namespace Rector\Core\ValueObject\Reporting;
 
-use RectorPrefix202211\Nette\Utils\Strings;
+use RectorPrefix202308\Nette\Utils\Strings;
 use Rector\ChangesReporting\ValueObject\RectorWithLineChange;
 use Rector\Core\Contract\Rector\RectorInterface;
 use Rector\Parallel\ValueObject\Name;
-use RectorPrefix202211\Symplify\EasyParallel\Contract\SerializableInterface;
-use RectorPrefix202211\Webmozart\Assert\Assert;
+use RectorPrefix202308\Symplify\EasyParallel\Contract\SerializableInterface;
+use RectorPrefix202308\Webmozart\Assert\Assert;
 final class FileDiff implements SerializableInterface
 {
-    /**
-     * @var string
-     * @se https://regex101.com/r/AUPIX4/1
-     */
-    private const FIRST_LINE_REGEX = '#@@(.*?)(?<' . self::FIRST_LINE_KEY . '>\\d+)(.*?)@@#';
-    /**
-     * @var string
-     */
-    private const FIRST_LINE_KEY = 'first_line';
     /**
      * @readonly
      * @var string
@@ -41,6 +32,15 @@ final class FileDiff implements SerializableInterface
      */
     private $rectorsWithLineChanges = [];
     /**
+     * @var string
+     * @se https://regex101.com/r/AUPIX4/1
+     */
+    private const FIRST_LINE_REGEX = '#@@(.*?)(?<' . self::FIRST_LINE_KEY . '>\\d+)(.*?)@@#';
+    /**
+     * @var string
+     */
+    private const FIRST_LINE_KEY = 'first_line';
+    /**
      * @param RectorWithLineChange[] $rectorsWithLineChanges
      */
     public function __construct(string $relativeFilePath, string $diff, string $diffConsoleFormatted, array $rectorsWithLineChanges = [])
@@ -49,7 +49,7 @@ final class FileDiff implements SerializableInterface
         $this->diff = $diff;
         $this->diffConsoleFormatted = $diffConsoleFormatted;
         $this->rectorsWithLineChanges = $rectorsWithLineChanges;
-        Assert::allIsAOf($rectorsWithLineChanges, RectorWithLineChange::class);
+        Assert::allIsInstanceOf($rectorsWithLineChanges, RectorWithLineChange::class);
     }
     public function getDiff() : string
     {

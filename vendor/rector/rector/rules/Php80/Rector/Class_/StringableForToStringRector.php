@@ -6,13 +6,12 @@ namespace Rector\Php80\Rector\Class_;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Cast\String_ as CastString_;
-use PhpParser\Node\Name;
+use PhpParser\Node\Identifier;
 use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Return_;
-use PHPStan\Type\StringType;
 use Rector\Core\NodeAnalyzer\ClassAnalyzer;
 use Rector\Core\Rector\AbstractRector;
 use Rector\Core\ValueObject\MethodName;
@@ -30,10 +29,6 @@ use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 final class StringableForToStringRector extends AbstractRector implements MinPhpVersionInterface
 {
     /**
-     * @var string
-     */
-    private const STRINGABLE = 'Stringable';
-    /**
      * @readonly
      * @var \Rector\FamilyTree\Reflection\FamilyRelationsAnalyzer
      */
@@ -48,6 +43,10 @@ final class StringableForToStringRector extends AbstractRector implements MinPhp
      * @var \Rector\Core\NodeAnalyzer\ClassAnalyzer
      */
     private $classAnalyzer;
+    /**
+     * @var string
+     */
+    private const STRINGABLE = 'Stringable';
     public function __construct(FamilyRelationsAnalyzer $familyRelationsAnalyzer, ReturnTypeInferer $returnTypeInferer, ClassAnalyzer $classAnalyzer)
     {
         $this->familyRelationsAnalyzer = $familyRelationsAnalyzer;
@@ -92,6 +91,9 @@ CODE_SAMPLE
      */
     public function refactor(Node $node) : ?Node
     {
+        if ($this->classAnalyzer->isAnonymousClass($node)) {
+            return null;
+        }
         $toStringClassMethod = $node->getMethod(MethodName::TO_STRING);
         if (!$toStringClassMethod instanceof ClassMethod) {
             return null;
@@ -102,18 +104,15 @@ CODE_SAMPLE
         if (\in_array(self::STRINGABLE, $classLikeAncestorNames, \true)) {
             return null;
         }
-        if ($this->classAnalyzer->isAnonymousClass($node)) {
-            return null;
-        }
         $returnType = $this->returnTypeInferer->inferFunctionLike($toStringClassMethod);
-        if (!$returnType instanceof StringType) {
+        if (!$returnType->isString()->yes()) {
             $this->processNotStringType($toStringClassMethod);
         }
         // add interface
         $node->implements[] = new FullyQualified(self::STRINGABLE);
         // add return type
         if ($toStringClassMethod->returnType === null) {
-            $toStringClassMethod->returnType = new Name('string');
+            $toStringClassMethod->returnType = new Identifier('string');
         }
         return $node;
     }
@@ -124,11 +123,8 @@ CODE_SAMPLE
         }
         $hasReturn = $this->betterNodeFinder->hasInstancesOfInFunctionLikeScoped($toStringClassMethod, Return_::class);
         if (!$hasReturn) {
-            $stmts = (array) $toStringClassMethod->stmts;
-            \end($stmts);
-            $lastKey = \key($stmts);
-            $lastKey = $lastKey === null ? 0 : (int) $lastKey + 1;
-            $toStringClassMethod->stmts[$lastKey] = new Return_(new String_(''));
+            $emptyStringReturn = new Return_(new String_(''));
+            $toStringClassMethod->stmts[] = $emptyStringReturn;
             return;
         }
         $this->traverseNodesWithCallable((array) $toStringClassMethod->stmts, function (Node $subNode) {
@@ -140,7 +136,7 @@ CODE_SAMPLE
                 return null;
             }
             $type = $this->nodeTypeResolver->getType($subNode->expr);
-            if ($type instanceof StringType) {
+            if ($type->isString()->yes()) {
                 return null;
             }
             $subNode->expr = new CastString_($subNode->expr);

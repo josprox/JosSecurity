@@ -134,7 +134,7 @@ function validarToken($id, $secretKey, $token){
 }
 
 //Editor de archivos.
-function edit_file($titulo,$directorio){
+function edit_file($titulo,$directorio, $class = ""){
     $archivo = strip_tags((string) $directorio);
     if(isset($_POST['enviar'])){
         $fp=fopen($archivo, "w+");
@@ -151,7 +151,7 @@ function edit_file($titulo,$directorio){
     <h1 align="center"><?php echo $titulo; ?></h1>
     <form action="" method="post">
         <div class="mb-3">
-            <textarea name="contenido" rows="15" class="form-control"><?php echo $contenido; ?></textarea>
+            <textarea name="contenido" rows="15" class="form-control <?php echo $contenido; ?>"><?php echo $contenido; ?></textarea>
         </div>
         <center>
             <input name="enviar" type="submit" class="btn btn-success" value="Guardar archivo">
@@ -266,9 +266,14 @@ function FA($correo, $contra, $clave, $cookies="si", $redireccion = "panel"){
     $contra = mysqli_real_escape_string($conexion, (string) $contra);
     $cookies = mysqli_real_escape_string($conexion, $cookies);
     $conexion -> close();
-    $consulta = consulta_mysqli_where("id, name, phone, fa, type_fa, two_fa, last_ip","users", "email", "'$correo'");
+    $sql_check = new GranMySQL();
+    $sql_check -> seleccion = "id, name, phone, fa, type_fa, two_fa, last_ip";
+    $sql_check -> tabla = "users";
+    $sql_check -> comparar = "email";
+    $sql_check -> comparable = "$correo";
+    $consulta = $sql_check -> where();
     if($consulta['fa'] != "A" || $consulta['last_ip'] == $_SERVER['REMOTE_ADDR']){
-        return logins($correo,$contra,"users",$cookies);
+        return logins($correo,$contra,"users",$cookies, $redireccion);
     }else{
         $generador = generar_llave_alteratorio(16);
         $fecha = fecha_1_day;
@@ -278,9 +283,30 @@ function FA($correo, $contra, $clave, $cookies="si", $redireccion = "panel"){
         $web = ruta . "panel?login_auth=" . $generador . "&correo=" . $correo . "&contra=" . $contra . "&cookies=" . $cookies;
         switch($consulta['type_fa']){
             case "correo":
-                insertar_datos_clasic_mysqli("check_users","id_user, accion, url, expiracion", "'$id_user', 'login_auth', '$generador', '$fecha'");
-                $mensaje = "<div><p>Hola de nuevo $nombre_user</p></div><div><p>Si deseas entrar en $nombre_app podrás hacerlo <a href='$web'>dando clic aquí</a>.</p></div>";
-                mail_WP($correo,"Inicia sesión",$mensaje);
+                if($clave !=""){
+                    $sql_check -> seleccion = "*";
+                    $sql_check -> tabla = "check_users";
+                    $sql_check -> comparar = "url";
+                    $sql_check -> comparable = "$clave";
+                    $sql_check -> respuesta = 'num_rows';
+                    (int)$where = $sql_check->where();
+                    if($where > 0){
+                        $sql_check -> respuesta = 'fetch_assoc';
+                        $checking = $sql_check->where();
+                        $checker = consulta_mysqli_where("email", "users", "id", $checking['id_user']);
+                        if($checker["email"] == $correo){
+                            eliminar_datos_con_where("check_users","id_user",$checking['id_user']);
+                            logins($_GET['arg1'],$_GET['arg2'],"users","si",$_GET['arg5']);
+                        }
+                    }else{
+                        return "no_check_mail";
+                    }
+                }else{
+                    insertar_datos_clasic_mysqli("check_users","id_user, accion, url, expiracion", "'$id_user', 'login_auth', '$generador', '$fecha'");
+                    $mensaje = "<div><p>Hola de nuevo $nombre_user</p></div><div><p>Si deseas entrar en $nombre_app podrás hacerlo <a href='$web'>dando clic aquí</a>.</p></div><div><p>Tu código de acceso es: $generador</p></div>";
+                    mail_WP($correo,"Inicia sesión",$mensaje);
+                    return "2fa";
+                }
             break;
             case "GG":
                 $llave =(string) $consulta['two_fa'];
@@ -288,29 +314,50 @@ function FA($correo, $contra, $clave, $cookies="si", $redireccion = "panel"){
                 // Verifica si el código de la aplicación ingresado por el usuario coincide con el código generado a partir de la clave secreta
                 if ($google2fa->verifyKey($llave, $clave, 0)) {
                     // El código de la aplicación es válido, realiza las acciones necesarias (por ejemplo, permitir el acceso al usuario)
-                    return logins($correo, $contra, "users", $cookies);
+                    return logins($correo, $contra, "users", $cookies, $redireccion);
                 } else {
                     // El código de la aplicación no es válido, muestra un mensaje de error o realiza alguna otra acción
                     return "error";
                 }
             break;
             case "sms":
-                insertar_datos_clasic_mysqli("check_users","id_user, accion, url, expiracion", "'$id_user', 'login_auth', '$generador', '$fecha'");
-                if(isset($_ENV['TWILIO']) && $_ENV['TWILIO'] == 1){
-                    $enviar = new Nuevo_Mensaje();
-                    $enviar -> numero = $consulta['phone'];
-                    $enviar -> mensaje = "Se ha detectado una solicitud para iniciar sesión, para continuar acceda al siguiente link: $web";
-                    $enviar -> enviar();
+                if($clave !=""){
+                    $sql_check -> seleccion = "*";
+                    $sql_check -> tabla = "check_users";
+                    $sql_check -> comparar = "url";
+                    $sql_check -> comparable = "$clave";
+                    $sql_check -> respuesta = 'num_rows';
+                    (int)$where = $sql_check->where();
+                    if($where > 0){
+                        $sql_check -> respuesta = 'fetch_assoc';
+                        $checking = $sql_check->where();
+                        $checker = consulta_mysqli_where("email", "users", "id", $checking['id_user']);
+                        if($checker["email"] == $correo){
+                            eliminar_datos_con_where("check_users","id_user",$checking['id_user']);
+                            logins($_GET['arg1'],$_GET['arg2'],"users","si",$_GET['arg5']);
+                        }
+                    }else{
+                        return "no_check_sms";
+                    }
                 }else{
-                    $mensaje = "<div><p>Hola de nuevo $nombre_user</p></div><div><p>Si deseas entrar en $nombre_app podrás hacerlo <a href='$web'>dando clic aquí</a>.</p><p>Haz recibido por este método tu acceso ya que tenemos dificultades en poder enviarle un sms.</p></div>";
-                    mail_WP($correo,"Inicia sesión",$mensaje);
+                    insertar_datos_clasic_mysqli("check_users","id_user, accion, url, expiracion", "'$id_user', 'login_auth', '$generador', '$fecha'");
+                    if(isset($_ENV['TWILIO']) && $_ENV['TWILIO'] == 1){
+                        $enviar = new Nuevo_Mensaje();
+                        $enviar -> numero = $consulta['phone'];
+                        $enviar -> mensaje = "Se ha detectado una solicitud para iniciar sesión, para continuar acceda al siguiente link: $web si desea acceder por código, su código de acceso es: $generador ";
+                        $enviar -> enviar();
+                    }else{
+                        $mensaje = "<div><p>Hola de nuevo $nombre_user</p></div><div><p>Si deseas entrar en $nombre_app podrás hacerlo <a href='$web'>dando clic aquí</a>.</p><p>Haz recibido por este método tu acceso ya que tenemos dificultades en poder enviarle un sms.</p></div>";
+                        mail_WP($correo,"Inicia sesión",$mensaje);
+                    }
+                    return "2fa";
                 }
+                break;
         }
-        return "2fa";
     }
 }
 
-function logins($correo,$contra,$tabla = "users",$cookies = "si"){
+function logins($correo,$contra,$tabla = "users",$cookies = "si", $redireccion = "panel"){
     $conexion = conect_mysqli();
     $tabla = mysqli_real_escape_string($conexion, (string) $tabla);
     $correo = mysqli_real_escape_string($conexion, (string) $correo);
@@ -322,6 +369,7 @@ function logins($correo,$contra,$tabla = "users",$cookies = "si"){
         $check -> correo = $correo;
         $check -> contra = $contra;
         $check -> cookies = $cookies;
+        $check -> redireccion = $redireccion; 
         if($resultado == 1 || $resultado == 2 || $resultado == 4){
             $check -> compilar();
             $check -> ejecutar();
@@ -346,7 +394,7 @@ class login{
     public $tabla = "users";
     public $redireccion ="admin";
     public $check_user = "panel";
-    public $cookies = TRUE;
+    public $cookies = "si";
     public $modo_admin = TRUE;
     private $conexion;
     private $nombre_app;

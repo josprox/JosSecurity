@@ -5,18 +5,18 @@ namespace Rector\PostRector\Application;
 
 use PhpParser\Node\Stmt;
 use PhpParser\NodeTraverser;
-use Rector\Core\Exception\ShouldNotHappenException;
 use Rector\Core\Logging\CurrentRectorProvider;
 use Rector\Core\Provider\CurrentFileProvider;
 use Rector\Core\ValueObject\Application\File;
 use Rector\PostRector\Contract\Rector\PostRectorInterface;
+use Rector\PostRector\Rector\ClassRenamingPostRector;
+use Rector\PostRector\Rector\NameImportingPostRector;
+use Rector\PostRector\Rector\UnusedImportRemovingPostRector;
+use Rector\PostRector\Rector\UseAddingPostRector;
+use Rector\Renaming\Rector\Name\RenameClassRector;
 use Rector\Skipper\Skipper\Skipper;
 final class PostFileProcessor
 {
-    /**
-     * @var PostRectorInterface[]
-     */
-    private $postRectors = [];
     /**
      * @readonly
      * @var \Rector\Skipper\Skipper\Skipper
@@ -33,14 +33,33 @@ final class PostFileProcessor
      */
     private $currentRectorProvider;
     /**
-     * @param PostRectorInterface[] $postRectors
+     * @var PostRectorInterface[]
      */
-    public function __construct(Skipper $skipper, CurrentFileProvider $currentFileProvider, CurrentRectorProvider $currentRectorProvider, array $postRectors)
+    private $postRectors = [];
+    public function __construct(
+        Skipper $skipper,
+        CurrentFileProvider $currentFileProvider,
+        CurrentRectorProvider $currentRectorProvider,
+        // set order here
+        UseAddingPostRector $useAddingPostRector,
+        NameImportingPostRector $nameImportingPostRector,
+        ClassRenamingPostRector $classRenamingPostRector,
+        UnusedImportRemovingPostRector $unusedImportRemovingPostRector
+    )
     {
         $this->skipper = $skipper;
         $this->currentFileProvider = $currentFileProvider;
         $this->currentRectorProvider = $currentRectorProvider;
-        $this->postRectors = $this->sortByPriority($postRectors);
+        $this->postRectors = [
+            // priority: 650
+            $classRenamingPostRector,
+            // priority: 600
+            $nameImportingPostRector,
+            // priority: 500
+            $useAddingPostRector,
+            // priority: 100
+            $unusedImportRemovingPostRector,
+        ];
     }
     /**
      * @param Stmt[] $stmts
@@ -59,28 +78,17 @@ final class PostFileProcessor
         }
         return $stmts;
     }
-    /**
-     * @param PostRectorInterface[] $postRectors
-     * @return PostRectorInterface[]
-     */
-    private function sortByPriority(array $postRectors) : array
-    {
-        $postRectorsByPriority = [];
-        foreach ($postRectors as $postRector) {
-            if (isset($postRectorsByPriority[$postRector->getPriority()])) {
-                throw new ShouldNotHappenException();
-            }
-            $postRectorsByPriority[$postRector->getPriority()] = $postRector;
-        }
-        \krsort($postRectorsByPriority);
-        return $postRectorsByPriority;
-    }
     private function shouldSkipPostRector(PostRectorInterface $postRector) : bool
     {
         $file = $this->currentFileProvider->getFile();
         if (!$file instanceof File) {
             return \false;
         }
-        return $this->skipper->shouldSkipElementAndFilePath($postRector, $file->getFilePath());
+        $filePath = $file->getFilePath();
+        if ($this->skipper->shouldSkipElementAndFilePath($postRector, $filePath)) {
+            return \true;
+        }
+        // skip renaming if rename class rector is skipped
+        return $postRector instanceof ClassRenamingPostRector && $this->skipper->shouldSkipElementAndFilePath(RenameClassRector::class, $filePath);
     }
 }

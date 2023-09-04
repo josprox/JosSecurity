@@ -4,10 +4,12 @@ declare (strict_types=1);
 namespace Rector\Privatization\Rector\ClassMethod;
 
 use PhpParser\Node;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
+use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
-use Rector\Core\Rector\AbstractRector;
-use Rector\Core\Reflection\ReflectionResolver;
+use Rector\Core\Rector\AbstractScopeAwareRector;
+use Rector\Privatization\Guard\OverrideByParentClassGuard;
 use Rector\Privatization\NodeManipulator\VisibilityManipulator;
 use Rector\Privatization\VisibilityGuard\ClassMethodVisibilityGuard;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
@@ -15,7 +17,7 @@ use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 /**
  * @see \Rector\Tests\Privatization\Rector\ClassMethod\PrivatizeFinalClassMethodRector\PrivatizeFinalClassMethodRectorTest
  */
-final class PrivatizeFinalClassMethodRector extends AbstractRector
+final class PrivatizeFinalClassMethodRector extends AbstractScopeAwareRector
 {
     /**
      * @readonly
@@ -29,14 +31,14 @@ final class PrivatizeFinalClassMethodRector extends AbstractRector
     private $visibilityManipulator;
     /**
      * @readonly
-     * @var \Rector\Core\Reflection\ReflectionResolver
+     * @var \Rector\Privatization\Guard\OverrideByParentClassGuard
      */
-    private $reflectionResolver;
-    public function __construct(ClassMethodVisibilityGuard $classMethodVisibilityGuard, VisibilityManipulator $visibilityManipulator, ReflectionResolver $reflectionResolver)
+    private $overrideByParentClassGuard;
+    public function __construct(ClassMethodVisibilityGuard $classMethodVisibilityGuard, VisibilityManipulator $visibilityManipulator, OverrideByParentClassGuard $overrideByParentClassGuard)
     {
         $this->classMethodVisibilityGuard = $classMethodVisibilityGuard;
         $this->visibilityManipulator = $visibilityManipulator;
-        $this->reflectionResolver = $reflectionResolver;
+        $this->overrideByParentClassGuard = $overrideByParentClassGuard;
     }
     public function getRuleDefinition() : RuleDefinition
     {
@@ -63,34 +65,41 @@ CODE_SAMPLE
      */
     public function getNodeTypes() : array
     {
-        return [ClassMethod::class];
+        return [Class_::class];
     }
     /**
-     * @param ClassMethod $node
+     * @param Class_ $node
      */
-    public function refactor(Node $node) : ?Node
+    public function refactorWithScope(Node $node, Scope $scope) : ?Node
     {
-        $classReflection = $this->reflectionResolver->resolveClassReflection($node);
+        if (!$node->isFinal()) {
+            return null;
+        }
+        if (!$this->overrideByParentClassGuard->isLegal($node)) {
+            return null;
+        }
+        $classReflection = $scope->getClassReflection();
         if (!$classReflection instanceof ClassReflection) {
             return null;
         }
-        if (!$classReflection->isClass()) {
-            return null;
+        $hasChanged = \false;
+        foreach ($node->getMethods() as $classMethod) {
+            if ($this->shouldSkipClassMethod($classMethod)) {
+                continue;
+            }
+            if ($this->classMethodVisibilityGuard->isClassMethodVisibilityGuardedByParent($classMethod, $classReflection)) {
+                continue;
+            }
+            if ($this->classMethodVisibilityGuard->isClassMethodVisibilityGuardedByTrait($classMethod, $classReflection)) {
+                continue;
+            }
+            $this->visibilityManipulator->makePrivate($classMethod);
+            $hasChanged = \true;
         }
-        if (!$classReflection->isFinal()) {
-            return null;
+        if ($hasChanged) {
+            return $node;
         }
-        if ($this->shouldSkipClassMethod($node)) {
-            return null;
-        }
-        if ($this->classMethodVisibilityGuard->isClassMethodVisibilityGuardedByParent($node, $classReflection)) {
-            return null;
-        }
-        if ($this->classMethodVisibilityGuard->isClassMethodVisibilityGuardedByTrait($node, $classReflection)) {
-            return null;
-        }
-        $this->visibilityManipulator->makePrivate($node);
-        return $node;
+        return null;
     }
     private function shouldSkipClassMethod(ClassMethod $classMethod) : bool
     {

@@ -3,7 +3,6 @@
 declare (strict_types=1);
 namespace Rector\CodingStyle\TypeAnalyzer;
 
-use PHPStan\Type\ArrayType;
 use PHPStan\Type\IterableType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
@@ -11,10 +10,10 @@ final class IterableTypeAnalyzer
 {
     public function detect(Type $type) : bool
     {
-        if ($type instanceof ArrayType) {
+        if ($type instanceof IterableType) {
             return \true;
         }
-        if ($type instanceof IterableType) {
+        if ($type->isArray()->yes()) {
             return \true;
         }
         if ($type instanceof UnionType) {

@@ -5,11 +5,8 @@ namespace Rector\TypeDeclaration;
 
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\Constant\ConstantArrayType;
-use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\NeverType;
-use PHPStan\Type\ObjectType;
-use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeTraverser;
 use PHPStan\Type\UnionType;
@@ -22,10 +19,6 @@ use Rector\TypeDeclaration\ValueObject\NestedArrayType;
 final class TypeNormalizer
 {
     /**
-     * @var NestedArrayType[]
-     */
-    private $collectedNestedArrayTypes = [];
-    /**
      * @readonly
      * @var \Rector\NodeTypeResolver\PHPStan\Type\TypeFactory
      */
@@ -35,31 +28,14 @@ final class TypeNormalizer
      * @var \Rector\Core\Util\Reflection\PrivatesAccessor
      */
     private $privatesAccessor;
+    /**
+     * @var NestedArrayType[]
+     */
+    private $collectedNestedArrayTypes = [];
     public function __construct(TypeFactory $typeFactory, PrivatesAccessor $privatesAccessor)
     {
         $this->typeFactory = $typeFactory;
         $this->privatesAccessor = $privatesAccessor;
-    }
-    public function convertConstantArrayTypeToArrayType(ConstantArrayType $constantArrayType) : ?ArrayType
-    {
-        $nonConstantValueTypes = [];
-        if ($constantArrayType->getItemType() instanceof UnionType) {
-            /** @var UnionType $unionType */
-            $unionType = $constantArrayType->getItemType();
-            foreach ($unionType->getTypes() as $unionedType) {
-                if ($unionedType instanceof ConstantStringType) {
-                    $stringType = new StringType();
-                    $nonConstantValueTypes[\get_class($stringType)] = $stringType;
-                } elseif ($unionedType instanceof ObjectType) {
-                    $nonConstantValueTypes[] = $unionedType;
-                } else {
-                    return null;
-                }
-            }
-        } else {
-            return null;
-        }
-        return $this->createArrayTypeFromNonConstantValueTypes($nonConstantValueTypes);
     }
     /**
      * @api
@@ -100,8 +76,8 @@ final class TypeNormalizer
             if ($this->isConstantArrayNever($traversedType)) {
                 \assert($traversedType instanceof ConstantArrayType);
                 // not sure why, but with direct new node everything gets nulled to MixedType
-                $this->privatesAccessor->setPrivatePropertyOfClass($traversedType, 'keyType', new MixedType(), Type::class);
-                $this->privatesAccessor->setPrivatePropertyOfClass($traversedType, 'itemType', new MixedType(), Type::class);
+                $this->privatesAccessor->setPrivateProperty($traversedType, 'keyType', new MixedType());
+                $this->privatesAccessor->setPrivateProperty($traversedType, 'itemType', new MixedType());
                 return $traversedType;
             }
             if ($traversedType instanceof UnionType) {
@@ -150,23 +126,10 @@ final class TypeNormalizer
     {
         return $countTraversedTypes === 2 && ($this->isArrayNeverType($traversedTypeTypes[0]) || $this->isArrayNeverType($traversedTypeTypes[1]));
     }
-    /**
-     * @param array<string|int, Type> $nonConstantValueTypes
-     */
-    private function createArrayTypeFromNonConstantValueTypes(array $nonConstantValueTypes) : ArrayType
-    {
-        $nonConstantValueTypes = \array_values($nonConstantValueTypes);
-        if (\count($nonConstantValueTypes) > 1) {
-            $nonConstantValueType = new UnionType($nonConstantValueTypes);
-        } else {
-            $nonConstantValueType = $nonConstantValueTypes[0];
-        }
-        return new ArrayType(new MixedType(), $nonConstantValueType);
-    }
     private function collectNestedArrayTypeFromUnionType(UnionType $unionType, int $arrayNesting) : void
     {
         foreach ($unionType->getTypes() as $unionedType) {
-            if ($unionedType instanceof ArrayType) {
+            if ($unionedType->isArray()->yes()) {
                 ++$arrayNesting;
                 $this->normalizeArrayOfUnionToUnionArray($unionedType, $arrayNesting);
             } else {

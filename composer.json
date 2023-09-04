@@ -21,6 +21,6 @@
         "pragmarx/google2fa": "^8.0"
     },
     "require-dev": {
-        "rector/rector": "^0.14.8"
+        "rector/rector": "^0.18.1"
     }
 }

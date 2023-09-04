@@ -3,29 +3,35 @@
 declare (strict_types=1);
 namespace Rector\Config;
 
+use RectorPrefix202308\Illuminate\Container\Container;
 use Rector\Caching\Contract\ValueObject\Storage\CacheStorageInterface;
 use Rector\Core\Configuration\Option;
-use Rector\Core\Configuration\ValueObjectInliner;
+use Rector\Core\Configuration\Parameter\SimpleParameterProvider;
 use Rector\Core\Contract\Rector\ConfigurableRectorInterface;
+use Rector\Core\Contract\Rector\NonPhpRectorInterface;
 use Rector\Core\Contract\Rector\RectorInterface;
+use Rector\Core\Exception\ShouldNotHappenException;
+use Rector\Core\FileSystem\FilesystemTweaker;
+use Rector\Core\NodeAnalyzer\ScopeAnalyzer;
+use Rector\Core\Rector\AbstractScopeAwareRector;
 use Rector\Core\ValueObject\PhpVersion;
-use RectorPrefix202211\Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use RectorPrefix202211\Webmozart\Assert\Assert;
+use RectorPrefix202308\Webmozart\Assert\Assert;
 /**
  * @api
- * Same as Symfony container configurator, with patched return type for "set()" method for easier DX.
- * It is an alias for internal class that is prefixed during build, so it's basically for keeping stable public API.
  */
-final class RectorConfig extends ContainerConfigurator
+final class RectorConfig extends Container
 {
+    /**
+     * @var array<class-string<RectorInterface>, mixed[]>>
+     */
+    private $ruleConfigurations = [];
     /**
      * @param string[] $paths
      */
     public function paths(array $paths) : void
     {
         Assert::allString($paths);
-        $parameters = $this->parameters();
-        $parameters->set(Option::PATHS, $paths);
+        SimpleParameterProvider::setParameter(Option::PATHS, $paths);
     }
     /**
      * @param string[] $sets
@@ -40,61 +46,92 @@ final class RectorConfig extends ContainerConfigurator
     }
     public function disableParallel() : void
     {
-        $parameters = $this->parameters();
-        $parameters->set(Option::PARALLEL, \false);
+        SimpleParameterProvider::setParameter(Option::PARALLEL, \false);
     }
     public function parallel(int $seconds = 120, int $maxNumberOfProcess = 16, int $jobSize = 20) : void
     {
-        $parameters = $this->parameters();
-        $parameters->set(Option::PARALLEL, \true);
-        $parameters->set(Option::PARALLEL_TIMEOUT_IN_SECONDS, $seconds);
-        $parameters->set(Option::PARALLEL_MAX_NUMBER_OF_PROCESSES, $maxNumberOfProcess);
-        $parameters->set(Option::PARALLEL_JOB_SIZE, $jobSize);
+        SimpleParameterProvider::setParameter(Option::PARALLEL, \true);
+        SimpleParameterProvider::setParameter(Option::PARALLEL_JOB_TIMEOUT_IN_SECONDS, $seconds);
+        SimpleParameterProvider::setParameter(Option::PARALLEL_MAX_NUMBER_OF_PROCESSES, $maxNumberOfProcess);
+        SimpleParameterProvider::setParameter(Option::PARALLEL_JOB_SIZE, $jobSize);
+    }
+    public function noDiffs() : void
+    {
+        SimpleParameterProvider::setParameter(Option::NO_DIFFS, \true);
+    }
+    public function memoryLimit(string $memoryLimit) : void
+    {
+        SimpleParameterProvider::setParameter(Option::MEMORY_LIMIT, $memoryLimit);
     }
     /**
      * @param array<int|string, mixed> $criteria
      */
     public function skip(array $criteria) : void
     {
-        $parameters = $this->parameters();
-        $parameters->set(Option::SKIP, $criteria);
+        $notExistsRules = [];
+        foreach ($criteria as $key => $value) {
+            /**
+             * Cover define rule then list of files
+             *
+             * $rectorConfig->skip([
+             *      RenameVariableToMatchMethodCallReturnTypeRector::class => [
+             *          __DIR__ . '/packages/Config/RectorConfig.php'
+             *      ],
+             * ]);
+             */
+            if ($this->isRuleNoLongerExists($key)) {
+                $notExistsRules[] = $key;
+            }
+            if (!\is_string($value)) {
+                continue;
+            }
+            /**
+             * Cover direct value without array list of files, eg:
+             *
+             * $rectorConfig->skip([
+             *      StringClassNameToClassConstantRector::class,
+             * ]);
+             */
+            if ($this->isRuleNoLongerExists($value)) {
+                $notExistsRules[] = $value;
+            }
+        }
+        if ($notExistsRules !== []) {
+            throw new ShouldNotHappenException('Following skipped rules on $rectorConfig->skip() are no longer exists or changed to different namespace: ' . \implode(', ', $notExistsRules));
+        }
+        SimpleParameterProvider::addParameter(Option::SKIP, $criteria);
+    }
+    public function removeUnusedImports(bool $removeUnusedImports = \true) : void
+    {
+        SimpleParameterProvider::setParameter(Option::REMOVE_UNUSED_IMPORTS, $removeUnusedImports);
     }
     public function importNames(bool $importNames = \true, bool $importDocBlockNames = \true) : void
     {
-        $parameters = $this->parameters();
-        $parameters->set(Option::AUTO_IMPORT_NAMES, $importNames);
-        $parameters->set(Option::AUTO_IMPORT_DOC_BLOCK_NAMES, $importDocBlockNames);
+        SimpleParameterProvider::setParameter(Option::AUTO_IMPORT_NAMES, $importNames);
+        SimpleParameterProvider::setParameter(Option::AUTO_IMPORT_DOC_BLOCK_NAMES, $importDocBlockNames);
     }
     public function importShortClasses(bool $importShortClasses = \true) : void
     {
-        $parameters = $this->parameters();
-        $parameters->set(Option::IMPORT_SHORT_CLASSES, $importShortClasses);
+        SimpleParameterProvider::setParameter(Option::IMPORT_SHORT_CLASSES, $importShortClasses);
     }
     /**
-     * @deprecated Use @see \Rector\Config\RectorConfig::importShortClasses(false) instead
-     */
-    public function disableImportShortClasses() : void
-    {
-        $parameters = $this->parameters();
-        $parameters->set(Option::IMPORT_SHORT_CLASSES, \false);
-    }
-    /**
-     * @deprecated Use @see \Rector\Config\RectorConfig::importNames(false) instead
-     */
-    public function disableImportNames() : void
-    {
-        $parameters = $this->parameters();
-        $parameters->set(Option::AUTO_IMPORT_NAMES, \false);
-    }
-    /**
-     * Set PHPStan custom config to load extensions and custom configuration to Rector.
-     * By default, the "phpstan.neon" path is used.
+     * Add PHPStan custom config to load extensions and custom configuration to Rector.
      */
     public function phpstanConfig(string $filePath) : void
     {
         Assert::fileExists($filePath);
-        $parameters = $this->parameters();
-        $parameters->set(Option::PHPSTAN_FOR_RECTOR_PATH, $filePath);
+        SimpleParameterProvider::addParameter(Option::PHPSTAN_FOR_RECTOR_PATHS, [$filePath]);
+    }
+    /**
+     * Add PHPStan custom configs to load extensions and custom configuration to Rector.
+     *
+     * @param string[] $filePaths
+     */
+    public function phpstanConfigs(array $filePaths) : void
+    {
+        Assert::allString($filePaths);
+        Assert::allFileExists($filePaths);
+        SimpleParameterProvider::addParameter(Option::PHPSTAN_FOR_RECTOR_PATHS, $filePaths);
     }
     /**
      * @param class-string<ConfigurableRectorInterface&RectorInterface> $rectorClass
@@ -105,15 +142,19 @@ final class RectorConfig extends ContainerConfigurator
         Assert::classExists($rectorClass);
         Assert::isAOf($rectorClass, RectorInterface::class);
         Assert::isAOf($rectorClass, ConfigurableRectorInterface::class);
-        $services = $this->services();
-        // decorate with value object inliner so Symfony understands, see https://getrector.org/blog/2020/09/07/how-to-inline-value-object-in-symfony-php-config
-        \array_walk_recursive($configuration, static function (&$value) {
-            if (\is_object($value)) {
-                $value = ValueObjectInliner::inline($value);
-            }
-            return $value;
+        // store configuration to cache
+        $this->ruleConfigurations[$rectorClass] = \array_merge($this->ruleConfigurations[$rectorClass] ?? [], $configuration);
+        $isBound = $this->bound($rectorClass);
+        // avoid double registration
+        if ($isBound) {
+            return;
+        }
+        $this->singleton($rectorClass);
+        $this->tagRectorService($rectorClass);
+        $this->afterResolving($rectorClass, function (ConfigurableRectorInterface $configurableRector) use($rectorClass) : void {
+            $ruleConfiguration = $this->ruleConfigurations[$rectorClass];
+            $configurableRector->configure($ruleConfiguration);
         });
-        $services->set($rectorClass)->call('configure', [$configuration]);
     }
     /**
      * @param class-string<RectorInterface> $rectorClass
@@ -122,8 +163,26 @@ final class RectorConfig extends ContainerConfigurator
     {
         Assert::classExists($rectorClass);
         Assert::isAOf($rectorClass, RectorInterface::class);
-        $services = $this->services();
-        $services->set($rectorClass);
+        $this->singleton($rectorClass);
+        $this->tagRectorService($rectorClass);
+        if (\is_a($rectorClass, AbstractScopeAwareRector::class, \true)) {
+            $this->extend($rectorClass, static function (AbstractScopeAwareRector $scopeAwareRector, Container $container) : AbstractScopeAwareRector {
+                $scopeAnalyzer = $container->make(ScopeAnalyzer::class);
+                $scopeAwareRector->autowireAbstractScopeAwareRector($scopeAnalyzer);
+                return $scopeAwareRector;
+            });
+        }
+    }
+    public function import(string $filePath) : void
+    {
+        $paths = [$filePath];
+        if (\strpos($filePath, '*') !== \false) {
+            $filesystemTweaker = new FilesystemTweaker();
+            $paths = $filesystemTweaker->resolveWithFnmatch($paths);
+        }
+        foreach ($paths as $path) {
+            $this->importFile($path);
+        }
     }
     /**
      * @param array<class-string<RectorInterface>> $rectorClasses
@@ -131,6 +190,7 @@ final class RectorConfig extends ContainerConfigurator
     public function rules(array $rectorClasses) : void
     {
         Assert::allString($rectorClasses);
+        $this->ensureNotDuplicatedClasses($rectorClasses);
         foreach ($rectorClasses as $rectorClass) {
             $this->rule($rectorClass);
         }
@@ -140,8 +200,7 @@ final class RectorConfig extends ContainerConfigurator
      */
     public function phpVersion(int $phpVersion) : void
     {
-        $parameters = $this->parameters();
-        $parameters->set(Option::PHP_VERSION_FEATURES, $phpVersion);
+        SimpleParameterProvider::setParameter(Option::PHP_VERSION_FEATURES, $phpVersion);
     }
     /**
      * @param string[] $autoloadPaths
@@ -149,8 +208,7 @@ final class RectorConfig extends ContainerConfigurator
     public function autoloadPaths(array $autoloadPaths) : void
     {
         Assert::allString($autoloadPaths);
-        $parameters = $this->parameters();
-        $parameters->set(Option::AUTOLOAD_PATHS, $autoloadPaths);
+        SimpleParameterProvider::setParameter(Option::AUTOLOAD_PATHS, $autoloadPaths);
     }
     /**
      * @param string[] $bootstrapFiles
@@ -158,18 +216,15 @@ final class RectorConfig extends ContainerConfigurator
     public function bootstrapFiles(array $bootstrapFiles) : void
     {
         Assert::allString($bootstrapFiles);
-        $parameters = $this->parameters();
-        $parameters->set(Option::BOOTSTRAP_FILES, $bootstrapFiles);
+        SimpleParameterProvider::setParameter(Option::BOOTSTRAP_FILES, $bootstrapFiles);
     }
     public function symfonyContainerXml(string $filePath) : void
     {
-        $parameters = $this->parameters();
-        $parameters->set(Option::SYMFONY_CONTAINER_XML_PATH_PARAMETER, $filePath);
+        SimpleParameterProvider::setParameter(Option::SYMFONY_CONTAINER_XML_PATH_PARAMETER, $filePath);
     }
     public function symfonyContainerPhp(string $filePath) : void
     {
-        $parameters = $this->parameters();
-        $parameters->set(Option::SYMFONY_CONTAINER_PHP_PATH_PARAMETER, $filePath);
+        SimpleParameterProvider::setParameter(Option::SYMFONY_CONTAINER_PHP_PATH_PARAMETER, $filePath);
     }
     /**
      * @param string[] $extensions
@@ -177,18 +232,19 @@ final class RectorConfig extends ContainerConfigurator
     public function fileExtensions(array $extensions) : void
     {
         Assert::allString($extensions);
-        $parameters = $this->parameters();
-        $parameters->set(Option::FILE_EXTENSIONS, $extensions);
-    }
-    public function nestedChainMethodCallLimit(int $limit) : void
-    {
-        $parameters = $this->parameters();
-        $parameters->set(Option::NESTED_CHAIN_METHOD_CALL_LIMIT, $limit);
+        SimpleParameterProvider::setParameter(Option::FILE_EXTENSIONS, $extensions);
     }
     public function cacheDirectory(string $directoryPath) : void
     {
-        $parameters = $this->parameters();
-        $parameters->set(Option::CACHE_DIR, $directoryPath);
+        // cache directory path is created via mkdir in CacheFactory
+        // when not exists, so no need to validate $directoryPath is a directory
+        SimpleParameterProvider::setParameter(Option::CACHE_DIR, $directoryPath);
+    }
+    public function containerCacheDirectory(string $directoryPath) : void
+    {
+        // container cache directory path must be a directory on the first place
+        Assert::directory($directoryPath);
+        SimpleParameterProvider::setParameter(Option::CONTAINER_CACHE_DIRECTORY, $directoryPath);
     }
     /**
      * @param class-string<CacheStorageInterface> $cacheClass
@@ -196,16 +252,78 @@ final class RectorConfig extends ContainerConfigurator
     public function cacheClass(string $cacheClass) : void
     {
         Assert::isAOf($cacheClass, CacheStorageInterface::class);
-        $parameters = $this->parameters();
-        $parameters->set(Option::CACHE_CLASS, $cacheClass);
+        SimpleParameterProvider::setParameter(Option::CACHE_CLASS, $cacheClass);
     }
     /**
      * @see https://github.com/nikic/PHP-Parser/issues/723#issuecomment-712401963
      */
     public function indent(string $character, int $count) : void
     {
-        $parameters = $this->parameters();
-        $parameters->set(Option::INDENT_CHAR, $character);
-        $parameters->set(Option::INDENT_SIZE, $count);
+        SimpleParameterProvider::setParameter(Option::INDENT_CHAR, $character);
+        SimpleParameterProvider::setParameter(Option::INDENT_SIZE, $count);
+    }
+    /**
+     * @api deprecated, just for BC layer warning
+     */
+    public function services() : void
+    {
+        \trigger_error('The services() method is deprecated. Use $rectorConfig->singleton(ServiceType::class) instead', \E_USER_ERROR);
+    }
+    public function resetRuleConfigurations() : void
+    {
+        $this->ruleConfigurations = [];
+    }
+    private function importFile(string $filePath) : void
+    {
+        Assert::fileExists($filePath);
+        $self = $this;
+        $callable = (require $filePath);
+        Assert::isCallable($callable);
+        /** @var callable(Container $container): void $callable */
+        $callable($self);
+    }
+    /**
+     * @param mixed $skipRule
+     */
+    private function isRuleNoLongerExists($skipRule) : bool
+    {
+        return \is_string($skipRule) && \strpos($skipRule, '*') === \false && \realpath($skipRule) === \false && \substr_compare($skipRule, 'Rector', -\strlen('Rector')) === 0 && !\class_exists($skipRule);
+    }
+    /**
+     * @param string[] $values
+     * @return string[]
+     */
+    private function resolveDuplicatedValues(array $values) : array
+    {
+        $counted = \array_count_values($values);
+        $duplicates = [];
+        foreach ($counted as $value => $count) {
+            if ($count > 1) {
+                $duplicates[] = $value;
+            }
+        }
+        return \array_unique($duplicates);
+    }
+    /**
+     * @param class-string<RectorInterface> $rectorClass
+     */
+    private function tagRectorService(string $rectorClass) : void
+    {
+        $this->tag($rectorClass, RectorInterface::class);
+        if (\is_a($rectorClass, NonPhpRectorInterface::class, \true)) {
+            \trigger_error(\sprintf('The "%s" interface of "%s" rule is deprecated. Rector will process only PHP code, as designed to with AST. For another file format, use custom tooling.', NonPhpRectorInterface::class, $rectorClass));
+            exit;
+        }
+    }
+    /**
+     * @param string[] $rectorClasses
+     */
+    private function ensureNotDuplicatedClasses(array $rectorClasses) : void
+    {
+        $duplicatedRectorClasses = $this->resolveDuplicatedValues($rectorClasses);
+        if ($duplicatedRectorClasses === []) {
+            return;
+        }
+        throw new ShouldNotHappenException('Following rules are registered twice: ' . \implode(', ', $duplicatedRectorClasses));
     }
 }

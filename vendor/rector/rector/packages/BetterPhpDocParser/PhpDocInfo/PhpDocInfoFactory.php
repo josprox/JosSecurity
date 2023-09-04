@@ -21,10 +21,6 @@ use Rector\StaticTypeMapper\StaticTypeMapper;
 final class PhpDocInfoFactory
 {
     /**
-     * @var array<string, PhpDocInfo>
-     */
-    private $phpDocInfosByObjectHash = [];
-    /**
      * @readonly
      * @var \Rector\BetterPhpDocParser\PhpDocNodeMapper
      */
@@ -64,6 +60,10 @@ final class PhpDocInfoFactory
      * @var \Rector\BetterPhpDocParser\PhpDocNodeFinder\PhpDocNodeByTypeFinder
      */
     private $phpDocNodeByTypeFinder;
+    /**
+     * @var array<int, PhpDocInfo>
+     */
+    private $phpDocInfosByObjectId = [];
     public function __construct(PhpDocNodeMapper $phpDocNodeMapper, CurrentNodeProvider $currentNodeProvider, Lexer $lexer, BetterPhpDocParser $betterPhpDocParser, StaticTypeMapper $staticTypeMapper, AnnotationNaming $annotationNaming, RectorChangeCollector $rectorChangeCollector, PhpDocNodeByTypeFinder $phpDocNodeByTypeFinder)
     {
         $this->phpDocNodeMapper = $phpDocNodeMapper;
@@ -90,33 +90,32 @@ final class PhpDocInfoFactory
     }
     public function createFromNode(Node $node) : ?\Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfo
     {
-        $objectHash = \spl_object_hash($node);
-        if (isset($this->phpDocInfosByObjectHash[$objectHash])) {
-            return $this->phpDocInfosByObjectHash[$objectHash];
+        $objectId = \spl_object_id($node);
+        if (isset($this->phpDocInfosByObjectId[$objectId])) {
+            return $this->phpDocInfosByObjectId[$objectId];
         }
         /** @see \Rector\BetterPhpDocParser\PhpDocParser\DoctrineAnnotationDecorator::decorate() */
         $this->currentNodeProvider->setNode($node);
         $docComment = $node->getDocComment();
         if (!$docComment instanceof Doc) {
-            if ($node->getComments() !== []) {
+            if ($node->getComments() === []) {
                 return null;
             }
             // create empty node
             $tokenIterator = new BetterTokenIterator([]);
             $phpDocNode = new PhpDocNode([]);
         } else {
-            $text = $docComment->getText();
-            $tokens = $this->lexer->tokenize($text);
+            $tokens = $this->lexer->tokenize($docComment->getText());
             $tokenIterator = new BetterTokenIterator($tokens);
             $phpDocNode = $this->betterPhpDocParser->parse($tokenIterator);
             $this->setPositionOfLastToken($phpDocNode);
         }
         $phpDocInfo = $this->createFromPhpDocNode($phpDocNode, $tokenIterator, $node);
-        $this->phpDocInfosByObjectHash[$objectHash] = $phpDocInfo;
+        $this->phpDocInfosByObjectId[$objectId] = $phpDocInfo;
         return $phpDocInfo;
     }
     /**
-     * @api
+     * @api downgrade
      */
     public function createEmpty(Node $node) : \Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfo
     {

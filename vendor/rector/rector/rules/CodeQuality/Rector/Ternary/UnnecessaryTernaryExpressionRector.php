@@ -9,7 +9,6 @@ use PhpParser\Node\Expr\BinaryOp;
 use PhpParser\Node\Expr\BooleanNot;
 use PhpParser\Node\Expr\Cast\Bool_;
 use PhpParser\Node\Expr\Ternary;
-use PHPStan\Type\BooleanType;
 use Rector\Core\PhpParser\Node\AssignAndBinaryMap;
 use Rector\Core\Rector\AbstractRector;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
@@ -44,20 +43,18 @@ final class UnnecessaryTernaryExpressionRector extends AbstractRector
      */
     public function refactor(Node $node) : ?Node
     {
-        /** @var Ternary $ternaryExpression */
-        $ternaryExpression = $node;
-        if (!$ternaryExpression->if instanceof Expr) {
+        if (!$node->if instanceof Expr) {
             return null;
         }
-        $ifExpression = $ternaryExpression->if;
+        $ifExpression = $node->if;
         if (!$this->valueResolver->isTrueOrFalse($ifExpression)) {
             return null;
         }
-        $elseExpression = $ternaryExpression->else;
+        $elseExpression = $node->else;
         if (!$this->valueResolver->isTrueOrFalse($elseExpression)) {
             return null;
         }
-        $condition = $ternaryExpression->cond;
+        $condition = $node->cond;
         if (!$condition instanceof BinaryOp) {
             return $this->processNonBinaryCondition($ifExpression, $elseExpression, $condition);
         }
@@ -94,7 +91,7 @@ final class UnnecessaryTernaryExpressionRector extends AbstractRector
     private function processTrueIfExpressionWithFalseElseExpression(Expr $expr) : Expr
     {
         $exprType = $this->getType($expr);
-        if ($exprType instanceof BooleanType) {
+        if ($exprType->isBoolean()->yes()) {
             return $expr;
         }
         return new Bool_($expr);
@@ -103,13 +100,13 @@ final class UnnecessaryTernaryExpressionRector extends AbstractRector
     {
         if ($expr instanceof BooleanNot) {
             $negatedExprType = $this->getType($expr->expr);
-            if ($negatedExprType instanceof BooleanType) {
+            if ($negatedExprType->isBoolean()->yes()) {
                 return $expr->expr;
             }
             return new Bool_($expr->expr);
         }
         $exprType = $this->getType($expr);
-        if ($exprType instanceof BooleanType) {
+        if ($exprType->isBoolean()->yes()) {
             return new BooleanNot($expr);
         }
         return new BooleanNot(new Bool_($expr));

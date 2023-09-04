@@ -5,35 +5,32 @@ namespace Rector\TypeDeclaration\Rector\Property;
 
 use PhpParser\Node;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Property;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
-use Rector\BetterPhpDocParser\PhpDocManipulator\PhpDocTypeChanger;
-use Rector\Core\Php\PhpVersionProvider;
+use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfo;
 use Rector\Core\Rector\AbstractRector;
+use Rector\Core\Reflection\ReflectionResolver;
 use Rector\Core\ValueObject\PhpVersionFeature;
 use Rector\DeadCode\PhpDoc\TagRemover\VarTagRemover;
 use Rector\PHPStanStaticTypeMapper\Enum\TypeKind;
 use Rector\Privatization\Guard\ParentPropertyLookupGuard;
 use Rector\TypeDeclaration\TypeInferer\PropertyTypeInferer\GetterTypeDeclarationPropertyTypeInferer;
+use Rector\VersionBonding\Contract\MinPhpVersionInterface;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 /**
  * @see \Rector\Tests\TypeDeclaration\Rector\Property\TypedPropertyFromStrictGetterMethodReturnTypeRector\TypedPropertyFromStrictGetterMethodReturnTypeRectorTest
  */
-final class TypedPropertyFromStrictGetterMethodReturnTypeRector extends AbstractRector
+final class TypedPropertyFromStrictGetterMethodReturnTypeRector extends AbstractRector implements MinPhpVersionInterface
 {
     /**
      * @readonly
      * @var \Rector\TypeDeclaration\TypeInferer\PropertyTypeInferer\GetterTypeDeclarationPropertyTypeInferer
      */
     private $getterTypeDeclarationPropertyTypeInferer;
-    /**
-     * @readonly
-     * @var \Rector\BetterPhpDocParser\PhpDocManipulator\PhpDocTypeChanger
-     */
-    private $phpDocTypeChanger;
     /**
      * @readonly
      * @var \Rector\DeadCode\PhpDoc\TagRemover\VarTagRemover
@@ -46,16 +43,15 @@ final class TypedPropertyFromStrictGetterMethodReturnTypeRector extends Abstract
     private $parentPropertyLookupGuard;
     /**
      * @readonly
-     * @var \Rector\Core\Php\PhpVersionProvider
+     * @var \Rector\Core\Reflection\ReflectionResolver
      */
-    private $phpVersionProvider;
-    public function __construct(GetterTypeDeclarationPropertyTypeInferer $getterTypeDeclarationPropertyTypeInferer, PhpDocTypeChanger $phpDocTypeChanger, VarTagRemover $varTagRemover, ParentPropertyLookupGuard $parentPropertyLookupGuard, PhpVersionProvider $phpVersionProvider)
+    private $reflectionResolver;
+    public function __construct(GetterTypeDeclarationPropertyTypeInferer $getterTypeDeclarationPropertyTypeInferer, VarTagRemover $varTagRemover, ParentPropertyLookupGuard $parentPropertyLookupGuard, ReflectionResolver $reflectionResolver)
     {
         $this->getterTypeDeclarationPropertyTypeInferer = $getterTypeDeclarationPropertyTypeInferer;
-        $this->phpDocTypeChanger = $phpDocTypeChanger;
         $this->varTagRemover = $varTagRemover;
         $this->parentPropertyLookupGuard = $parentPropertyLookupGuard;
-        $this->phpVersionProvider = $phpVersionProvider;
+        $this->reflectionResolver = $reflectionResolver;
     }
     public function getRuleDefinition() : RuleDefinition
     {
@@ -88,44 +84,46 @@ CODE_SAMPLE
      */
     public function getNodeTypes() : array
     {
-        return [Property::class];
+        return [Class_::class];
     }
     /**
-     * @param Property $node
+     * @param Class_ $node
      */
-    public function refactor(Node $node) : ?Property
+    public function refactor(Node $node) : ?\PhpParser\Node\Stmt\Class_
     {
-        if ($node->type !== null) {
-            return null;
+        $hasChanged = \false;
+        foreach ($node->getProperties() as $property) {
+            if ($this->shouldSkipProperty($property, $node)) {
+                continue;
+            }
+            $getterReturnType = $this->getterTypeDeclarationPropertyTypeInferer->inferProperty($property, $node);
+            if (!$getterReturnType instanceof Type) {
+                continue;
+            }
+            if ($getterReturnType instanceof MixedType) {
+                continue;
+            }
+            // if property is public, it should be nullable
+            if ($property->isPublic() && !TypeCombinator::containsNull($getterReturnType)) {
+                $getterReturnType = TypeCombinator::addNull($getterReturnType);
+            }
+            $propertyTypeNode = $this->staticTypeMapper->mapPHPStanTypeToPhpParserNode($getterReturnType, TypeKind::PROPERTY);
+            if (!$propertyTypeNode instanceof Node) {
+                continue;
+            }
+            // include fault value in the type
+            if ($this->isConflictingDefaultExprType($property, $getterReturnType)) {
+                continue;
+            }
+            $property->type = $propertyTypeNode;
+            $this->decorateDefaultNull($getterReturnType, $property);
+            $this->refactorPhpDoc($property);
+            $hasChanged = \true;
         }
-        if (!$this->parentPropertyLookupGuard->isLegal($node)) {
-            return null;
-        }
-        $getterReturnType = $this->getterTypeDeclarationPropertyTypeInferer->inferProperty($node);
-        if (!$getterReturnType instanceof Type) {
-            return null;
-        }
-        if ($getterReturnType instanceof MixedType) {
-            return null;
-        }
-        if (!$this->phpVersionProvider->isAtLeastPhpVersion(PhpVersionFeature::TYPED_PROPERTIES)) {
-            $phpDocInfo = $this->phpDocInfoFactory->createFromNodeOrEmpty($node);
-            $this->phpDocTypeChanger->changeVarType($phpDocInfo, $getterReturnType);
+        if ($hasChanged) {
             return $node;
         }
-        // if property is public, it should be nullable
-        if ($node->isPublic() && !TypeCombinator::containsNull($getterReturnType)) {
-            $getterReturnType = TypeCombinator::addNull($getterReturnType);
-        }
-        $propertyType = $this->staticTypeMapper->mapPHPStanTypeToPhpParserNode($getterReturnType, TypeKind::PROPERTY);
-        if (!$propertyType instanceof Node) {
-            return null;
-        }
-        $node->type = $propertyType;
-        $this->decorateDefaultNull($getterReturnType, $node);
-        $phpDocInfo = $this->phpDocInfoFactory->createFromNodeOrEmpty($node);
-        $this->varTagRemover->removeVarTagIfUseless($phpDocInfo, $node);
-        return $node;
+        return null;
     }
     public function provideMinPhpVersion() : int
     {
@@ -141,5 +139,37 @@ CODE_SAMPLE
             return;
         }
         $propertyProperty->default = $this->nodeFactory->createNull();
+    }
+    private function isConflictingDefaultExprType(Property $property, Type $getterReturnType) : bool
+    {
+        $onlyPropertyProperty = $property->props[0];
+        if (!$onlyPropertyProperty->default instanceof Expr) {
+            return \false;
+        }
+        $defaultType = $this->staticTypeMapper->mapPhpParserNodePHPStanType($onlyPropertyProperty->default);
+        // does default type match the getter one?
+        return !$defaultType->isSuperTypeOf($getterReturnType)->yes();
+    }
+    private function refactorPhpDoc(Property $property) : void
+    {
+        $phpDocInfo = $this->phpDocInfoFactory->createFromNode($property);
+        if (!$phpDocInfo instanceof PhpDocInfo) {
+            return;
+        }
+        $this->varTagRemover->removeVarTagIfUseless($phpDocInfo, $property);
+    }
+    private function shouldSkipProperty(Property $property, Class_ $class) : bool
+    {
+        if ($property->type instanceof Node) {
+            // already has type
+            return \true;
+        }
+        // skip non-single property
+        if (\count($property->props) !== 1) {
+            // has too many properties
+            return \true;
+        }
+        $classReflection = $this->reflectionResolver->resolveClassReflection($class);
+        return !$this->parentPropertyLookupGuard->isLegal($property, $classReflection);
     }
 }

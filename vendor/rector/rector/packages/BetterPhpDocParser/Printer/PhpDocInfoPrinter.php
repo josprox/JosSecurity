@@ -3,7 +3,7 @@
 declare (strict_types=1);
 namespace Rector\BetterPhpDocParser\Printer;
 
-use RectorPrefix202211\Nette\Utils\Strings;
+use RectorPrefix202308\Nette\Utils\Strings;
 use PhpParser\Node\Stmt\InlineHTML;
 use PHPStan\PhpDocParser\Ast\PhpDoc\ParamTagValueNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocChildNode;
@@ -26,6 +26,26 @@ use Rector\PhpDocParser\PhpDocParser\PhpDocNodeTraverser;
  */
 final class PhpDocInfoPrinter
 {
+    /**
+     * @readonly
+     * @var \Rector\BetterPhpDocParser\Printer\EmptyPhpDocDetector
+     */
+    private $emptyPhpDocDetector;
+    /**
+     * @readonly
+     * @var \Rector\BetterPhpDocParser\Printer\DocBlockInliner
+     */
+    private $docBlockInliner;
+    /**
+     * @readonly
+     * @var \Rector\BetterPhpDocParser\Printer\RemoveNodesStartAndEndResolver
+     */
+    private $removeNodesStartAndEndResolver;
+    /**
+     * @readonly
+     * @var \Rector\BetterPhpDocParser\PhpDocNodeVisitor\ChangedPhpDocNodeVisitor
+     */
+    private $changedPhpDocNodeVisitor;
     /**
      * @var string
      * @see https://regex101.com/r/Ab0Vey/1
@@ -71,26 +91,6 @@ final class PhpDocInfoPrinter
      * @var \Rector\PhpDocParser\PhpDocParser\PhpDocNodeTraverser
      */
     private $changedPhpDocNodeTraverser;
-    /**
-     * @readonly
-     * @var \Rector\BetterPhpDocParser\Printer\EmptyPhpDocDetector
-     */
-    private $emptyPhpDocDetector;
-    /**
-     * @readonly
-     * @var \Rector\BetterPhpDocParser\Printer\DocBlockInliner
-     */
-    private $docBlockInliner;
-    /**
-     * @readonly
-     * @var \Rector\BetterPhpDocParser\Printer\RemoveNodesStartAndEndResolver
-     */
-    private $removeNodesStartAndEndResolver;
-    /**
-     * @readonly
-     * @var \Rector\BetterPhpDocParser\PhpDocNodeVisitor\ChangedPhpDocNodeVisitor
-     */
-    private $changedPhpDocNodeVisitor;
     public function __construct(\Rector\BetterPhpDocParser\Printer\EmptyPhpDocDetector $emptyPhpDocDetector, \Rector\BetterPhpDocParser\Printer\DocBlockInliner $docBlockInliner, \Rector\BetterPhpDocParser\Printer\RemoveNodesStartAndEndResolver $removeNodesStartAndEndResolver, ChangedPhpDocNodeVisitor $changedPhpDocNodeVisitor)
     {
         $this->emptyPhpDocDetector = $emptyPhpDocDetector;
@@ -143,9 +143,9 @@ final class PhpDocInfoPrinter
         // hotfix of extra space with callable ()
         return Strings::replace($phpDocString, self::CALLABLE_REGEX, 'callable(');
     }
-    public function getCurrentPhpDocInfo() : PhpDocInfo
+    private function getCurrentPhpDocInfo() : PhpDocInfo
     {
-        if ($this->phpDocInfo === null) {
+        if (!$this->phpDocInfo instanceof PhpDocInfo) {
             throw new ShouldNotHappenException();
         }
         return $this->phpDocInfo;
@@ -171,7 +171,7 @@ final class PhpDocInfoPrinter
         if (StringUtils::isMatch($output, self::OPENING_DOCBLOCK_REGEX) && !StringUtils::isMatch($output, self::CLOSING_DOCBLOCK_REGEX)) {
             $output .= ' */';
         }
-        return $output;
+        return \str_replace(" \n", "\n", $output);
     }
     private function printDocChildNode(PhpDocChildNode $phpDocChildNode, int $key = 0, int $nodeCount = 0) : string
     {

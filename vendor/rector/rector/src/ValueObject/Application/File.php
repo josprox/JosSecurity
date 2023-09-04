@@ -3,6 +3,7 @@
 declare (strict_types=1);
 namespace Rector\Core\ValueObject\Application;
 
+use PhpParser\Node;
 use PhpParser\Node\Stmt;
 use Rector\ChangesReporting\ValueObject\RectorWithLineChange;
 use Rector\Core\Exception\ShouldNotHappenException;
@@ -12,6 +13,15 @@ use Rector\Core\ValueObject\Reporting\FileDiff;
  */
 final class File
 {
+    /**
+     * @readonly
+     * @var string
+     */
+    private $filePath;
+    /**
+     * @var string
+     */
+    private $fileContent;
     /**
      * @var bool
      */
@@ -26,11 +36,11 @@ final class File
      */
     private $fileDiff;
     /**
-     * @var Stmt[]
+     * @var Node[]
      */
     private $oldStmts = [];
     /**
-     * @var Stmt[]
+     * @var Node[]
      */
     private $newStmts = [];
     /**
@@ -41,24 +51,15 @@ final class File
      * @var RectorWithLineChange[]
      */
     private $rectorWithLineChanges = [];
-    /**
-     * @readonly
-     * @var string
-     */
-    private $filepath;
-    /**
-     * @var string
-     */
-    private $fileContent;
-    public function __construct(string $filepath, string $fileContent)
+    public function __construct(string $filePath, string $fileContent)
     {
-        $this->filepath = $filepath;
+        $this->filePath = $filePath;
         $this->fileContent = $fileContent;
         $this->originalFileContent = $fileContent;
     }
     public function getFilePath() : string
     {
-        return $this->filepath;
+        return $this->filePath;
     }
     public function getFileContent() : string
     {
@@ -71,10 +72,6 @@ final class File
         }
         $this->fileContent = $newFileContent;
         $this->hasChanged = \true;
-    }
-    public function hasContentChanged() : bool
-    {
-        return $this->fileContent !== $this->originalFileContent;
     }
     public function getOriginalFileContent() : string
     {
@@ -132,7 +129,7 @@ final class File
         return $this->oldTokens;
     }
     /**
-     * @param Stmt[] $newStmts
+     * @param Node[] $newStmts
      */
     public function changeNewStmts(array $newStmts) : void
     {

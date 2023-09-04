@@ -1,10 +1,10 @@
 <?php
 
-namespace RectorPrefix202211\React\Socket;
+namespace RectorPrefix202308\React\Socket;
 
-use RectorPrefix202211\Evenement\EventEmitter;
-use RectorPrefix202211\React\EventLoop\Loop;
-use RectorPrefix202211\React\EventLoop\LoopInterface;
+use RectorPrefix202308\Evenement\EventEmitter;
+use RectorPrefix202308\React\EventLoop\Loop;
+use RectorPrefix202308\React\EventLoop\LoopInterface;
 use BadMethodCallException;
 use UnexpectedValueException;
 /**

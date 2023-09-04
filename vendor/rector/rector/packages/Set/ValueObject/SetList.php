@@ -12,10 +12,6 @@ final class SetList implements SetListInterface
     /**
      * @var string
      */
-    public const ACTION_INJECTION_TO_CONSTRUCTOR_INJECTION = __DIR__ . '/../../../config/set/action-injection-to-constructor-injection.php';
-    /**
-     * @var string
-     */
     public const CODE_QUALITY = __DIR__ . '/../../../config/set/code-quality.php';
     /**
      * @var string
@@ -28,12 +24,13 @@ final class SetList implements SetListInterface
     /**
      * @var string
      */
-    public const GMAGICK_TO_IMAGICK = __DIR__ . '/../../../config/set/gmagick-to-imagick.php';
+    public const STRICT_BOOLEANS = __DIR__ . '/../../../config/set/strict-booleans.php';
     /**
      * @var string
      */
-    public const MONOLOG_20 = __DIR__ . '/../../../config/set/monolog20.php';
+    public const GMAGICK_TO_IMAGICK = __DIR__ . '/../../../config/set/gmagick-to-imagick.php';
     /**
+     * @deprecated Handle manually with explicit refactoring instead.
      * @var string
      */
     public const MYSQL_TO_MYSQLI = __DIR__ . '/../../../config/set/mysql-to-mysqli.php';
@@ -100,17 +97,13 @@ final class SetList implements SetListInterface
     /**
      * @var string
      */
-    public const PSR_4 = __DIR__ . '/../../../config/set/psr-4.php';
-    /**
-     * @var string
-     */
     public const TYPE_DECLARATION = __DIR__ . '/../../../config/set/type-declaration.php';
     /**
      * @var string
      */
-    public const TYPE_DECLARATION_STRICT = __DIR__ . '/../../../config/set/type-declaration-strict.php';
+    public const EARLY_RETURN = __DIR__ . '/../../../config/set/early-return.php';
     /**
      * @var string
      */
-    public const EARLY_RETURN = __DIR__ . '/../../../config/set/early-return.php';
+    public const INSTANCEOF = __DIR__ . '/../../../config/set/instanceof.php';
 }

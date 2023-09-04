@@ -57,7 +57,22 @@ final class BetterPhpDocParser extends PhpDocParser
         $this->tokenIteratorFactory = $tokenIteratorFactory;
         $this->phpDocNodeDecorators = $phpDocNodeDecorators;
         $this->privatesAccessor = $privatesAccessor;
-        parent::__construct($typeParser, $constExprParser);
+        parent::__construct(
+            // TypeParser
+            $typeParser,
+            // ConstExprParser
+            $constExprParser,
+            // requireWhitespaceBeforeDescription
+            \false,
+            // preserveTypeAliasesWithInvalidTypes
+            \false,
+            // usedAttributes
+            ['lines' => \true, 'indexes' => \true],
+            // parseDoctrineAnnotations
+            \false,
+            // textBetweenTagsBelongsToDescription, default to false, exists since 1.23.0
+            \true
+        );
     }
     public function parse(TokenIterator $tokenIterator) : PhpDocNode
     {
@@ -98,9 +113,13 @@ final class BetterPhpDocParser extends PhpDocParser
      */
     public function parseTagValue(TokenIterator $tokenIterator, string $tag) : PhpDocTagValueNode
     {
+        $isPrecededByHorizontalWhitespace = $tokenIterator->isPrecededByHorizontalWhitespace();
         $startPosition = $tokenIterator->currentPosition();
         $phpDocTagValueNode = parent::parseTagValue($tokenIterator, $tag);
         $endPosition = $tokenIterator->currentPosition();
+        if ($isPrecededByHorizontalWhitespace && \property_exists($phpDocTagValueNode, 'description')) {
+            $phpDocTagValueNode->description = \str_replace("\n", "\n * ", (string) $phpDocTagValueNode->description);
+        }
         $startAndEnd = new StartAndEnd($startPosition, $endPosition);
         $phpDocTagValueNode->setAttribute(PhpDocAttributeKey::START_AND_END, $startAndEnd);
         return $phpDocTagValueNode;

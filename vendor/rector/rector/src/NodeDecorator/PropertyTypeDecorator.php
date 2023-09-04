@@ -43,7 +43,7 @@ final class PropertyTypeDecorator
     }
     public function decorate(Property $property, ?Type $type) : void
     {
-        if ($type === null) {
+        if (!$type instanceof Type) {
             return;
         }
         $phpDocInfo = $this->phpDocInfoFactory->createFromNodeOrEmpty($property);
@@ -52,11 +52,11 @@ final class PropertyTypeDecorator
             if ($phpParserType !== null) {
                 $property->type = $phpParserType;
                 if ($type instanceof GenericObjectType) {
-                    $this->phpDocTypeChanger->changeVarType($phpDocInfo, $type);
+                    $this->phpDocTypeChanger->changeVarType($property, $phpDocInfo, $type);
                 }
                 return;
             }
         }
-        $this->phpDocTypeChanger->changeVarType($phpDocInfo, $type);
+        $this->phpDocTypeChanger->changeVarType($property, $phpDocInfo, $type);
     }
 }
