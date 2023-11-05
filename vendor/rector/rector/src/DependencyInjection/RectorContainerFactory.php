@@ -3,7 +3,7 @@
 declare (strict_types=1);
 namespace Rector\Core\DependencyInjection;
 
-use RectorPrefix202308\Illuminate\Container\Container;
+use RectorPrefix202310\Illuminate\Container\Container;
 use Rector\Caching\Detector\ChangedFilesDetector;
 use Rector\Core\Autoloading\BootstrapFilesIncluder;
 use Rector\Core\ValueObject\Bootstrap\BootstrapConfigs;
@@ -33,6 +33,7 @@ final class RectorContainerFactory
         foreach ($configFiles as $configFile) {
             $container->import($configFile);
         }
+        $container->boot();
         return $container;
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 declare (strict_types=1);
-namespace RectorPrefix202308;
+namespace RectorPrefix202310;
 
 use PhpParser\Node;
 use PhpParser\PrettyPrinter\Standard;
@@ -19,7 +19,7 @@ if (!\function_exists('dump_node')) {
 }
 if (!\function_exists('print_node')) {
     /**
-     * @param \PhpParser\Node|mixed[] $node
+     * @param Node|Node[] $node
      */
     function print_node($node) : void
     {

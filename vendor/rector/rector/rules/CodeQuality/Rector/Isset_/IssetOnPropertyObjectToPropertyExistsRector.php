@@ -12,6 +12,7 @@ use PhpParser\Node\Expr\BinaryOp\NotIdentical;
 use PhpParser\Node\Expr\BooleanNot;
 use PhpParser\Node\Expr\Isset_;
 use PhpParser\Node\Expr\PropertyFetch;
+use PhpParser\Node\Identifier;
 use PhpParser\Node\Scalar\String_;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\Php\PhpPropertyReflection;
@@ -19,6 +20,7 @@ use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypeWithClassName;
+use Rector\Core\PhpParser\Node\Value\ValueResolver;
 use Rector\Core\Rector\AbstractRector;
 use Rector\Core\Reflection\ReflectionResolver;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
@@ -40,10 +42,16 @@ final class IssetOnPropertyObjectToPropertyExistsRector extends AbstractRector
      * @var \Rector\Core\Reflection\ReflectionResolver
      */
     private $reflectionResolver;
-    public function __construct(ReflectionProvider $reflectionProvider, ReflectionResolver $reflectionResolver)
+    /**
+     * @readonly
+     * @var \Rector\Core\PhpParser\Node\Value\ValueResolver
+     */
+    private $valueResolver;
+    public function __construct(ReflectionProvider $reflectionProvider, ReflectionResolver $reflectionResolver, ValueResolver $valueResolver)
     {
         $this->reflectionProvider = $reflectionProvider;
         $this->reflectionResolver = $reflectionResolver;
+        $this->valueResolver = $valueResolver;
     }
     public function getRuleDefinition() : RuleDefinition
     {
@@ -134,6 +142,9 @@ CODE_SAMPLE
     }
     private function shouldSkipForPropertyTypeDeclaration(PropertyFetch $propertyFetch) : bool
     {
+        if (!$propertyFetch->name instanceof Identifier) {
+            return \true;
+        }
         $phpPropertyReflection = $this->reflectionResolver->resolvePropertyReflectionFromPropertyFetch($propertyFetch);
         if (!$phpPropertyReflection instanceof PhpPropertyReflection) {
             return \false;

@@ -17,10 +17,11 @@ use Rector\Core\Rector\AbstractRector;
 use Rector\Core\ValueObject\PhpVersionFeature;
 use Rector\NodeTypeResolver\TypeComparator\TypeComparator;
 use Rector\PHPStanStaticTypeMapper\Enum\TypeKind;
+use Rector\StaticTypeMapper\StaticTypeMapper;
 use Rector\TypeDeclaration\ValueObject\AddParamTypeDeclaration;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
-use RectorPrefix202308\Webmozart\Assert\Assert;
+use RectorPrefix202310\Webmozart\Assert\Assert;
 /**
  * @see \Rector\Tests\TypeDeclaration\Rector\ClassMethod\AddParamTypeDeclarationRector\AddParamTypeDeclarationRectorTest
  */
@@ -37,6 +38,11 @@ final class AddParamTypeDeclarationRector extends AbstractRector implements Conf
      */
     private $phpVersionProvider;
     /**
+     * @readonly
+     * @var \Rector\StaticTypeMapper\StaticTypeMapper
+     */
+    private $staticTypeMapper;
+    /**
      * @var AddParamTypeDeclaration[]
      */
     private $addParamTypeDeclarations = [];
@@ -44,10 +50,11 @@ final class AddParamTypeDeclarationRector extends AbstractRector implements Conf
      * @var bool
      */
     private $hasChanged = \false;
-    public function __construct(TypeComparator $typeComparator, PhpVersionProvider $phpVersionProvider)
+    public function __construct(TypeComparator $typeComparator, PhpVersionProvider $phpVersionProvider, StaticTypeMapper $staticTypeMapper)
     {
         $this->typeComparator = $typeComparator;
         $this->phpVersionProvider = $phpVersionProvider;
+        $this->staticTypeMapper = $staticTypeMapper;
     }
     public function getRuleDefinition() : RuleDefinition
     {
@@ -86,8 +93,9 @@ CODE_SAMPLE
             if ($this->shouldSkip($node, $classMethod)) {
                 continue;
             }
+            $methodName = $this->getName($classMethod);
             foreach ($this->addParamTypeDeclarations as $addParamTypeDeclaration) {
-                if (!$this->isName($classMethod, $addParamTypeDeclaration->getMethodName())) {
+                if (!$this->nodeNameResolver->isStringName($methodName, $addParamTypeDeclaration->getMethodName())) {
                     continue;
                 }
                 if (!$this->isObjectType($node, $addParamTypeDeclaration->getObjectType())) {

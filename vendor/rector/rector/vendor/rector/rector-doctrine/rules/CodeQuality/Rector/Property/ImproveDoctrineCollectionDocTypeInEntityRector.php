@@ -12,6 +12,7 @@ use PHPStan\PhpDocParser\Ast\PhpDoc\VarTagValueNode;
 use PHPStan\Reflection\Php\PhpPropertyReflection;
 use PHPStan\Type\Type;
 use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfo;
+use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory;
 use Rector\BetterPhpDocParser\PhpDocManipulator\PhpDocTypeChanger;
 use Rector\Core\NodeManipulator\AssignManipulator;
 use Rector\Core\Rector\AbstractRector;
@@ -22,6 +23,7 @@ use Rector\Doctrine\PhpDocParser\DoctrineDocBlockResolver;
 use Rector\Doctrine\TypeAnalyzer\CollectionTypeFactory;
 use Rector\Doctrine\TypeAnalyzer\CollectionTypeResolver;
 use Rector\Doctrine\TypeAnalyzer\CollectionVarTagValueNodeResolver;
+use Rector\StaticTypeMapper\StaticTypeMapper;
 use Rector\StaticTypeMapper\ValueObject\Type\FullyQualifiedObjectType;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
@@ -75,7 +77,17 @@ final class ImproveDoctrineCollectionDocTypeInEntityRector extends AbstractRecto
      * @var \Rector\Doctrine\NodeAnalyzer\TargetEntityResolver
      */
     private $targetEntityResolver;
-    public function __construct(CollectionTypeFactory $collectionTypeFactory, AssignManipulator $assignManipulator, CollectionTypeResolver $collectionTypeResolver, CollectionVarTagValueNodeResolver $collectionVarTagValueNodeResolver, PhpDocTypeChanger $phpDocTypeChanger, DoctrineDocBlockResolver $doctrineDocBlockResolver, ReflectionResolver $reflectionResolver, AttributeFinder $attributeFinder, TargetEntityResolver $targetEntityResolver)
+    /**
+     * @readonly
+     * @var \Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory
+     */
+    private $phpDocInfoFactory;
+    /**
+     * @readonly
+     * @var \Rector\StaticTypeMapper\StaticTypeMapper
+     */
+    private $staticTypeMapper;
+    public function __construct(CollectionTypeFactory $collectionTypeFactory, AssignManipulator $assignManipulator, CollectionTypeResolver $collectionTypeResolver, CollectionVarTagValueNodeResolver $collectionVarTagValueNodeResolver, PhpDocTypeChanger $phpDocTypeChanger, DoctrineDocBlockResolver $doctrineDocBlockResolver, ReflectionResolver $reflectionResolver, AttributeFinder $attributeFinder, TargetEntityResolver $targetEntityResolver, PhpDocInfoFactory $phpDocInfoFactory, StaticTypeMapper $staticTypeMapper)
     {
         $this->collectionTypeFactory = $collectionTypeFactory;
         $this->assignManipulator = $assignManipulator;
@@ -86,6 +98,8 @@ final class ImproveDoctrineCollectionDocTypeInEntityRector extends AbstractRecto
         $this->reflectionResolver = $reflectionResolver;
         $this->attributeFinder = $attributeFinder;
         $this->targetEntityResolver = $targetEntityResolver;
+        $this->phpDocInfoFactory = $phpDocInfoFactory;
+        $this->staticTypeMapper = $staticTypeMapper;
     }
     public function getRuleDefinition() : RuleDefinition
     {

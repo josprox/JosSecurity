@@ -8,14 +8,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace RectorPrefix202308\Symfony\Component\Console\Input;
+namespace RectorPrefix202310\Symfony\Component\Console\Input;
 
-use RectorPrefix202308\Symfony\Component\Console\Command\Command;
-use RectorPrefix202308\Symfony\Component\Console\Completion\CompletionInput;
-use RectorPrefix202308\Symfony\Component\Console\Completion\CompletionSuggestions;
-use RectorPrefix202308\Symfony\Component\Console\Completion\Suggestion;
-use RectorPrefix202308\Symfony\Component\Console\Exception\InvalidArgumentException;
-use RectorPrefix202308\Symfony\Component\Console\Exception\LogicException;
+use RectorPrefix202310\Symfony\Component\Console\Command\Command;
+use RectorPrefix202310\Symfony\Component\Console\Completion\CompletionInput;
+use RectorPrefix202310\Symfony\Component\Console\Completion\CompletionSuggestions;
+use RectorPrefix202310\Symfony\Component\Console\Completion\Suggestion;
+use RectorPrefix202310\Symfony\Component\Console\Exception\InvalidArgumentException;
+use RectorPrefix202310\Symfony\Component\Console\Exception\LogicException;
 /**
  * Represents a command line argument.
  *
@@ -50,7 +50,7 @@ class InputArgument
      * @param string                                                                        $name            The argument name
      * @param int|null                                                                      $mode            The argument mode: a bit mask of self::REQUIRED, self::OPTIONAL and self::IS_ARRAY
      * @param string                                                                        $description     A description text
-     * @param string|bool|int|float|mixed[] $default The default value (for self::OPTIONAL mode only)
+     * @param string|bool|int|float|array|null                                              $default         The default value (for self::OPTIONAL mode only)
      * @param array|\Closure(CompletionInput,CompletionSuggestions):list<string|Suggestion> $suggestedValues The values used for input completion
      *
      * @throws InvalidArgumentException When argument mode is not valid

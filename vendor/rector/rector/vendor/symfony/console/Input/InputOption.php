@@ -8,14 +8,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace RectorPrefix202308\Symfony\Component\Console\Input;
+namespace RectorPrefix202310\Symfony\Component\Console\Input;
 
-use RectorPrefix202308\Symfony\Component\Console\Command\Command;
-use RectorPrefix202308\Symfony\Component\Console\Completion\CompletionInput;
-use RectorPrefix202308\Symfony\Component\Console\Completion\CompletionSuggestions;
-use RectorPrefix202308\Symfony\Component\Console\Completion\Suggestion;
-use RectorPrefix202308\Symfony\Component\Console\Exception\InvalidArgumentException;
-use RectorPrefix202308\Symfony\Component\Console\Exception\LogicException;
+use RectorPrefix202310\Symfony\Component\Console\Command\Command;
+use RectorPrefix202310\Symfony\Component\Console\Completion\CompletionInput;
+use RectorPrefix202310\Symfony\Component\Console\Completion\CompletionSuggestions;
+use RectorPrefix202310\Symfony\Component\Console\Completion\Suggestion;
+use RectorPrefix202310\Symfony\Component\Console\Exception\InvalidArgumentException;
+use RectorPrefix202310\Symfony\Component\Console\Exception\LogicException;
 /**
  * Represents a command line option.
  *
@@ -68,9 +68,9 @@ class InputOption
      */
     private $description;
     /**
-     * @param string|mixed[] $shortcut The shortcuts, can be null, a string of shortcuts delimited by | or an array of shortcuts
+     * @param string|array|null                                                             $shortcut        The shortcuts, can be null, a string of shortcuts delimited by | or an array of shortcuts
      * @param int|null                                                                      $mode            The option mode: One of the VALUE_* constants
-     * @param string|bool|int|float|mixed[] $default The default value (must be null for self::VALUE_NONE)
+     * @param string|bool|int|float|array|null                                              $default         The default value (must be null for self::VALUE_NONE)
      * @param array|\Closure(CompletionInput,CompletionSuggestions):list<string|Suggestion> $suggestedValues The values used for input completion
      *
      * @throws InvalidArgumentException If option mode is invalid or incompatible

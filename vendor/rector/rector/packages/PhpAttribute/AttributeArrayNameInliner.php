@@ -11,11 +11,11 @@ use PhpParser\Node\Identifier;
 use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_;
 use Rector\Core\Exception\NotImplementedYetException;
-use RectorPrefix202308\Webmozart\Assert\Assert;
+use RectorPrefix202310\Webmozart\Assert\Assert;
 final class AttributeArrayNameInliner
 {
     /**
-     * @param \PhpParser\Node\Expr\Array_|mixed[] $array
+     * @param Array_|Arg[] $array
      * @return Arg[]
      */
     public function inlineArrayToArgs($array) : array

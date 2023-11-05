@@ -3,7 +3,7 @@
 declare (strict_types=1);
 namespace Rector\PHPUnit\PHPUnit70\Rector\Class_;
 
-use RectorPrefix202308\Nette\Utils\Strings;
+use RectorPrefix202310\Nette\Utils\Strings;
 use PhpParser\Node;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\Class_;
@@ -97,10 +97,11 @@ CODE_SAMPLE
         $hasChanged = \false;
         $dataProviderClassMethods = $this->dataProviderClassMethodFinder->find($node);
         foreach ($dataProviderClassMethods as $dataProviderClassMethod) {
-            if (!$this->isName($dataProviderClassMethod, 'test*')) {
+            $dataProviderClassMethodName = $dataProviderClassMethod->name->toString();
+            if (\strncmp($dataProviderClassMethodName, 'test', \strlen('test')) !== 0) {
                 continue;
             }
-            $shortMethodName = Strings::substring($dataProviderClassMethod->name->toString(), 4);
+            $shortMethodName = Strings::substring($dataProviderClassMethodName, 4);
             $shortMethodName = \lcfirst($shortMethodName);
             $dataProviderClassMethod->name = new Identifier($shortMethodName);
             $hasChanged = \true;

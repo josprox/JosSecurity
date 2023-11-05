@@ -23,12 +23,14 @@ use PHPStan\Type\UnionType;
 use Rector\Core\Enum\ObjectReference;
 use Rector\Core\Exception\ShouldNotHappenException;
 use Rector\Core\NodeAnalyzer\ClassAnalyzer;
+use Rector\Core\PhpParser\Node\BetterNodeFinder;
 use Rector\Core\Rector\AbstractScopeAwareRector;
 use Rector\Core\Reflection\ReflectionResolver;
 use Rector\Core\ValueObject\PhpVersionFeature;
 use Rector\NodeTypeResolver\NodeTypeResolver\NewTypeResolver;
 use Rector\NodeTypeResolver\PHPStan\Type\TypeFactory;
 use Rector\PHPStanStaticTypeMapper\Enum\TypeKind;
+use Rector\StaticTypeMapper\StaticTypeMapper;
 use Rector\StaticTypeMapper\ValueObject\Type\SelfStaticType;
 use Rector\TypeDeclaration\NodeAnalyzer\ReturnTypeAnalyzer\StrictReturnNewAnalyzer;
 use Rector\TypeDeclaration\TypeInferer\ReturnTypeInferer;
@@ -81,7 +83,17 @@ final class ReturnTypeFromReturnNewRector extends AbstractScopeAwareRector imple
      * @var \Rector\NodeTypeResolver\NodeTypeResolver\NewTypeResolver
      */
     private $newTypeResolver;
-    public function __construct(TypeFactory $typeFactory, ReflectionProvider $reflectionProvider, ReflectionResolver $reflectionResolver, StrictReturnNewAnalyzer $strictReturnNewAnalyzer, ClassMethodReturnTypeOverrideGuard $classMethodReturnTypeOverrideGuard, ReturnTypeInferer $returnTypeInferer, ClassAnalyzer $classAnalyzer, NewTypeResolver $newTypeResolver)
+    /**
+     * @readonly
+     * @var \Rector\Core\PhpParser\Node\BetterNodeFinder
+     */
+    private $betterNodeFinder;
+    /**
+     * @readonly
+     * @var \Rector\StaticTypeMapper\StaticTypeMapper
+     */
+    private $staticTypeMapper;
+    public function __construct(TypeFactory $typeFactory, ReflectionProvider $reflectionProvider, ReflectionResolver $reflectionResolver, StrictReturnNewAnalyzer $strictReturnNewAnalyzer, ClassMethodReturnTypeOverrideGuard $classMethodReturnTypeOverrideGuard, ReturnTypeInferer $returnTypeInferer, ClassAnalyzer $classAnalyzer, NewTypeResolver $newTypeResolver, BetterNodeFinder $betterNodeFinder, StaticTypeMapper $staticTypeMapper)
     {
         $this->typeFactory = $typeFactory;
         $this->reflectionProvider = $reflectionProvider;
@@ -91,6 +103,8 @@ final class ReturnTypeFromReturnNewRector extends AbstractScopeAwareRector imple
         $this->returnTypeInferer = $returnTypeInferer;
         $this->classAnalyzer = $classAnalyzer;
         $this->newTypeResolver = $newTypeResolver;
+        $this->betterNodeFinder = $betterNodeFinder;
+        $this->staticTypeMapper = $staticTypeMapper;
     }
     public function getRuleDefinition() : RuleDefinition
     {
@@ -216,9 +230,8 @@ CODE_SAMPLE
             if (!$return->expr instanceof New_) {
                 return null;
             }
-            $new = $return->expr;
-            $newType = $this->createObjectTypeFromNew($new);
-            if ($newType === null) {
+            $newType = $this->createObjectTypeFromNew($return->expr);
+            if (!$newType instanceof Type) {
                 return null;
             }
             $newTypes[] = $newType;

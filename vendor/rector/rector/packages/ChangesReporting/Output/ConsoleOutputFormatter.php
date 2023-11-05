@@ -3,14 +3,14 @@
 declare (strict_types=1);
 namespace Rector\ChangesReporting\Output;
 
-use RectorPrefix202308\Nette\Utils\Strings;
+use RectorPrefix202310\Nette\Utils\Strings;
 use Rector\ChangesReporting\Annotation\RectorsChangelogResolver;
 use Rector\ChangesReporting\Contract\Output\OutputFormatterInterface;
 use Rector\Core\ValueObject\Configuration;
 use Rector\Core\ValueObject\Error\SystemError;
 use Rector\Core\ValueObject\ProcessResult;
 use Rector\Core\ValueObject\Reporting\FileDiff;
-use RectorPrefix202308\Symfony\Component\Console\Style\SymfonyStyle;
+use RectorPrefix202310\Symfony\Component\Console\Style\SymfonyStyle;
 final class ConsoleOutputFormatter implements OutputFormatterInterface
 {
     /**
@@ -42,8 +42,8 @@ final class ConsoleOutputFormatter implements OutputFormatterInterface
         if ($configuration->shouldShowDiffs()) {
             $this->reportFileDiffs($processResult->getFileDiffs());
         }
-        $this->reportErrors($processResult->getErrors());
-        if ($processResult->getErrors() !== []) {
+        $this->reportErrors($processResult->getSystemErrors());
+        if ($processResult->getSystemErrors() !== []) {
             return;
         }
         // to keep space between progress bar and success message

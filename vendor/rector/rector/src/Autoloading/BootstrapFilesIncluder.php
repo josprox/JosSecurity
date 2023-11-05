@@ -9,7 +9,7 @@ use Rector\Core\Exception\ShouldNotHappenException;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
-use RectorPrefix202308\Webmozart\Assert\Assert;
+use RectorPrefix202310\Webmozart\Assert\Assert;
 /**
  * @see \Rector\Core\Tests\Autoloading\BootstrapFilesIncluderTest
  */
@@ -34,6 +34,7 @@ final class BootstrapFilesIncluder
     }
     private function requireRectorStubs() : void
     {
+        /** @var false|string $stubsRectorDirectory */
         $stubsRectorDirectory = \realpath(__DIR__ . '/../../stubs-rector');
         if ($stubsRectorDirectory === \false) {
             return;

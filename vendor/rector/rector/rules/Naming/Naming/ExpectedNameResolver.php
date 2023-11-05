@@ -62,10 +62,7 @@ final class ExpectedNameResolver
         }
         /** @var string $currentName */
         $currentName = $this->nodeNameResolver->getName($param->var);
-        if ($currentName === $expectedName) {
-            return null;
-        }
-        if ($this->nodeNameResolver->endsWith($currentName, $expectedName)) {
+        if ($currentName === $expectedName || \substr_compare($currentName, \ucfirst($expectedName), -\strlen(\ucfirst($expectedName))) === 0) {
             return null;
         }
         return $expectedName;
@@ -122,8 +119,7 @@ final class ExpectedNameResolver
         if ($returnedType instanceof MixedType) {
             return null;
         }
-        if ($returnedType instanceof ObjectType && $returnedType->isInstanceOf('DateTimeInterface')->yes()) {
-            // skip date time, as custom naming
+        if ($this->isDateTimeType($returnedType)) {
             return null;
         }
         $expectedName = $this->propertyNaming->getExpectedNameFromType($returnedType);
@@ -197,5 +193,18 @@ final class ExpectedNameResolver
             return null;
         }
         return $arrayType->getItemType();
+    }
+    /**
+     * Skip date time, as custom naming
+     */
+    private function isDateTimeType(Type $type) : bool
+    {
+        if (!$type instanceof ObjectType) {
+            return \false;
+        }
+        if ($type->isInstanceOf('DateTimeInterface')->yes()) {
+            return \true;
+        }
+        return $type->isInstanceOf('DateTime')->yes();
     }
 }

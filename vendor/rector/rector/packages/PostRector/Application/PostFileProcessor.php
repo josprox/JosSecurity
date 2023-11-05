@@ -3,11 +3,8 @@
 declare (strict_types=1);
 namespace Rector\PostRector\Application;
 
-use PhpParser\Node\Stmt;
+use PhpParser\Node;
 use PhpParser\NodeTraverser;
-use Rector\Core\Logging\CurrentRectorProvider;
-use Rector\Core\Provider\CurrentFileProvider;
-use Rector\Core\ValueObject\Application\File;
 use Rector\PostRector\Contract\Rector\PostRectorInterface;
 use Rector\PostRector\Rector\ClassRenamingPostRector;
 use Rector\PostRector\Rector\NameImportingPostRector;
@@ -23,23 +20,11 @@ final class PostFileProcessor
      */
     private $skipper;
     /**
-     * @readonly
-     * @var \Rector\Core\Provider\CurrentFileProvider
-     */
-    private $currentFileProvider;
-    /**
-     * @readonly
-     * @var \Rector\Core\Logging\CurrentRectorProvider
-     */
-    private $currentRectorProvider;
-    /**
      * @var PostRectorInterface[]
      */
     private $postRectors = [];
     public function __construct(
         Skipper $skipper,
-        CurrentFileProvider $currentFileProvider,
-        CurrentRectorProvider $currentRectorProvider,
         // set order here
         UseAddingPostRector $useAddingPostRector,
         NameImportingPostRector $nameImportingPostRector,
@@ -48,8 +33,6 @@ final class PostFileProcessor
     )
     {
         $this->skipper = $skipper;
-        $this->currentFileProvider = $currentFileProvider;
-        $this->currentRectorProvider = $currentRectorProvider;
         $this->postRectors = [
             // priority: 650
             $classRenamingPostRector,
@@ -62,29 +45,23 @@ final class PostFileProcessor
         ];
     }
     /**
-     * @param Stmt[] $stmts
-     * @return Stmt[]
+     * @param Node[] $stmts
+     * @return Node[]
      */
-    public function traverse(array $stmts) : array
+    public function traverse(array $stmts, string $filePath) : array
     {
         foreach ($this->postRectors as $postRector) {
-            if ($this->shouldSkipPostRector($postRector)) {
+            if ($this->shouldSkipPostRector($postRector, $filePath)) {
                 continue;
             }
-            $this->currentRectorProvider->changeCurrentRector($postRector);
             $nodeTraverser = new NodeTraverser();
             $nodeTraverser->addVisitor($postRector);
             $stmts = $nodeTraverser->traverse($stmts);
         }
         return $stmts;
     }
-    private function shouldSkipPostRector(PostRectorInterface $postRector) : bool
+    private function shouldSkipPostRector(PostRectorInterface $postRector, string $filePath) : bool
     {
-        $file = $this->currentFileProvider->getFile();
-        if (!$file instanceof File) {
-            return \false;
-        }
-        $filePath = $file->getFilePath();
         if ($this->skipper->shouldSkipElementAndFilePath($postRector, $filePath)) {
             return \true;
         }

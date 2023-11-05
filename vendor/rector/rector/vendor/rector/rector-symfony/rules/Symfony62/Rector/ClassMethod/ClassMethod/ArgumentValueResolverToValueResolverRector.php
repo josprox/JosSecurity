@@ -16,8 +16,8 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\If_;
 use PhpParser\Node\Stmt\Return_;
 use Rector\Core\Rector\AbstractRector;
-use RectorPrefix202308\Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
-use RectorPrefix202308\Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
+use RectorPrefix202310\Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
+use RectorPrefix202310\Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 /**
@@ -88,21 +88,20 @@ CODE_SAMPLE
         return \false;
     }
     /**
-     *
      * @return array{bool, Expr|null, Expr|null}
      */
     private function extractSupportsArguments(Class_ $class, int $key, ClassMethod $classMethod) : array
     {
         $isIdentical = \true;
         $supportFirstArg = $supportSecondArg = null;
-        if (null === $classMethod->getStmts()) {
+        if ($classMethod->getStmts() === null) {
             return [$isIdentical, $supportFirstArg, $supportSecondArg];
         }
-        foreach ($classMethod->getStmts() as $statement) {
-            if (!$statement instanceof Return_) {
+        foreach ($classMethod->getStmts() as $stmt) {
+            if (!$stmt instanceof Return_) {
                 continue;
             }
-            $expression = $statement->expr;
+            $expression = $stmt->expr;
             if (!$expression instanceof BinaryOp) {
                 continue;
             }

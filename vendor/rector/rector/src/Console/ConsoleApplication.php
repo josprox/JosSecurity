@@ -3,18 +3,17 @@
 declare (strict_types=1);
 namespace Rector\Core\Console;
 
-use RectorPrefix202308\Composer\XdebugHandler\XdebugHandler;
+use RectorPrefix202310\Composer\XdebugHandler\XdebugHandler;
 use Rector\ChangesReporting\Output\ConsoleOutputFormatter;
 use Rector\Core\Application\VersionResolver;
 use Rector\Core\Configuration\Option;
-use Rector\Core\Util\Reflection\PrivatesAccessor;
-use RectorPrefix202308\Symfony\Component\Console\Application;
-use RectorPrefix202308\Symfony\Component\Console\Command\Command;
-use RectorPrefix202308\Symfony\Component\Console\Input\InputDefinition;
-use RectorPrefix202308\Symfony\Component\Console\Input\InputInterface;
-use RectorPrefix202308\Symfony\Component\Console\Input\InputOption;
-use RectorPrefix202308\Symfony\Component\Console\Output\OutputInterface;
-use RectorPrefix202308\Webmozart\Assert\Assert;
+use RectorPrefix202310\Symfony\Component\Console\Application;
+use RectorPrefix202310\Symfony\Component\Console\Command\Command;
+use RectorPrefix202310\Symfony\Component\Console\Input\InputDefinition;
+use RectorPrefix202310\Symfony\Component\Console\Input\InputInterface;
+use RectorPrefix202310\Symfony\Component\Console\Input\InputOption;
+use RectorPrefix202310\Symfony\Component\Console\Output\OutputInterface;
+use RectorPrefix202310\Webmozart\Assert\Assert;
 final class ConsoleApplication extends Application
 {
     /**
@@ -30,13 +29,6 @@ final class ConsoleApplication extends Application
         Assert::notEmpty($commands);
         Assert::allIsInstanceOf($commands, Command::class);
         $this->addCommands($commands);
-        // remove unused commands
-        $privatesAccessor = new PrivatesAccessor();
-        $privatesAccessor->propertyClosure($this, 'commands', static function (array $commands) : array {
-            unset($commands['completion']);
-            unset($commands['help']);
-            return $commands;
-        });
         // run this command, if no command name is provided
         $this->setDefaultCommand('process');
     }

@@ -15,7 +15,7 @@ use Rector\Core\Rector\AbstractRector;
 use Rector\Core\ValueObject\MethodName;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
-use RectorPrefix202308\Webmozart\Assert\Assert;
+use RectorPrefix202310\Webmozart\Assert\Assert;
 /**
  * @api used in rector-symfony
  * @see \Rector\Tests\Arguments\Rector\ClassMethod\ReplaceArgumentDefaultValueRector\ReplaceArgumentDefaultValueRectorTest
@@ -64,8 +64,12 @@ CODE_SAMPLE
         if ($node instanceof New_) {
             return $this->refactorNew($node);
         }
+        $nodeName = $this->getName($node->name);
+        if ($nodeName === null) {
+            return null;
+        }
         foreach ($this->replaceArgumentDefaultValues as $replaceArgumentDefaultValue) {
-            if (!$this->isName($node->name, $replaceArgumentDefaultValue->getMethod())) {
+            if (!$this->nodeNameResolver->isStringName($nodeName, $replaceArgumentDefaultValue->getMethod())) {
                 continue;
             }
             if (!$this->nodeTypeResolver->isMethodStaticCallOrClassMethodObjectType($node, $replaceArgumentDefaultValue->getObjectType())) {

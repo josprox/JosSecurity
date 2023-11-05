@@ -57,9 +57,6 @@ final class PhpVersionFeature
      * @var int
      */
     public const CLASSNAME_CONSTANT = \Rector\Core\ValueObject\PhpVersion::PHP_55;
-    /*
-     * @var int
-     */
     /**
      * @var int
      */
@@ -76,6 +73,10 @@ final class PhpVersionFeature
      * @var int
      */
     public const SCALAR_TYPES = \Rector\Core\ValueObject\PhpVersion::PHP_70;
+    /**
+     * @var int
+     */
+    public const HAS_RETURN_TYPE = \Rector\Core\ValueObject\PhpVersion::PHP_70;
     /**
      * @var int
      */

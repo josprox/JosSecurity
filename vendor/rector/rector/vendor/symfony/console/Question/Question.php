@@ -8,10 +8,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace RectorPrefix202308\Symfony\Component\Console\Question;
+namespace RectorPrefix202310\Symfony\Component\Console\Question;
 
-use RectorPrefix202308\Symfony\Component\Console\Exception\InvalidArgumentException;
-use RectorPrefix202308\Symfony\Component\Console\Exception\LogicException;
+use RectorPrefix202310\Symfony\Component\Console\Exception\InvalidArgumentException;
+use RectorPrefix202310\Symfony\Component\Console\Exception\LogicException;
 /**
  * Represents a Question.
  *
@@ -61,7 +61,7 @@ class Question
     private $multiline = \false;
     /**
      * @param string                     $question The question to ask to the user
-     * @param string|bool|int|float $default The default answer to return if the user enters nothing
+     * @param string|bool|int|float|null $default  The default answer to return if the user enters nothing
      */
     public function __construct(string $question, $default = null)
     {

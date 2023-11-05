@@ -270,7 +270,7 @@ try {
                 break;
         }
         header('Content-Type: application/json');
-        echo json_encode($respuesta);
+        echo json_encode($respuesta, JSON_THROW_ON_ERROR);
     }
 
 } catch (Exception $e) {

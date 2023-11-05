@@ -59,7 +59,7 @@ use Rector\Core\Util\Reflection\PrivatesAccessor;
 use Rector\NodeNameResolver\NodeNameResolver;
 use Rector\NodeTypeResolver\Node\AttributeKey;
 use Rector\NodeTypeResolver\PHPStan\Scope\Contract\NodeVisitor\ScopeResolverNodeVisitorInterface;
-use RectorPrefix202308\Webmozart\Assert\Assert;
+use RectorPrefix202310\Webmozart\Assert\Assert;
 /**
  * @inspired by https://github.com/silverstripe/silverstripe-upgrader/blob/532182b23e854d02e0b27e68ebc394f436de0682/src/UpgradeRule/PHP/Visitor/PHPStanScopeVisitor.php
  * - https://github.com/silverstripe/silverstripe-upgrader/pull/57/commits/e5c7cfa166ad940d9d4ff69537d9f7608e992359#diff-5e0807bb3dc03d6a8d8b6ad049abd774
@@ -141,6 +141,7 @@ final class PHPStanNodeScopeResolver
         // skip chain method calls, performance issue: https://github.com/phpstan/phpstan/issues/254
         $nodeCallback = function (Node $node, MutatingScope $mutatingScope) use(&$nodeCallback, $filePath) : void {
             if ($node instanceof FileWithoutNamespace) {
+                $node->setAttribute(AttributeKey::SCOPE, $mutatingScope);
                 $this->nodeScopeResolver->processNodes($node->stmts, $mutatingScope, $nodeCallback);
                 return;
             }
@@ -207,7 +208,7 @@ final class PHPStanNodeScopeResolver
         $this->nodeScopeResolver->processNodes($stmts, $scope, $nodeCallback);
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor(new WrappedNodeRestoringNodeVisitor());
-        $nodeTraverser->addVisitor(new ExprScopeFromStmtNodeVisitor($scope));
+        $nodeTraverser->addVisitor(new ExprScopeFromStmtNodeVisitor($this, $filePath, $scope));
         $nodeTraverser->traverse($stmts);
         return $stmts;
     }

@@ -18,7 +18,7 @@ use Rector\Core\ValueObject\PhpVersionFeature;
 use Rector\VersionBonding\Contract\MinPhpVersionInterface;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
-use RectorPrefix202308\Webmozart\Assert\Assert;
+use RectorPrefix202310\Webmozart\Assert\Assert;
 /**
  * @changelog https://wiki.php.net/rfc/class_name_scalars https://github.com/symfony/symfony/blob/2.8/UPGRADE-2.8.md#form
  *
@@ -150,6 +150,12 @@ CODE_SAMPLE
             return \true;
         }
         foreach ($this->classesToSkip as $classToSkip) {
+            if (\strpos($classToSkip, '*') !== \false) {
+                if (\fnmatch($classToSkip, $classLikeName, \FNM_NOESCAPE)) {
+                    return \true;
+                }
+                continue;
+            }
             if ($this->nodeNameResolver->isStringName($classLikeName, $classToSkip)) {
                 return \true;
             }

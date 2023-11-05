@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace RectorPrefix202308;
+namespace RectorPrefix202310;
 
-use RectorPrefix202308\OndraM\CiDetector\CiDetector;
+use RectorPrefix202310\OndraM\CiDetector\CiDetector;
 use Rector\Caching\ValueObject\Storage\MemoryCacheStorage;
 use Rector\Config\RectorConfig;
 use Rector\Core\Bootstrap\ExtensionConfigResolver;
@@ -12,7 +12,8 @@ return static function (RectorConfig $rectorConfig) : void {
     $rectorConfig->skip([]);
     $rectorConfig->autoloadPaths([]);
     $rectorConfig->bootstrapFiles([]);
-    $rectorConfig->parallel(120, 16, 20);
+    $rectorConfig->parallel();
+    $rectorConfig->disableCollectors();
     // to avoid autoimporting out of the box
     $rectorConfig->importNames(\false, \false);
     $rectorConfig->removeUnusedImports(\false);
@@ -26,9 +27,9 @@ return static function (RectorConfig $rectorConfig) : void {
     if ((new CiDetector())->isCiDetected()) {
         $rectorConfig->cacheClass(MemoryCacheStorage::class);
     }
+    // load internal rector-* extension configs
     $extensionConfigResolver = new ExtensionConfigResolver();
-    $extensionConfigFiles = $extensionConfigResolver->provide();
-    foreach ($extensionConfigFiles as $extensionConfigFile) {
+    foreach ($extensionConfigResolver->provide() as $extensionConfigFile) {
         $rectorConfig->import($extensionConfigFile);
     }
 };

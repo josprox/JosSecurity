@@ -3,7 +3,7 @@
 declare (strict_types=1);
 namespace Rector\StaticTypeMapper\ValueObject\Type;
 
-use RectorPrefix202308\Nette\Utils\Strings;
+use RectorPrefix202310\Nette\Utils\Strings;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Use_;
 use PhpParser\Node\Stmt\UseUse;
@@ -42,23 +42,20 @@ final class FullyQualifiedObjectType extends ObjectType
         $name->setAttribute(AttributeKey::NAMESPACED_NAME, $this->getClassName());
         return $name;
     }
-    public function getUseNode(?int $useType = null) : Use_
+    /**
+     * @param Use_::TYPE_* $useType
+     */
+    public function getUseNode(int $useType) : Use_
     {
         $name = new Name($this->getClassName());
         $name->setAttribute(AttributeKey::IS_USEUSE_NAME, \true);
         $useUse = new UseUse($name);
         $use = new Use_([$useUse]);
-        if ($useType !== null) {
-            $use->type = $useType;
-        }
+        $use->type = $useType;
         return $use;
     }
     public function getShortNameLowered() : string
     {
         return \strtolower($this->getShortName());
-    }
-    public function getClassNameLowered() : string
-    {
-        return \strtolower($this->getClassName());
     }
 }

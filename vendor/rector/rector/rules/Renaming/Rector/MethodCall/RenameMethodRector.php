@@ -10,6 +10,7 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Interface_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
@@ -23,7 +24,7 @@ use Rector\Renaming\ValueObject\MethodCallRename;
 use Rector\Renaming\ValueObject\MethodCallRenameWithArrayKey;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
-use RectorPrefix202308\Webmozart\Assert\Assert;
+use RectorPrefix202310\Webmozart\Assert\Assert;
 /**
  * @see \Rector\Tests\Renaming\Rector\MethodCall\RenameMethodRector\RenameMethodRectorTest
  */
@@ -115,11 +116,11 @@ CODE_SAMPLE
         return $classReflection->hasMethod($methodCallRename->getNewMethod());
     }
     /**
-     * @param \PhpParser\Node\Stmt\Class_|\PhpParser\Node\Stmt\Interface_ $classOrInternace
+     * @param \PhpParser\Node\Stmt\Class_|\PhpParser\Node\Stmt\Interface_ $classOrInterface
      */
-    private function hasClassNewClassMethod($classOrInternace, MethodCallRenameInterface $methodCallRename) : bool
+    private function hasClassNewClassMethod($classOrInterface, MethodCallRenameInterface $methodCallRename) : bool
     {
-        return (bool) $classOrInternace->getMethod($methodCallRename->getNewMethod());
+        return (bool) $classOrInterface->getMethod($methodCallRename->getNewMethod());
     }
     private function shouldKeepForParentInterface(MethodCallRenameInterface $methodCallRename, ?ClassReflection $classReflection) : bool
     {
@@ -144,17 +145,12 @@ CODE_SAMPLE
         $classReflection = $scope->getClassReflection();
         $hasChanged = \false;
         foreach ($classOrInterface->getMethods() as $classMethod) {
+            $methodName = $this->getName($classMethod->name);
+            if ($methodName === null) {
+                continue;
+            }
             foreach ($this->methodCallRenames as $methodCallRename) {
-                if (!$this->isName($classMethod->name, $methodCallRename->getOldMethod())) {
-                    continue;
-                }
-                if (!$this->nodeTypeResolver->isMethodStaticCallOrClassMethodObjectType($classMethod, $methodCallRename->getObjectType())) {
-                    continue;
-                }
-                if ($this->shouldKeepForParentInterface($methodCallRename, $classReflection)) {
-                    continue;
-                }
-                if ($this->hasClassNewClassMethod($classOrInterface, $methodCallRename)) {
+                if ($this->shouldSkipRename($methodName, $classMethod, $methodCallRename, $classReflection, $classOrInterface)) {
                     continue;
                 }
                 $classMethod->name = new Identifier($methodCallRename->getNewMethod());
@@ -167,13 +163,33 @@ CODE_SAMPLE
         return null;
     }
     /**
+     * @param \PhpParser\Node\Stmt\Class_|\PhpParser\Node\Stmt\Interface_ $classOrInterface
+     */
+    private function shouldSkipRename(string $methodName, ClassMethod $classMethod, MethodCallRenameInterface $methodCallRename, ClassReflection $classReflection, $classOrInterface) : bool
+    {
+        if (!$this->nodeNameResolver->isStringName($methodName, $methodCallRename->getOldMethod())) {
+            return \true;
+        }
+        if (!$this->nodeTypeResolver->isMethodStaticCallOrClassMethodObjectType($classMethod, $methodCallRename->getObjectType())) {
+            return \true;
+        }
+        if ($this->shouldKeepForParentInterface($methodCallRename, $classReflection)) {
+            return \true;
+        }
+        return $this->hasClassNewClassMethod($classOrInterface, $methodCallRename);
+    }
+    /**
      * @param \PhpParser\Node\Expr\StaticCall|\PhpParser\Node\Expr\MethodCall $call
      * @return \PhpParser\Node\Expr\ArrayDimFetch|null|\PhpParser\Node\Expr\MethodCall|\PhpParser\Node\Expr\StaticCall
      */
     private function refactorMethodCallAndStaticCall($call)
     {
+        $callName = $this->getName($call->name);
+        if ($callName === null) {
+            return null;
+        }
         foreach ($this->methodCallRenames as $methodCallRename) {
-            if (!$this->isName($call->name, $methodCallRename->getOldMethod())) {
+            if (!$this->nodeNameResolver->isStringName($callName, $methodCallRename->getOldMethod())) {
                 continue;
             }
             if (!$this->nodeTypeResolver->isMethodStaticCallOrClassMethodObjectType($call, $methodCallRename->getObjectType())) {

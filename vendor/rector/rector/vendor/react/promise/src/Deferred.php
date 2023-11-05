@@ -1,6 +1,6 @@
 <?php
 
-namespace RectorPrefix202308\React\Promise;
+namespace RectorPrefix202310\React\Promise;
 
 class Deferred implements PromisorInterface
 {

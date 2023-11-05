@@ -3,7 +3,7 @@
 declare (strict_types=1);
 namespace Rector\ChangesReporting\Output;
 
-use RectorPrefix202308\Nette\Utils\Json;
+use RectorPrefix202310\Nette\Utils\Json;
 use Rector\ChangesReporting\Annotation\RectorsChangelogResolver;
 use Rector\ChangesReporting\Contract\Output\OutputFormatterInterface;
 use Rector\Core\ValueObject\Configuration;
@@ -41,9 +41,9 @@ final class JsonOutputFormatter implements OutputFormatterInterface
             // for Rector CI
             $errorsJson['changed_files'][] = $relativeFilePath;
         }
-        $errors = $processResult->getErrors();
-        $errorsJson['totals']['errors'] = \count($errors);
-        $errorsData = $this->createErrorsData($errors);
+        $systemErrors = $processResult->getSystemErrors();
+        $errorsJson['totals']['errors'] = \count($systemErrors);
+        $errorsData = $this->createErrorsData($systemErrors);
         if ($errorsData !== []) {
             $errorsJson['errors'] = $errorsData;
         }
