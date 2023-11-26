@@ -1246,6 +1246,9 @@ if ($_ENV['PLUGINS'] != 1 || !isset($_ENV['PLUGINS'])){
             include (__DIR__ . DIRECTORY_SEPARATOR . "plugins/onesignal/SDK.php");
         }
     }
+    if(isset($_ENV['HI_GOOGLE']) && $_ENV['HI_GOOGLE'] == 1){
+        include (__DIR__ . DIRECTORY_SEPARATOR . "plugins/Google_client/higoogle.php");
+    }
 }
 
 // Se ha integrado Gran MySQL como una herramienta completa, dejando de ser solo un plugin.
