@@ -1,6 +1,6 @@
 # JosSecurity
 
-![JosSecurity](./resources/img/logo%20azul/cover.png)
+<img src="./resourses/img/logo%20azul/cover.png" alt="JosSecurity seguridad a tu alcance."/>
 
 ## ¿Qué es JosSecurity?
 
@@ -98,5 +98,4 @@ Puedes donar a través de [Patreon](https://www.patreon.com/jossestrada), [Merca
 JosSecurity es creado por JOSPROX MX/ JOSPROX Internacional.
 Licencia: CC BY 4.0.
 
-![CC BY 4.0](./resources/img/byncsa.jpg)
-[Creative Commons Attribution 4.0 International](https://spdx.org/licenses/CC-BY-4.0.html)
+<img src="./resourses/img/byncsa.jpg" alt="Creative Commons Attribution 4.0 International"/>
