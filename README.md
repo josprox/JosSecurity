@@ -89,6 +89,10 @@ Si trabajas en un localhost (usando de ejemplo xampp):
 - Se recomienda usar un panel de control para administrar el servidor. [Hestia Control Panel](https://hestiacp.com/) es una opción preferida.
 - Para pruebas y mejoras, se recomienda usar XAMPP con PHP 8.2 o superior.
 
+#### Ayuda e información
+
+Obten información de las actualizaciones o ayuda del sistema a través de la página [JosSecurity help](https://social.josprox.com/jossecurity) de Alola social.
+
 #### Donaciones.
 
 Puedes donar a través de [Patreon](https://www.patreon.com/jossestrada), [Mercado Pago](https://mpago.la/2gsWWYW) y [Paypal](http://paypal.me/JOSPROXMX). ¡Tu apoyo es fundamental!

@@ -2,7 +2,7 @@
 
 $name_app_default = "JosSecurity";
 
-$version_app_default = "2.3";
+$version_app_default = "2.5";
 
 if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . ".env")){
   header("Location: ./public/panel");
