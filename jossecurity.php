@@ -259,6 +259,11 @@ if ($_ENV['CONECT_DATABASE'] == 1){
     }
 }
 
+// Se ha configurado GranMail, como una nueva extensión de JosSecurity para dejar atrás a las funciones obsoletas.
+if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . "config/extension/GranMail/granmail.php")){
+    include (__DIR__ . DIRECTORY_SEPARATOR . "config/extension/GranMail/granmail.php");
+}
+
 //configuración de logins, registros y cookies
 
 function FA($correo, $contra, $clave, $cookies="si", $redireccion = "panel"){
@@ -460,8 +465,10 @@ class login{
                         actualizar_datos_mysqli("users","`last_ip` = '$ip'","id",$id);
         
                         $cuerpo_de_correo = "<div><p align='justify'>Te informamos que hemos recibido un inicio de sesión desde ". $this->nombre_app .", sino fuiste tú te recomendamos que cambies tu contraseña lo más pronto posible.😊</p></div><div><p>La dirección ip donde se ingresó fue: ".$this->ip."</p><p>Accedió el día: ".$this->fecha ."</p></div>";
+
+                        $correo_confirmar = json_decode(mail_smtp_v1_3($row['name'],"Haz iniciado sesión",$cuerpo_de_correo,$usuario), true);
         
-                        if(mail_smtp_v1_3($row['name'],"Has iniciado sesión",$cuerpo_de_correo,$usuario) == TRUE){
+                        if($correo_confirmar['Estado'] == 200){
                             header("Location: $location");
                         }
         
@@ -609,7 +616,8 @@ function resetear_contra($correo){
         $name = $row['name'];
     
         if($_ENV['SMTP_ACTIVE'] == 1){
-            include (__DIR__ . "/config/correo/correo_reset_password.php");
+            $mensaje = 'Recientemente has solicitado restablecer tu contraseña es por eso que, le hemos mandado un link para poder restaurar su contraseña, podrá modificarla dentro del sistema.<br><br>Su link es: <a href="'.check_http().$_ENV['DOMINIO'].$_ENV['HOMEDIR']."panel?cambiar_contra=".$key.'">'.check_http().$_ENV['DOMINIO'].$_ENV['HOMEDIR']."panel?cambiar_contra=".$key.'</a>';
+            mail_smtp_v1_3("Soporte de " . $_ENV['NAME_APP'],"Resetea tu contraseña",$mensaje, $correo);
             return TRUE;
         }
         if($_ENV['SMTP_ACTIVE'] != 1){
@@ -738,39 +746,46 @@ function generar_llave($caracteres, $patron){
 // Jossitos de correo
 
 function mail_smtp_v1_3($nombre,$asunto,$contenido,$correo){
-    if($_ENV['SMTP_ACTIVE'] == 1){
-        include (__DIR__ . "/config/correo/correo.php");
-        return TRUE;
-    }elseif($_ENV['SMTP_ACTIVE'] != 1){
-        return FALSE;
-    }
+    $email = new GranMail\NewMail;
+    $email -> metodo = "basic";
+    $email -> nombre = $nombre;
+    $email -> correo = $correo;
+    $email -> asunto = $asunto;
+    $email -> contenido = $contenido;
+    $json = $email -> send();
+    return $json;
 }
 
 function mail_WP( $to, $subject, $message, $headers = '', $attachments  = [] ){
-    if($_ENV['SMTP_ACTIVE'] != 1 || !isset($_ENV['SMTP_ACTIVE'])){
-        return false;
-    }elseif($_ENV['SMTP_ACTIVE'] == 1){
-        include (__DIR__ . DIRECTORY_SEPARATOR ."config/correo/correo_wp.php");
-        return mi_mail_v2($to, $subject, $message, $headers, $attachments);
-    }
+    $email = new GranMail\NewMail;
+    $email -> metodo = "WordPress";
+    $email -> nombre = "José Luis";
+    $email -> correo = $to;
+    $email -> asunto = $subject;
+    $email -> contenido = $message;
+    $email -> headers = $headers;
+    $email -> attachments = $attachments;
+    $json = $email -> send();
+    return $json;
 }
 
 function mail_smtp_v1_3_recibir($nombre,$asunto,$contenido,$correo){
-    if($_ENV['SMTP_ACTIVE'] == 1){
-        include (__DIR__ . "/config/correo/correo_recibir.php");
-        return TRUE;
-    }elseif($_ENV['SMTP_ACTIVE'] != 1){
-        return FALSE;
-    }
+    $email = new GranMail\NewMail;
+    $email -> metodo = "recibir";
+    $email -> nombre = $nombre;
+    $email -> asunto = $asunto;
+    $email -> correo = $correo;
+    $email -> contenido = $contenido;
+    $json = $email -> send();
+    return $json;
 }
 
 function mail_smtp_v1_3_check($correo){
-    if($_ENV['SMTP_ACTIVE'] == 1){
-        include (__DIR__ . "/config/correo/correo_check.php");
-        return TRUE;
-    }elseif($_ENV['SMTP_ACTIVE'] != 1){
-        return FALSE;
-    }
+    $email = new GranMail\NewMail;
+    $email -> metodo = "test";
+    $email -> correo = $correo;
+    $json = $email -> send();
+    return $json;
 }
 
 //Consultas, lecturas, inserciones y eliminaciones de datos para MySQL o MariaDB, se recomienda usar estos Jossitos dentro del sistema, si vas a permitir que los usuarios registren información a tu base de datos a través de un formulario, se recomienda usar el plugin GranMySQL.

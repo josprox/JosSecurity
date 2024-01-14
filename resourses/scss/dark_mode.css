@@ -1101,8 +1101,9 @@ button {
   }
 }
 
-h1, h2, h3, label, small, p {
+h1, h2, h3, label, small, p, .form-text {
   color: #fff !important;
+  text-shadow: black 0.1em 0.1em 0.2em;
 }
 
 * {
