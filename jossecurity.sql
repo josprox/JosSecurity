@@ -100,12 +100,12 @@ CREATE TABLE `users` (
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `id_rol` bigint(21) NOT NULL,
-  `phone` varchar(21) DEFAULT NULL,
-  `checked_status` varchar(5) DEFAULT NULL,
-  `last_ip` varchar(255) DEFAULT NULL,
-  `fa` varchar(1) NOT NULL,
-  `type_fa` varchar(15) DEFAULT NULL,
-  `two_fa` varchar(32) DEFAULT NULL,
+  `phone` varchar(21) NULL DEFAULT NULL,
+  `checked_status` varchar(5) NULL DEFAULT NULL,
+  `last_ip` varchar(255) NULL DEFAULT NULL,
+  `fa` varchar(1) NULL NOT NULL,
+  `type_fa` varchar(15) NULL DEFAULT NULL,
+  `two_fa` varchar(32) NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

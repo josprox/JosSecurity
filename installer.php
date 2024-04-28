@@ -183,52 +183,52 @@ if(isset($_POST['instalar'])){
   fwrite($env_create, "CHECK_USER=".$CHECK_USER."\n\n");
   
   fwrite($env_create, "# Conexión a la base de datos MySQL.\n");
-  fwrite($env_create, "USUARIO=".$usuariodb."\n");
-  fwrite($env_create, "CONTRA=".$password_db."\n");
-  fwrite($env_create, "BASE_DE_DATOS=".$db."\n");
-  fwrite($env_create, "HOST=".$servidor_db."\n");
+  fwrite($env_create, "USUARIO='".$usuariodb."'\n");
+  fwrite($env_create, "CONTRA='".$password_db."'\n");
+  fwrite($env_create, "BASE_DE_DATOS='".$db."'\n");
+  fwrite($env_create, "HOST='".$servidor_db."'\n");
   fwrite($env_create, "PUERTO=".$puerto."\n\n");
   
   fwrite($env_create, "# Conexión a la base de datos PostgreSQL.\n");
-  fwrite($env_create, "USUARIO_PSG=".$usuariodb_psg."\n");
-  fwrite($env_create, "CONTRA_PSG=".$password_db_psg."\n");
-  fwrite($env_create, "BASE_DE_DATOS_PSG=".$db_psg."\n");
-  fwrite($env_create, "HOST_PSG=".$servidor_db_psg."\n");
+  fwrite($env_create, "USUARIO_PSG='".$usuariodb_psg."'\n");
+  fwrite($env_create, "CONTRA_PSG='".$password_db_psg."'\n");
+  fwrite($env_create, "BASE_DE_DATOS_PSG='".$db_psg."'\n");
+  fwrite($env_create, "HOST_PSG='".$servidor_db_psg."'\n");
   fwrite($env_create, "PUERTO_PSG=".$puerto_psg."\n\n");
 
   fwrite($env_create, "# Funcion de recaptcha.\n");
   fwrite($env_create, "RECAPTCHA=1\n");
-  fwrite($env_create, "RECAPTCHA_CODE_PUBLIC=".$RCP."\n");
-  fwrite($env_create, "RECAPTCHA_CODE_SECRET=".$RCS."\n\n");
+  fwrite($env_create, "RECAPTCHA_CODE_PUBLIC='".$RCP."'\n");
+  fwrite($env_create, "RECAPTCHA_CODE_SECRET='".$RCS."'\n\n");
 
   fwrite($env_create, "# Onesignal.\n");
   fwrite($env_create, "ONESIGNAL=".$ONESIGNAL."\n");
-  fwrite($env_create, "ONESIGNAL_APP_ID=".$ONESIGNAL_APP_ID."\n");
-  fwrite($env_create, "ONESIGNAL_API_KEY=".$ONESIGNAL_API_KEY."\n\n");
+  fwrite($env_create, "ONESIGNAL_APP_ID='".$ONESIGNAL_APP_ID."'\n");
+  fwrite($env_create, "ONESIGNAL_API_KEY='".$ONESIGNAL_API_KEY."'\n\n");
 
   fwrite($env_create, "# Llaves de Twilio.\n");
   fwrite($env_create, "TWILIO=".$twilio."\n");
-  fwrite($env_create, "TWILIO_PHONE=".$twilio_tel."\n");
-  fwrite($env_create, "TWILIO_SID=".$twilio_sid."\n");
-  fwrite($env_create, "TWILIO_AUTH=".$twilio_auth."\n\n");
+  fwrite($env_create, "TWILIO_PHONE='".$twilio_tel."'\n");
+  fwrite($env_create, "TWILIO_SID='".$twilio_sid."'\n");
+  fwrite($env_create, "TWILIO_AUTH='".$twilio_auth."'\n\n");
 
   fwrite($env_create, "# Activador de Mercado Pago.\n");
   fwrite($env_create, "MERCADO_PAGO=".$MP."\n");
-  fwrite($env_create, "MERCADO_PAGO_PUBLIC_KEY=".$MPPK."\n");
-  fwrite($env_create, "MERCADO_PAGO_ACCESS_TOKEN=".$MPAT."\n\n");
+  fwrite($env_create, "MERCADO_PAGO_PUBLIC_KEY='".$MPPK."'\n");
+  fwrite($env_create, "MERCADO_PAGO_ACCESS_TOKEN='".$MPAT."'\n\n");
   
   fwrite($env_create, "# Acceso smtp para enviar correos.\n");
   fwrite($env_create, "SMTP_ACTIVE=1\n");
-  fwrite($env_create, "SMTP_SERVER=".$server_smtp."\n");
-  fwrite($env_create, "SMTP_USERNAME=".$user_smtp."\n");
+  fwrite($env_create, "SMTP_SERVER='".$server_smtp."'\n");
+  fwrite($env_create, "SMTP_USERNAME='".$user_smtp."'\n");
   fwrite($env_create, "SMTP_PASSWORD='".$pass_smtp."'\n");
   fwrite($env_create, "SMTP_PORT=".$smtp_port."\n\n");
 
   fwrite($env_create, "# Dominio registrado\n");
-  fwrite($env_create, "DOMINIO=".$dominio."\n\n");
+  fwrite($env_create, "DOMINIO='".$dominio."'\n\n");
 
   fwrite($env_create, "# Directorio\n");
-  fwrite($env_create, "HOMEDIR=".$dir.$homedir."\n\n");
+  fwrite($env_create, "HOMEDIR='".$dir.$homedir."'\n\n");
 
   fwrite($env_create, "# Zona horaria.\n");
   fwrite($env_create, "ZONA_HORARIA=America/Mexico_City\n\n");
@@ -289,21 +289,21 @@ if(isset($_POST['instalar'])){
 
               <div class="col-3">
                 <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" id="check_user_db" name="check_user_db">
+                  <input class="form-check-input" type="checkbox" id="check_user_db" name="check_user_db" checked>
                   <label class="form-check-label" for="check_user_db">¿Deseas activar el sistema de autenticacion de usuarios?</label>
                 </div>
               </div>
 
               <div class="col-4">
                 <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" id="service" name="service">
+                  <input class="form-check-input" type="checkbox" id="service" name="service" checked>
                   <label class="form-check-label" for="service">¿Desea activar el service worker que viene por defecto?</label>
                 </div>
               </div>
 
               <div class="col-3">
                 <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" id="API" name="API">
+                  <input class="form-check-input" type="checkbox" id="API" name="API" checked>
                   <label class="form-check-label" for="API">¿Deseas activar el sistema de API que viene por defecto?</label>
                 </div>
               </div>
