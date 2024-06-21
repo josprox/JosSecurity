@@ -4,10 +4,10 @@
     "bootstrap": "^5.3.3",
     "jquery": "^3.7.1",
     "richtext_for_npm": "^1.0.16",
-    "sweetalert2": "^11.10.8"
+    "sweetalert2": "^11.12.0"
   },
   "name": "jossecurity",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "description": "JosSecurity es un framework y librería al mismo tiempo, debido a que, el sistema lo podrás usar como primer uso o segundo uso en tu proyecto, JosSecurity tiene herramientas para que puedas crear tu sitio web de una manera fácil y sencilla sin tener conocimientos en el back-end.",
   "keywords": [
     "JosSecurity",

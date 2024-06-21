@@ -36,18 +36,32 @@ if ($_ENV['DEBUG'] == 1) {
     echo "<script>console.log('".$nombre_app." está funcionando.');</script>";
 }
 
-function head(){
+function head($bootstrap=0){
+
     if ($_ENV['DEBUG'] == 1){
         echo "<script>console.log('".$_ENV['NAME_APP']." Head está activo.');</script>";
     }
     return include (__DIR__ . "/config/general_rutes/head/head.php");
+    $pagina = nombre_de_pagina();
+    if($pagina != "panel.php" && $bootstrap !=0){
+        ?>
+        <!-- Bootstrap min -->
+        <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+        <?php
+    }
 }
 
-function head_users(){
+function head_users($bootstrap=0){
     if ($_ENV['DEBUG'] == 1){
         echo "<script>console.log('".$_ENV['NAME_APP']." Head admin está activo.');</script>";
     }
     return include (__DIR__ . "/config/general_rutes/head/head_users.php");
+    if($bootstrap !=0){
+        ?>
+        <!-- Bootstrap min -->
+        <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+        <?php
+    }
 }
 
 function head_admin(){
@@ -78,16 +92,28 @@ function navbar_admin(){
     return include (__DIR__ . "/config/general_rutes/navbar/navbar_admin.php");
 }
 
-function footer(){
+function footer($bootstrap = 0){
     if ($_ENV['DEBUG'] == 1){
         echo "<script>console.log('".$_ENV['NAME_APP']." footer está activo.');</script>";
     }
     return include (__DIR__ . "/config/general_rutes/footer/footer.php");
+    if($bootstrap !=0){
+        ?>
+        <!-- Bootstrap JavaScript Libraries -->
+    <script src="./../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js" integrity="<?php echo $_ENV['BOOTSTRAP']; ?>" crossorigin="anonymous"></script>
+        <?php
+    }
 }
 
-function footer_users(){
+function footer_users($bootstrap = 0){
     if ($_ENV['DEBUG'] == 1){
         echo "<script>console.log('".$_ENV['NAME_APP']." footer admin está activo.');</script>";
+    }
+    if($bootstrap !=0){
+        ?>
+        <!-- Bootstrap JavaScript Libraries -->
+        <script src="./../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js" integrity="<?php echo $_ENV['BOOTSTRAP']; ?>" crossorigin="anonymous"></script>
+        <?php
     }
     return include (__DIR__ . "/config/general_rutes/footer/footer_users.php");
 }
