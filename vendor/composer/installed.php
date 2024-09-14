@@ -3,7 +3,7 @@
         'name' => 'josprox/jossecurity',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '09de275a5a7e818fd3c268aa3fed5ab1380f159c',
+        'reference' => 'e5b9b9724abf9623680041d8eb49ace793544024',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -139,7 +139,7 @@
         'josprox/jossecurity' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '09de275a5a7e818fd3c268aa3fed5ab1380f159c',
+            'reference' => 'e5b9b9724abf9623680041d8eb49ace793544024',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -152,6 +152,17 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../mercadopago/dx-php',
             'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'onesignal/onesignal-php-api' => array(
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '325c42a2a2d19733391d9a638823ef051cbacc51',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../onesignal/onesignal-php-api',
+            'aliases' => array(
+                0 => '9999999-dev',
+            ),
             'dev_requirement' => false,
         ),
         'paragonie/constant_time_encoding' => array(

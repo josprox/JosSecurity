@@ -2,7 +2,7 @@
 
 $name_app_default = "JosSecurity";
 
-$version_app_default = "2.5";
+$version_app_default = "2.6";
 
 if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . ".env")){
   header("Location: ./public/panel");
@@ -57,6 +57,7 @@ if(isset($_POST['instalar'])){
   }
   $ONESIGNAL_APP_ID = $_POST['ONESIGNAL_APP_ID'];
   $ONESIGNAL_API_KEY = $_POST['ONESIGNAL_API_KEY'];
+  $YOUR_USER_KEY_TOKEN = $_POST['YOUR_USER_KEY_TOKEN'];
   //twilio
   if(isset($_POST['twilio'])){
     $twilio = "1";
@@ -204,7 +205,8 @@ if(isset($_POST['instalar'])){
   fwrite($env_create, "# Onesignal.\n");
   fwrite($env_create, "ONESIGNAL=".$ONESIGNAL."\n");
   fwrite($env_create, "ONESIGNAL_APP_ID='".$ONESIGNAL_APP_ID."'\n");
-  fwrite($env_create, "ONESIGNAL_API_KEY='".$ONESIGNAL_API_KEY."'\n\n");
+  fwrite($env_create, "ONESIGNAL_API_KEY='".$ONESIGNAL_API_KEY."'\n");
+  fwrite($env_create, "ONESIGNAL_USER_KEY_TOKEN='".$YOUR_USER_KEY_TOKEN."'\n\n");
 
   fwrite($env_create, "# Llaves de Twilio.\n");
   fwrite($env_create, "TWILIO=".$twilio."\n");
@@ -605,6 +607,24 @@ if(isset($_POST['instalar'])){
                     <small id="ONESIGNAL_API_KEY" class="form-text text-muted">Aquí va la API KEY</small>
                   </div>
                 </div>
+
+                <div class="col-10">
+
+                  <div class="mb-3">
+                    <label for="YOUR_USER_KEY_TOKEN" class="form-label">Llave de usuario</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="YOUR_USER_KEY_TOKEN"
+                      id="YOUR_USER_KEY_TOKEN"
+                      aria-describedby="helpId"
+                      placeholder="Pon la llave de usuario"
+                    />
+                    <small id="helpId" class="form-text text-muted">Pon tu llave de usuario (YOUR_USER_KEY_TOKEN).</small>
+                  </div>
+                  
+                </div>
+
 
               </div>
 

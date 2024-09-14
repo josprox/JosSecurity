@@ -9,6 +9,12 @@
             "email": "joss@tecnotech.ovh"
         }
     ],
+    "repositories": [
+        {
+        "type": "vcs",
+        "url": "https://github.com/OneSignal/onesignal-php-api.git"
+        }
+    ],
     "require": {
         "php": ">=8.3",
         "vlucas/phpdotenv": "^5.4",
@@ -16,10 +22,11 @@
         "mercadopago/dx-php": "^2.5",
         "evert/sitemap-php": "^1.2",
         "twilio/sdk": "^6.44",
-        "guzzlehttp/guzzle": "^7.5",
+        "guzzlehttp/guzzle": "^7.9",
         "intervention/image": "^2.7",
         "pragmarx/google2fa": "^8.0",
-        "chillerlan/php-qrcode": "^5.0"
+        "chillerlan/php-qrcode": "^5.0",
+        "onesignal/onesignal-php-api": "*@dev"
     },
     "require-dev": {
         "rector/rector": "^0.18.1"
