@@ -1145,4 +1145,9 @@ body {
 }
 .auth_dashboard .auth small {
   color: #fff !important;
+}
+
+.contenedor_blanco {
+  background-color: #000;
+  color: #fff;
 }/*# sourceMappingURL=dark_mode.css.map */
