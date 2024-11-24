@@ -154,18 +154,18 @@ if(isset($_POST['instalar'])){
     
     fwrite($env_create, "NAME_APP='".$name_app_default."'\n");
     
-  }elseif($name_app_default != $name_app){
+  } else {
 
-    fwrite($env_create, "NAME_APP='".$name_app."'\n");
+      fwrite($env_create, "NAME_APP='" . $name_app . "'\n");
 
   }
   if($version_app_default == $version_app){
     
     fwrite($env_create, "VERSION=".$version_app_default."\n\n");
     
-  }elseif($version_app_default != $version_app){
-    
-    fwrite($env_create, "VERSION=".$version_app."\n\n");
+  } else {
+
+      fwrite($env_create, "VERSION=" . $version_app . "\n\n");
 
   }
 
@@ -188,8 +188,9 @@ if(isset($_POST['instalar'])){
   fwrite($env_create, "CONTRA='".$password_db."'\n");
   fwrite($env_create, "BASE_DE_DATOS='".$db."'\n");
   fwrite($env_create, "HOST='".$servidor_db."'\n");
-  fwrite($env_create, "PUERTO=".$puerto."\n\n");
-  
+  fwrite($env_create, "PUERTO=".$puerto."\n");
+  fwrite($env_create, "PREFIJO=js_\n\n");
+
   fwrite($env_create, "# Conexión a la base de datos PostgreSQL.\n");
   fwrite($env_create, "USUARIO_PSG='".$usuariodb_psg."'\n");
   fwrite($env_create, "CONTRA_PSG='".$password_db_psg."'\n");

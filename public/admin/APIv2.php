@@ -2,7 +2,7 @@
 
 include (__DIR__ . "/../../jossecurity.php");
 
-login_cookie("users");
+login_cookie('table_users');
 
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: ../panel");
@@ -12,7 +12,7 @@ secure_auth_admin($iduser,"../");
 
 $row = new GranMySQL();
 $row -> seleccion = "name";
-$row -> tabla = "users";
+$row -> tabla = "table_users";
 $row -> comparar = "id";
 $row -> comparable = $iduser;
 $consulta = $row -> where();

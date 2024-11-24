@@ -1,16 +1,19 @@
 <?php
 
 //Cron del sistema por defecto.
-
-function limpiador_check_users(){
-    foreach(arreglo_consulta("SELECT * FROM check_users") as $row){
+function limpiar_tabla_check_users()
+{
+    $consulta = new GranMySQL();
+    $consulta -> tabla = "table_check_users";
+    $respuesta = json_decode($consulta -> clasic("json"),true);
+    foreach ($respuesta as $row){
         if($row['expiracion'] < \FECHA){
-            eliminar_datos_con_where("check_users","id",$row['id']);
+            eliminar_datos_con_where("table_check_users","id",$row['id']);
         }
     }
 }
 
-evento_programado("limpiador_check_users",\FECHA,"1 hours");
+evento_programado("limpiar_tabla_check_users",\FECHA,"1 hours");
 
 //Cron extendido disponible para el programador.
 

@@ -7,103 +7,123 @@
     Web: https://josprox.com
 */
 
-class GranMySQL{
-    public $seleccion = "*";
-    public $tabla = "users";
-    public $tabla_innerjoin;
-    public $comparar = "id";
-    public $comparable;
-    public $personalizacion = "";
-    public $respuesta = "fetch_assoc";
-    private $conexion;
+class GranMySQL {
+    public string $seleccion = "*";
+    public string $tabla = "table_users";
+    public mixed $tabla_innerjoin;
+    public string $comparar = "id";
+    public mixed $comparable;
+    public string $personalizacion = "";
+    public string $respuesta = "fetch_assoc";
 
-    public function __construct(){
+    private ?mysqli $conexion;
+    private mixed $prefijo;
+
+    /**
+     * Constructor modificado para aceptar un arreglo de configuración.
+     * @param array $config
+     */
+    public function __construct(array $config = []) {
         $this->conexion = conect_mysqli();
-    }
+        $this->prefijo = env("PREFIJO", "");
 
-    function clasic(){
-        try {
-            $sql = "SELECT {$this->seleccion} FROM {$this->tabla} {$this->personalizacion};";
-            $query = $this->conexion->query($sql);
-            $ejecucion = $this -> respuesta;
-            if($ejecucion != "num_rows"){
-                $resultado = $query -> $ejecucion();
-            }else{
-                $resultado = $query -> num_rows;
+        // Si se pasa un arreglo de configuración, inicializar las propiedades.
+        foreach ($config as $key => $value) {
+            if (property_exists($this, $key)) {
+                $this->$key = $value;
             }
-            return $resultado;
-        } catch (mysqli_sql_exception $e) {
-            // manejar excepción
-            throw $e;
         }
     }
 
-    function where(){
+    public function clasic(string $formato = "array") {
         try {
-            $sql = "SELECT {$this->seleccion} FROM {$this->tabla} {$this->personalizacion} WHERE {$this->comparar} = ?;";
+            $sql = "SELECT {$this->seleccion} FROM {$this->prefijo}{$this->tabla} {$this->personalizacion};";
+            $query = $this->conexion->query($sql);
+
+            if ($query === false) {
+                throw new Exception("Error en la consulta: {$this->conexion->error}");
+            }
+
+            return $this->procesarResultado($query, $formato);
+        } catch (Exception $e) {
+            $this->manejarExcepcion($e);
+        }
+    }
+
+    public function where(string $formato = "array") {
+        try {
+            $sql = "SELECT {$this->seleccion} FROM {$this->prefijo}{$this->tabla} {$this->personalizacion} WHERE {$this->comparar} = ?;";
             $stmt = $this->conexion->prepare($sql);
+
+            if ($stmt === false) {
+                throw new Exception("Error preparando la consulta: {$this->conexion->error}");
+            }
+
             $stmt->bind_param("s", $this->comparable);
             $stmt->execute();
             $result = $stmt->get_result();
-            $ejecucion = $this -> respuesta;
-            if($ejecucion != "num_rows"){
-                $resultado = $result -> $ejecucion();
-            }else{
-                $resultado = $result -> num_rows;
-            }
+
+            $resultado = $this->procesarResultado($result, $formato);
             $stmt->close();
             return $resultado;
-        } catch (mysqli_sql_exception $e) {
-            // manejar excepción
-            throw $e;
+        } catch (Exception $e) {
+            $this->manejarExcepcion($e);
         }
     }
 
-    function InnerJoin(){
+    public function innerJoin(string $formato = "array") {
         try {
-            $sql = "SELECT {$this->seleccion} FROM {$this->tabla} INNER JOIN {$this->tabla_innerjoin} ON {$this->tabla}.{$this->comparar} = {$this->tabla_innerjoin}.{$this->comparable} {$this->personalizacion};";
+            $sql = "SELECT {$this->seleccion} FROM {$this->prefijo}{$this->tabla} 
+                    INNER JOIN {$this->prefijo}{$this->tabla_innerjoin} 
+                    ON {$this->prefijo}{$this->tabla}.{$this->comparar} = {$this->prefijo}{$this->tabla_innerjoin}.{$this->comparable} 
+                    {$this->personalizacion};";
+
             $query = $this->conexion->query($sql);
-            $ejecucion = $this -> respuesta;
-            if($ejecucion != "num_rows"){
-                $resultado = $query -> $ejecucion();
-            }else{
-                $resultado = $query -> num_rows;
+
+            if ($query === false) {
+                throw new Exception("Error en la consulta: {$this->conexion->error}");
             }
-            return $resultado;
-        } catch (mysqli_sql_exception $e) {
-            // manejar excepción
-            throw $e;
+
+            return $this->procesarResultado($query, $formato);
+        } catch (Exception $e) {
+            $this->manejarExcepcion($e);
         }
     }
-    
-    function json(){
-        try {
-            $sql = "{$this->personalizacion}";
-            $query = $this->conexion->query($sql);
+
+    private function procesarResultado($query, string $formato) {
+        if ($formato === "json") {
             $json = [];
-            while($row = mysqli_fetch_assoc($query)){
+            while ($row = $query->fetch_assoc()) {
                 $json[] = $row;
             }
-            $json_resultado = json_encode($json, JSON_UNESCAPED_UNICODE);
-            if($json_resultado){
-                return $json_resultado;
-            }else{
-                throw new Exception("Error al convertir los datos a formato JSON");
-            }
-        } catch (mysqli_sql_exception $e) {
-            // manejar excepción
-            throw $e;
+            return json_encode($json, JSON_UNESCAPED_UNICODE);
+        }
+
+        if ($this->respuesta === "num_rows") {
+            return $query->num_rows;
+        } else {
+            return $query->{$this->respuesta}();
         }
     }
-    function __destruct(){
+
+    private function manejarExcepcion($e) {
+        error_log("Error en GranMySQL: " . $e->getMessage());
+        throw $e;
+    }
+
+    public function __destruct() {
+        $this->resetearPropiedades();
+        $this->conexion->close();
+    }
+
+    private function resetearPropiedades() {
         $this->seleccion = "*";
-        $this->tabla = "users";
+        $this->tabla = "table_users";
         $this->tabla_innerjoin = null;
         $this->comparar = "id";
         $this->comparable = null;
         $this->personalizacion = "";
         $this->respuesta = "fetch_assoc";
-        $this->conexion->close();
     }
 }
 ?>

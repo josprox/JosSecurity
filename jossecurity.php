@@ -24,9 +24,9 @@ session_start();
 date_default_timezone_set($_ENV['ZONA_HORARIA']);
 
 // Definiciones dentro de JosSecurity
+const JS_ROUTE = __DIR__ . DIRECTORY_SEPARATOR;
 define("NOMBRE_APP",(string)$_ENV['NAME_APP']);
 define("VERSION",(float)$_ENV['VERSION']);
-define("JS_ROUTE", __DIR__ . DIRECTORY_SEPARATOR);
 define("FECHA",date("Y-m-d H:i:s"));
 define("FECHA_1_DAY",date("Y-m-d H:i:s", strtotime(\FECHA . "+ 1 days")));
 define("ZONA_HORARIA_CLIENTE", date_default_timezone_get());
@@ -163,7 +163,7 @@ function validarToken($id, $secretKey, $token){
     $google2fa = new GoogleAuthenticator();
     $valido = $google2fa->verifyKey($secretKey, $token);
     if($valido == TRUE){
-        actualizar_datos_mysqli("users","`fa` = 'A', `type_fa` = 'GG', `two_fa` = '$secretKey'","id",$id);
+        actualizar_datos_mysqli("table_users","`fa` = 'A', `type_fa` = 'GG', `two_fa` = '$secretKey'","id",$id);
     }
     return header("refresh:1;");
 }
@@ -315,25 +315,25 @@ function verificar_usuario($check_user): bool {
     $check_user = mysqli_real_escape_string($conexion, (string) $check_user);
 
     // Verificar si el token existe
-    $mysql->tabla = "check_users";
+    $mysql->tabla = "table_check_users";
     $mysql->seleccion = "COUNT(*) as count";
     $mysql->personalizacion = "WHERE url = '$check_user' AND accion = 'check_user'";
     $existe = $mysql->clasic();
     
     if ($existe['count'] >= 1) {
         // Consultar los detalles del usuario
-        $mysql->tabla = "check_users";
+        $mysql->tabla = "table_check_users";
         $mysql->seleccion = "id, id_user, accion";
         $mysql->personalizacion = "WHERE url = '$check_user'";
         $checking = $mysql->clasic();
         
         if (!empty($checking)) {
-            $id_user = $checking[0]['id_user'];
+            $id_user = $checking['id_user'];
             
             // Verificar la acción y actualizar el estado del usuario
-            if ($checking[0]['accion'] == "check_user") {
-                if(actualizar_datos_mysqli("users","`checked_status` = 'TRUE'","id",$id_user) == TRUE){
-                    eliminar_datos_con_where("check_users","id_user",$id_user);
+            if ($checking['accion'] == "check_user") {
+                if(actualizar_datos_mysqli("table_users","`checked_status` = 'TRUE'","id",$id_user) == TRUE){
+                    eliminar_datos_con_where("table_check_users","id_user",$id_user);
                     return true;
                 }
             }
@@ -350,19 +350,19 @@ function cambiar_contra($token,$contra,$repit_contra):bool{
     $conexion -> close();
     // Verificar si el token existe
     $consulta = new GranMySQL();
-    $consulta->tabla = "check_users";
+    $consulta->tabla = "table_check_users";
     $consulta->seleccion = "COUNT(*) as count";
     $consulta->personalizacion = "WHERE url = '$token' AND accion = 'cambiar_contra'";
     $existe = $consulta->clasic();
     if ($existe['count'] >= 1){
-        $consulta -> seleccion = "users.name, check_users.id_user";
-        $consulta -> tabla = "users";
+        $consulta -> seleccion = "mht_table_users.name, check_mht_table_users.id_user";
+        $consulta -> tabla = "table_users";
         $consulta -> comparar = "id";
-        $consulta -> tabla_innerjoin = "check_users";
+        $consulta -> tabla_innerjoin = "table_check_users";
         $consulta -> comparable = "id_user";
         $consulta -> personalizacion = "WHERE url = '$token'";
         $respuesta = $consulta -> InnerJoin();
-        if(eliminar_datos_con_where("check_users","url","'$token'") == TRUE){
+        if(eliminar_datos_con_where("table_check_users","url","'$token'") == TRUE){
             if($contra == $repit_contra){
                 if(actualizar_contra($respuesta['id_user'],$contra)){
                     return true;
@@ -374,6 +374,7 @@ function cambiar_contra($token,$contra,$repit_contra):bool{
             return false;
         }
     }
+    return false;
 }
 
 
@@ -385,12 +386,12 @@ function FA($correo, $contra, $clave, $cookies="si", $redireccion = "panel"){
     $conexion -> close();
     $sql_check = new GranMySQL();
     $sql_check -> seleccion = "id, name, phone, fa, type_fa, two_fa, last_ip";
-    $sql_check -> tabla = "users";
+    $sql_check -> tabla = "table_users";
     $sql_check -> comparar = "email";
     $sql_check -> comparable = "$correo";
     $consulta = $sql_check -> where();
     if($consulta['fa'] != "A" || $consulta['last_ip'] == $_SERVER['REMOTE_ADDR']){
-        return logins($correo,$contra,"users",$cookies, $redireccion);
+        return logins($correo,$contra,"table_users",$cookies, $redireccion);
     }else{
         $generador = generar_llave_alteratorio(16);
         $fecha = \FECHA_1_DAY;
@@ -402,7 +403,7 @@ function FA($correo, $contra, $clave, $cookies="si", $redireccion = "panel"){
             case "correo":
                 if($clave !=""){
                     $sql_check -> seleccion = "*";
-                    $sql_check -> tabla = "check_users";
+                    $sql_check -> tabla = "table_check_users";
                     $sql_check -> comparar = "url";
                     $sql_check -> comparable = "$clave";
                     $sql_check -> respuesta = 'num_rows';
@@ -410,16 +411,16 @@ function FA($correo, $contra, $clave, $cookies="si", $redireccion = "panel"){
                     if($where > 0){
                         $sql_check -> respuesta = 'fetch_assoc';
                         $checking = $sql_check->where();
-                        $checker = consulta_mysqli_where("email", "users", "id", $checking['id_user']);
+                        $checker = consulta_mysqli_where("email", "table_users", "id", $checking['id_user']);
                         if($checker["email"] == $correo){
-                            eliminar_datos_con_where("check_users","id_user",$checking['id_user']);
-                            logins($_GET['arg1'],$_GET['arg2'],"users","si",$_GET['arg5']);
+                            eliminar_datos_con_where("table_check_users","id_user",$checking['id_user']);
+                            logins($_GET['arg1'],$_GET['arg2'],"table_users","si",$_GET['arg5']);
                         }
                     }else{
                         return "no_check_mail";
                     }
                 }else{
-                    insertar_datos_clasic_mysqli("check_users","id_user, accion, url, expiracion", "'$id_user', 'login_auth', '$generador', '$fecha'");
+                    insertar_datos_clasic_mysqli("table_check_users","id_user, accion, url, expiracion", "'$id_user', 'login_auth', '$generador', '$fecha'");
                     $mensaje = "<div><p>Hola de nuevo $nombre_user</p></div><div><p>Si deseas entrar en $nombre_app podrás hacerlo <a href='$web'>dando clic aquí</a>.</p></div><div><p>Tu código de acceso es: $generador</p></div>";
                     mail_WP($correo,"Inicia sesión",$mensaje);
                     return "2fa";
@@ -431,7 +432,7 @@ function FA($correo, $contra, $clave, $cookies="si", $redireccion = "panel"){
                 // Verifica si el código de la aplicación ingresado por el usuario coincide con el código generado a partir de la clave secreta
                 if ($google2fa->verifyKey($llave, $clave, 0)) {
                     // El código de la aplicación es válido, realiza las acciones necesarias (por ejemplo, permitir el acceso al usuario)
-                    return logins($correo, $contra, "users", $cookies, $redireccion);
+                    return logins($correo, $contra, "table_users", $cookies, $redireccion);
                 } else {
                     // El código de la aplicación no es válido, muestra un mensaje de error o realiza alguna otra acción
                     return "error";
@@ -440,7 +441,7 @@ function FA($correo, $contra, $clave, $cookies="si", $redireccion = "panel"){
             case "sms":
                 if($clave !=""){
                     $sql_check -> seleccion = "*";
-                    $sql_check -> tabla = "check_users";
+                    $sql_check -> tabla = "table_check_users";
                     $sql_check -> comparar = "url";
                     $sql_check -> comparable = "$clave";
                     $sql_check -> respuesta = 'num_rows';
@@ -448,16 +449,16 @@ function FA($correo, $contra, $clave, $cookies="si", $redireccion = "panel"){
                     if($where > 0){
                         $sql_check -> respuesta = 'fetch_assoc';
                         $checking = $sql_check->where();
-                        $checker = consulta_mysqli_where("email", "users", "id", $checking['id_user']);
+                        $checker = consulta_mysqli_where("email", "table_users", "id", $checking['id_user']);
                         if($checker["email"] == $correo){
-                            eliminar_datos_con_where("check_users","id_user",$checking['id_user']);
-                            logins($_GET['arg1'],$_GET['arg2'],"users","si",$_GET['arg5']);
+                            eliminar_datos_con_where("table_check_users","id_user",$checking['id_user']);
+                            logins($_GET['arg1'],$_GET['arg2'],"table_users","si",$_GET['arg5']);
                         }
                     }else{
                         return "no_check_sms";
                     }
                 }else{
-                    insertar_datos_clasic_mysqli("check_users","id_user, accion, url, expiracion", "'$id_user', 'login_auth', '$generador', '$fecha'");
+                    insertar_datos_clasic_mysqli("table_check_users","id_user, accion, url, expiracion", "'$id_user', 'login_auth', '$generador', '$fecha'");
                     if(isset($_ENV['TWILIO']) && $_ENV['TWILIO'] == 1){
                         $enviar = new Nuevo_Mensaje();
                         $enviar -> numero = $consulta['phone'];
@@ -474,12 +475,13 @@ function FA($correo, $contra, $clave, $cookies="si", $redireccion = "panel"){
     }
 }
 
-function logins($correo,$contra,$tabla = "users",$cookies = "si", $redireccion = "panel"){
+function logins($correo,$contra,$tabla = "table_users",$cookies = "si", $redireccion = "panel"){
     $conexion = conect_mysqli();
     $tabla = mysqli_real_escape_string($conexion, (string) $tabla);
     $correo = mysqli_real_escape_string($conexion, (string) $correo);
-    mysqli_close($conexion);
-    if(leer_tablas_mysql_custom("SELECT id FROM $tabla WHERE email = '$correo'")>= 1){
+    $conexion->close();
+    (string)$tabla_completa = env("PREFIJO","").$tabla;
+    if(leer_tablas_mysql_custom("SELECT id FROM {$tabla_completa} WHERE email = '$correo'")>= 1){
         $consulta = consulta_mysqli_where("id_rol","$tabla","email","'$correo'");
         $resultado = $consulta['id_rol'];
         $check = new login;
@@ -506,7 +508,7 @@ function logins($correo,$contra,$tabla = "users",$cookies = "si", $redireccion =
 include (__DIR__ . DIRECTORY_SEPARATOR . "config/extension/logins.php");
 
 function cookie_session($sesion,$localizacion_admin,$localizacion_users){
-    $consulta = consulta_mysqli_where("id_rol","users","id",$sesion);
+    $consulta = consulta_mysqli_where("id_rol","table_users","id",$sesion);
     $resultado = $consulta["id_rol"];
     if ($resultado == 1 || $resultado == 2 || $resultado == 4){
         header("Location: $localizacion_admin");
@@ -521,8 +523,8 @@ function login_cookie($table_DB){
         if ($_COOKIE['COOKIE_INDEFINED_SESSION']) {
             $nombre_user = $_COOKIE['COOKIE_DATA_INDEFINED_SESSION']['user'];
             $password_user = $_COOKIE['COOKIE_DATA_INDEFINED_SESSION']['pass'];
-    
-            $sql = "SELECT id, password FROM $table_DB WHERE email = '$nombre_user'";
+            (string)$tabla_completa = env("PREFIJO","").$table_DB;
+            $sql = "SELECT id, password FROM {$tabla_completa} WHERE email = '$nombre_user'";
             $resultado = $conexion->query($sql);
             $rows = $resultado->num_rows;
             if ($rows > 0) {
@@ -547,9 +549,9 @@ function registro($table_db,$name_user,$email_user,$contra_user,$rol_user,$facto
 	$rol = mysqli_real_escape_string($conexion,(string) $rol_user);
     $rol = (int)$rol;
 	$fa_status = mysqli_real_escape_string($conexion,(string) $factor);
+    (string)$tabla_completa = env("PREFIJO","").$table_db;
 
-
-    $sql_check = "SELECT id FROM $table_db WHERE email = '$email'";
+    $sql_check = "SELECT id FROM {$tabla_completa} WHERE email = '$email'";
     $sql_rest = $conexion->query($sql_check);
     $filas = $sql_rest -> num_rows;
     mysqli_close($conexion);
@@ -572,7 +574,7 @@ function registro($table_db,$name_user,$email_user,$contra_user,$rol_user,$facto
             if(mail_smtp_v1_3($nombre,"Su registro ha sido exitoso!!",$cuerpo_de_correo,$email) == TRUE){
                 $consulta_id_new = consulta_mysqli_where("id",$table_db,"email","'$email'");
                 $id_new = $consulta_id_new['id'];
-                insertar_datos_clasic_mysqli("check_users","id_user, url, accion, expiracion","$id_new, '$key', 'check_user', '$fecha_1_day'");
+                insertar_datos_clasic_mysqli("table_check_users","id_user, url, accion, expiracion","$id_new, '$key', 'check_user', '$fecha_1_day'");
             }
         }
         $success = "
@@ -599,12 +601,12 @@ function registro($table_db,$name_user,$email_user,$contra_user,$rol_user,$facto
 
 function resetear_contra($correo){
     $key = generar_llave_alteratorio(16);
-    $consulta = consulta_mysqli_where("id","users","email","'$correo'");
+    $consulta = consulta_mysqli_where("id","table_users","email","'$correo'");
     $id_correo = $consulta['id'];
     $fecha_1_day = date("Y-m-d H:i:s", strtotime(\FECHA . "+ 1 days"));
 
-    if(insertar_datos_clasic_mysqli("check_users","id_user, accion, url, expiracion","$id_correo,'cambiar_contra', '$key','$fecha_1_day'") == TRUE){
-        $row = consulta_mysqli_where("name","users","email","'$correo'");
+    if(insertar_datos_clasic_mysqli("table_check_users","id_user, accion, url, expiracion","$id_correo,'cambiar_contra', '$key','$fecha_1_day'") == TRUE){
+        $row = consulta_mysqli_where("name","table_users","email","'$correo'");
     
         $name = $row['name'];
     
@@ -629,7 +631,7 @@ function actualizar_contra($id, $nueva_contra){
     $contra = mysqli_real_escape_string($conexion, (string) $nueva_contra);
     $password_encriptada = password_hash((string) $contra,PASSWORD_BCRYPT,["cost"=>10]);
     $conexion -> close();
-    if(actualizar_datos_mysqli("users","`password` = '$password_encriptada'","id",$id_check) == TRUE){
+    if(actualizar_datos_mysqli("table_users","`password` = '$password_encriptada'","id",$id_check) == TRUE){
         return TRUE;
     }else{
         return FALSE;
@@ -645,7 +647,8 @@ function logout($id,$table_DB){
 
     $conexion = conect_mysqli();
     $table = mysqli_real_escape_string($conexion, (string) $table_DB);
-    $sql = "SELECT email,password FROM $table WHERE id = '$id'";
+    (string)$tabla_completa = env("PREFIJO","").$table;
+    $sql = "SELECT email,password FROM {$tabla_completa} WHERE id = '$id'";
     $resultado = $conexion->query($sql);
     $row = $resultado->fetch_assoc();
     $usuario = $row['email'];
@@ -665,7 +668,7 @@ function logout($id,$table_DB){
 
 function eliminar_cuenta($id,$table_DB,$redireccion){
     global $nombre_app;
-    $consulta = consulta_mysqli_where("email, name","users","id",$id);
+    $consulta = consulta_mysqli_where("email, name","table_users","id",$id);
     if (eliminar_datos_con_where($table_DB,"id",$id)) {
         $cuerpo_de_correo = "<div><p>Hemos eliminado tu cuenta, muchas gracias haber sido parte de $nombre_app, esperamos verte en algún momento.</p></div>";
         if(mail_smtp_v1_3($consulta['name'],"Hasta pronto 😢",$cuerpo_de_correo,$consulta['email'])){
@@ -687,7 +690,7 @@ function eliminar_cuenta($id,$table_DB,$redireccion){
 
 function eliminar_cuenta_con_cookies($id,$table_DB,$redireccion){
     global $nombre_app;
-    $consulta = consulta_mysqli_where("email, password, name","users","id",$id);
+    $consulta = consulta_mysqli_where("email, password, name","table_users","id",$id);
     $usuario = $consulta['email'];
     $password = $consulta['password'];
     //eliminar cookies creadas por el sistema
@@ -795,7 +798,8 @@ function arreglo_consulta($code){
 
 function consulta_mysqli_clasic($select_db,$table_db){
     $conexion = conect_mysqli();
-    $sql = "SELECT $select_db FROM $table_db";
+    (string)$tabla_completa = env("PREFIJO","").$table_db;
+    $sql = "SELECT $select_db FROM {$tabla_completa}";
     $resultado = $conexion->query($sql);
     $fetch = $resultado->fetch_assoc();
     mysqli_close($conexion);
@@ -804,30 +808,12 @@ function consulta_mysqli_clasic($select_db,$table_db){
 
 function consulta_mysqli_where($select_db,$table_db,$data,$compare){
     $conexion = conect_mysqli();
-    $sql = "SELECT $select_db FROM $table_db WHERE $data = $compare";
+    (string)$tabla_completa = env("PREFIJO","").$table_db;
+    $sql = "SELECT $select_db FROM {$tabla_completa} WHERE $data = $compare";
     $resultado = $conexion->query($sql);
     $fetch = $resultado->fetch_assoc();
     mysqli_close($conexion);
     return $fetch;
-}
-
-function consulta_mysqli_innerjoin($select_db,$table_db,$inner,$compare,$data){
-    $conexion = conect_mysqli();
-    $sql = "SELECT $select_db FROM $table_db INNER JOIN $inner ON $compare = $data";
-    $resultado = $conexion->query($sql);
-    $fetch = $resultado->fetch_assoc();
-    mysqli_close($conexion);
-    return $fetch;
-}
-
-function consulta_mysqli_estructura_tabla($tabla){
-    global $DB;
-    $conexion = conect_mysqli();
-    $sql = "SHOW CREATE TABLE `$DB`.`$tabla`";
-    $resultado = $conexion->query($sql);
-    $fetch = $resultado->fetch_assoc();
-    mysqli_close($conexion);
-    return print_r($fetch);
 }
 
 function consulta_mysqli_custom_all($code){
@@ -837,21 +823,6 @@ function consulta_mysqli_custom_all($code){
     $fetch = $resultado->fetch_assoc();
     mysqli_close($conexion);
     return $fetch;
-}
-
-function consulta_mysqli_custom_all_JSON($code){
-    $conexion = conect_mysqli();
-    $resultado = $conexion->query((string)$code);
-    $json = [];
-    while($row = mysqli_fetch_assoc($resultado)){
-        $json[] = $row;
-    }
-    $conexion ->close();
-    if($json_resultado = json_encode($json, JSON_UNESCAPED_UNICODE)){
-        return $json_resultado;
-    }else{
-        return false;
-    }
 }
 
 function leer_tablas_mysql_custom($code){
@@ -865,7 +836,8 @@ function leer_tablas_mysql_custom($code){
 
 function insertar_datos_clasic_mysqli($tabla,$datos,$contenido){
     $conexion = conect_mysqli();
-    $sql = "INSERT INTO $tabla ($datos) VALUES ($contenido);";
+    (string)$tabla_completa = env("PREFIJO","").$tabla;
+    $sql = "INSERT INTO {$tabla_completa} ($datos) VALUES ($contenido);";
     if($conexion -> query($sql) == TRUE){
         mysqli_close($conexion);
         return TRUE;
@@ -889,8 +861,8 @@ function insertar_datos_custom_mysqli($codigo_sql){
 
 function insertar_datos_post_mysqli($tabla,$post){
     $conexion = conect_mysqli();
-
-    $insert = "INSERT INTO $tabla (";
+    (string)$tabla_completa = env("PREFIJO","").$tabla;
+    $insert = "INSERT INTO {$tabla_completa} (";
     $values = " VALUES (";
     
     foreach ( $post as $key => $value ) {
@@ -916,9 +888,9 @@ function insertar_datos_post_mysqli($tabla,$post){
 function actualizar_datos_mysqli($tabla, $edicion, $where, $dato){
     global $fecha;
     $miconexion = conect_mysqli();
-    
+    $tabla_completa = env("PREFIJO","").$tabla;
     // Construir la consulta de actualización
-    $sql = "UPDATE `$tabla` SET $edicion, `updated_at` = ? WHERE `$where` = ?";
+    $sql = "UPDATE `{$tabla_completa}` SET $edicion, `updated_at` = ? WHERE `$where` = ?";
     
     // Preparar la consulta
     if ($stmt = $miconexion->prepare($sql)) {
@@ -942,64 +914,13 @@ function actualizar_datos_mysqli($tabla, $edicion, $where, $dato){
     }
 }
 
-function Github_API($private=false, $url, $token=null) {
-    // Inicializar cURL
-    $ch = curl_init($url);
 
-    // Construir el array de encabezados
-    $headers = [
-        'User-Agent: PHP' // GitHub requiere un User-Agent en las solicitudes API
-    ];
-
-    // Si la API es privada, agregar el token de autorización
-    if ($private && $token) {
-        $headers[] = 'Authorization: token ' . $token; // Agregar encabezado de autenticación
-    }
-
-    // Configurar opciones de cURL
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Obtener respuesta en lugar de imprimirla
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers); // Pasar los encabezados configurados
-
-    // Ejecutar la solicitud
-    $response = curl_exec($ch);
-
-    // Verificar si hubo errores
-    if (curl_errno($ch)) {
-        $errorMessage = 'Error en cURL: ' . curl_error($ch);
-        curl_close($ch);
-        return json_encode([
-            "error" => 500,
-            "mensaje" => $errorMessage
-        ]);
-    }
-
-    // Obtener el código de respuesta HTTP
-    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    // Cerrar cURL
-    curl_close($ch);
-
-    // Verificar si la solicitud fue exitosa
-    if ($httpcode === 200) {
-        // Decodificar la respuesta JSON
-        if (json_validate($response)) {
-            return $response;
-        }
-        return json_encode([
-            "error" => 404,
-            "mensaje" => "No se obtuvo nada, código HTTP: " . $httpcode
-        ]);
-    } else {
-        return json_encode([
-            "error" => 400,
-            "mensaje" => "Solicitud fallida, código HTTP: " . $httpcode
-        ]);
-    }
-}
-
-function eliminar_datos_con_where($tabla,$where,$dato){
+function eliminar_datos_con_where($tabla,$where,$dato): string
+{
     $conexion = conect_mysqli();
-    $sql = "DELETE FROM `$tabla` WHERE `$tabla`.`$where` = $dato";
+    (string)$prefijo = env("PREFIJO","");
+    $tabla_completa = $prefijo.$tabla;
+    $sql = "DELETE FROM `{$tabla_completa}` WHERE {$tabla_completa}.{$where} = {$dato}";
     if ($conexion->query($sql) === TRUE) {
         $success = "
         <script>
@@ -1055,7 +976,8 @@ function eliminar_datos_custom_mysqli($sql_codigo){
 
 function crear_tabla_mysqli($tabla,$contenido){
     $conexion = conect_mysqli();
-    $sql = "CREATE TABLE `$tabla` (`id` bigint(25) NOT NULL PRIMARY KEY AUTO_INCREMENT, $contenido, `created_at` timestamp NULL DEFAULT NULL, `updated_at` timestamp NULL DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+    $tabla_completa = env("PREFIJO","").$tabla;
+    $sql = "CREATE TABLE `{$tabla_completa}` (`id` bigint(25) NOT NULL PRIMARY KEY AUTO_INCREMENT, {$contenido}, `created_at` timestamp NULL DEFAULT NULL, `updated_at` timestamp NULL DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
     if($conexion ->query($sql)){
         mysqli_close($conexion);
         return TRUE;
@@ -1067,7 +989,8 @@ function crear_tabla_mysqli($tabla,$contenido){
 }
 function crear_tabla_PDO($tabla,$contenido){
     $pdo = conect_mysql();
-    $sql = "CREATE TABLE `$tabla` (`id` bigint(25) NOT NULL PRIMARY KEY AUTO_INCREMENT, $contenido, `created_at` timestamp NULL DEFAULT NULL, `updated_at` timestamp NULL DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+    $tabla_completa = env("PREFIJO","").$tabla;
+    $sql = "CREATE TABLE `{$tabla_completa}` (`id` bigint(25) NOT NULL PRIMARY KEY AUTO_INCREMENT, {$contenido}, `created_at` timestamp NULL DEFAULT NULL, `updated_at` timestamp NULL DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
     if($pdo ->exec($sql)){
         $pdo = null;
         return TRUE;
@@ -1080,7 +1003,8 @@ function crear_tabla_PDO($tabla,$contenido){
 
 function eliminar_tabla_PDO($tabla){
     $pdo = conect_mysql();
-    $sql = "TRUNCATE TABLE `$tabla`;";
+    $tabla_completa= env("PREFIJO","").$tabla;
+    $sql = "TRUNCATE TABLE `{$tabla_completa}`;";
     $pdo -> exec($sql);
 }
 
@@ -1112,10 +1036,10 @@ function cookie(){
 //Sistema de seguridad para el administrador
 
 function secure_auth_admin($iduser,$location){
-    $rol = consulta_mysqli_where("id_rol","users","id",$iduser);
+    $rol = consulta_mysqli_where("id_rol","table_users","id",$iduser);
     $check_user = $rol['id_rol'];
     if($check_user != 1 && $check_user != 2 && $check_user != 4){
-        logout($iduser,"users");
+        logout($iduser,"table_users");
         header("location: $location");
     }
 }
@@ -1170,9 +1094,30 @@ function borrar_directorio($dirname) {
 	 return true;
 }
 
+// variables env
+
+function env($key, $default = null)
+{
+    // Si $_ENV contiene la clave y no está vacía, devuelve su valor
+    if (isset($_ENV[$key]) && !empty($_ENV[$key])) {
+        return $_ENV[$key];
+    }
+
+    // Si no existe, verifica en getenv para sistemas configurados de forma diferente
+    $value = getenv($key);
+    if ($value !== false) {
+        return $value;
+    }
+
+    // Devuelve el valor predeterminado si no se encuentra nada
+    return $default;
+}
+
+
 //Jossitos para comprobación interna de seguridad SSL/TLS a través del puerto 80 o 443
 
-function check_http(){
+function check_http(): string
+{
     $domain = $_ENV['DOMINIO'];
     if (isset($domain) && $domain !== 'localhost' && isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
         return 'https://';
@@ -1184,7 +1129,8 @@ function check_http(){
 }
 
 // Jossito para escanear directorios
-function escanear_directorio($url_interno){
+function escanear_directorio($url_interno): false|string
+{
     $archivos = scandir(__DIR__ . DIRECTORY_SEPARATOR . $url_interno);
     $resultados = [];
     
@@ -1212,12 +1158,14 @@ function escanear_directorio($url_interno){
 
 //Cron de JosSecurity
 
-function evento_programado($task_name, $schedule, $interval) {
+function evento_programado($task_name, $schedule, $interval): void
+{
     $fecha = \FECHA;
     $timestamp = strtotime((string) $schedule); 
     $next_run = date("Y-m-d H:i:s", $timestamp);
-    if(leer_tablas_mysql_custom("SELECT * FROM tareas WHERE funcion = '$task_name'") >=1){
-        $consulta = consulta_mysqli_where("sig_fecha","tareas","funcion","'$task_name'");
+    $tabla = env("PREFIJO","")."table_tareas";
+    if(leer_tablas_mysql_custom("SELECT * FROM {$tabla} WHERE funcion = '$task_name'") >=1){
+        $consulta = consulta_mysqli_where("sig_fecha","table_tareas","funcion","'$task_name'");
         if(\FECHA >= $consulta['sig_fecha']){
             $task_name();
             // actualiza el siguiente tiempo de ejecución
@@ -1225,11 +1173,12 @@ function evento_programado($task_name, $schedule, $interval) {
             $fecha_creacion->modify('+'.$interval);
             $fecha_final = $fecha_creacion->format('Y-m-d H:i:s');
             // actualizar el programa de tareas en la base de datos
-            actualizar_datos_mysqli("tareas","`sig_fecha` = '$fecha_final'","funcion","'$task_name'");
+            actualizar_datos_mysqli("table_tareas","`sig_fecha` = '$fecha_final'","funcion","'$task_name'");
         }
     }else{
         $task_name();
-        insertar_datos_custom_mysqli("INSERT INTO tareas (funcion, sig_fecha, created_at) VALUES ('$task_name', '$next_run','$fecha')");
+        $tabla = env("PREFIJO","")."table_tareas";
+        insertar_datos_custom_mysqli("INSERT INTO {$tabla} (funcion, sig_fecha, created_at) VALUES ('$task_name', '$next_run','$fecha')");
     }
 }
 //Jossito para comprobar zona horaria del cliente
@@ -1378,7 +1327,7 @@ if($_ENV['RECAPTCHA'] != 1 || !isset($_ENV['RECAPTCHA'])){
 //Post "salir" para permitir un logout de manera segura
 
 if(isset($_POST['salir'])){
-    logout("","users");
+    logout("","table_users");
     header("Location: ./../panel");
 }
 
@@ -1427,6 +1376,12 @@ if ($_ENV['PLUGINS'] != 1 || !isset($_ENV['PLUGINS'])){
 // Se ha integrado Gran MySQL como una herramienta completa, dejando de ser solo un plugin.
 if(file_exists(__DIR__ . "/config/extension/granmysql/gran_mysql.php")){
     include (__DIR__ . "/config/extension/granmysql/gran_mysql.php");
+}
+
+// Nueva clase para verificar estados de un dominio
+
+if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . "config/extension/NetworkHelperJS/NetworkHelper.php")){
+    include (__DIR__ . DIRECTORY_SEPARATOR . "config/extension/NetworkHelperJS/NetworkHelper.php");
 }
 
 // Podrás crear tus propios Jossitos en el achivo mis_jossitos.php en la carpeta config.

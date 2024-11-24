@@ -1,12 +1,15 @@
 <?php
 
 function not_paid_datos(){
-    return consulta_mysqli_clasic("*","not_pay");
+    return consulta_mysqli_clasic("*","table_not_pay");
 }
 
 function correr_not_pay(){
-
-    if (leer_tablas_mysql_custom("SELECT * FROM not_pay")>=1){
+    $consulta_not_pay = new GranMySQL();
+    $consulta_not_pay -> seleccion = "COUNT(*)";
+    $consulta_not_pay -> tabla = "table_not_pay";
+    $repuesta_not_pay = $consulta_not_pay -> clasic();
+    if ($repuesta_not_pay['COUNT(*)']>=1){
 
         $datos = not_paid_datos();
 

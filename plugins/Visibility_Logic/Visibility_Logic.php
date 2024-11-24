@@ -11,7 +11,7 @@
 class VisibilityLogic{
     public $accion = "mostrar";
     public $ip = "allow-all";
-    public $iduser_tabla = "users";
+    public $iduser_tabla = "table_users";
     public $fecha = "";
 
     function ip(){
