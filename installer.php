@@ -2,7 +2,7 @@
 
 $name_app_default = "JosSecurity";
 
-$version_app_default = "2.6";
+$version_app_default = "2.7.0";
 
 if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . ".env")){
   header("Location: ./public/panel");
@@ -325,7 +325,7 @@ if(isset($_POST['instalar'])){
               <div class="col-5">
                 <div class="mb-3">
                   <label for="version" class="form-label">Versión de la aplicación</label>
-                  <input type="number" step="any" value="<?php echo $version_app_default; ?>"
+                  <input type="text" disabled step="any" value="<?php echo $version_app_default; ?>"
                     class="form-control" name="version" id="version" aria-describedby="version" required>
                   <small id="version" class="form-text text-muted">Ingresa el número de la aplicación.</small>
                 </div>

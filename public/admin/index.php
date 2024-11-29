@@ -2,6 +2,8 @@
 
 global $nombre_app, $version_app;
 
+use SysJosSecurity\SysNAND;
+
 include (__DIR__ . "/../../jossecurity.php");
 
 login_cookie("table_users");
@@ -265,7 +267,10 @@ $sistema = new SysJosSecurity\SysNAND();
     </section>
 
   <br>
-  <p align="center">Este sistema fue creado por JOSPROX MX | Internacional, visita nuestra <a href="https://jossecurity.josprox.com/" role="button">documentación</a> para saber cómo usar el sistema de JosSecurity. Versión: <?php echo $version_app; ?></p>
+  <p align="center">Este sistema fue creado por JOSPROX MX | Internacional, visita nuestra <a href="https://jossecurity.josprox.com/" role="button">documentación</a> para saber cómo usar el sistema de JosSecurity. Versión:
+      <?php
+      echo env("VERSION","2.6");
+      ?></p>
 
 
   </div>

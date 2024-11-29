@@ -2,7 +2,9 @@
 
 namespace SysJosSecurity;
 
+use Exception;
 use Intervention\Image\ImageManagerStatic as Image;
+use GuzzleHttp\Client;
 
 class SysNAND{
     public $jossito = "";
@@ -12,10 +14,13 @@ class SysNAND{
     public $comparador = TRUE;
     private $system_rute;
     private $conexion;
+    private Client $client;
 
     public function __construct(){
         $this->conexion = conect_mysqli();
         $this->system_rute = (__DIR__ . DIRECTORY_SEPARATOR . "../../");
+        // Inicializa el cliente HTTP
+        $this->client = new Client();
     }
 
     public function comparar(){
@@ -107,4 +112,61 @@ class SysNAND{
         }
         return true;
     }
+
+    function updateEnvValue($key, $newValue, $filePath = '.env')
+    {
+        // Verificar si el archivo existe
+        $filePath = \JS_ROUTE . $filePath;
+        if (!file_exists($filePath)) {
+            throw new Exception("El archivo $filePath no existe.");
+        }
+
+        // Leer el contenido del archivo
+        $envContent = file_get_contents($filePath);
+
+        // Crear un patrón para buscar la línea correspondiente al valor actual
+        $pattern = "/^$key=.*$/m";
+
+        // Verificar si la clave existe en el archivo
+        if (preg_match($pattern, $envContent)) {
+            // Reemplazar la línea existente con el nuevo valor
+            $envContent = preg_replace($pattern, "$key=$newValue", $envContent);
+        } else {
+            // Si no existe, agregar la clave y el valor al final del archivo
+            $envContent .= PHP_EOL . "$key=$newValue";
+        }
+
+        // Guardar los cambios en el archivo
+        file_put_contents($filePath, $envContent);
+    }
+
+    public function getLatestVersionName()
+    {
+        try {
+            // Obtén la URL desde el archivo .env
+            $updaterUrl = env('UPDATER_URL',"https://jossred.josprox.com/api/version/JosSecurity");
+
+            // Realiza la solicitud HTTP
+            $response = $this->client->get($updaterUrl);
+            $body = $response->getBody()->getContents();
+
+            // Decodifica el JSON
+            $json = json_decode($body, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new Exception("Error al decodificar el JSON: " . json_last_error_msg());
+            }
+
+            if (!isset($json['Version'])) {
+                throw new Exception("La clave 'Version' no está presente en la respuesta JSON");
+            }
+
+            // Devuelve el nombre de la última versión
+            return $json;
+        } catch (Exception $e) {
+            // Manejo de errores
+            return "Error: " . $e->getMessage();
+        }
+    }
+
 }

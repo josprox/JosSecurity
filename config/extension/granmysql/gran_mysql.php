@@ -17,6 +17,7 @@ class GranMySQL {
     public string $respuesta = "fetch_assoc";
 
     private ?mysqli $conexion;
+    private $pdo_conect;
     private mixed $prefijo;
 
     /**
@@ -25,6 +26,7 @@ class GranMySQL {
      */
     public function __construct(array $config = []) {
         $this->conexion = conect_mysqli();
+        $this->pdo_conect = conect_mysql();
         $this->prefijo = env("PREFIJO", "");
 
         // Si se pasa un arreglo de configuración, inicializar las propiedades.
@@ -109,6 +111,40 @@ class GranMySQL {
     private function manejarExcepcion($e) {
         error_log("Error en GranMySQL: " . $e->getMessage());
         throw $e;
+    }
+
+    function cambiarPrefijo($oldPrefix, $newPrefix):string {
+        try {
+            // Obtener todas las tablas con el prefijo antiguo
+            $query = "
+                SELECT TABLE_NAME
+                FROM INFORMATION_SCHEMA.TABLES
+                WHERE TABLE_SCHEMA = :databaseName
+                  AND TABLE_NAME LIKE :oldPrefix";
+            
+            $stmt = $this->pdo_conect->prepare($query);
+            $stmt->execute([
+                ':databaseName' => env("BASE_DE_DATOS"),
+                ':oldPrefix' => "$oldPrefix%"
+            ]);
+    
+            $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    
+            if (empty($tables)) {
+                return "No se encontraron tablas con el prefijo '$oldPrefix'.";
+            }
+    
+            // Generar y ejecutar los comandos para renombrar tablas
+            foreach ($tables as $table) {
+                $newTableName = str_replace($oldPrefix, $newPrefix, $table);
+                $renameQuery = "RENAME TABLE `$table` TO `$newTableName`;";
+                $this->pdo_conect->exec($renameQuery);
+            }
+    
+            return "Cambio de prefijos completado.";
+        } catch (PDOException $e) {
+            return "Error al cambiar los prefijos: " . $e->getMessage();
+        }
     }
 
     public function __destruct() {

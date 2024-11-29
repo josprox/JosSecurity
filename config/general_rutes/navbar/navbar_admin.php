@@ -1,3 +1,6 @@
+<?php
+    use SysJosSecurity\SysNAND;
+?>
 <nav class="navbar navbar-expand-sm fixed-top navbar-transparent">
     <div class="container">
     <a class="navbar-brand" href="https://github.com/josprox/JosSecurity" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-shield-halved"></i> JS</a>
@@ -30,9 +33,9 @@
             <a class="dropdown-item" href="sitemap"><i class="fa-solid fa-signs-post"></i> Generar un sitemap</a>
             <?php
             if ($_ENV['CONECT_POSTGRESQL'] == 1 OR $_ENV['CONECT_POSTGRESQL_PDO'] == 1){?>
-              <a class="dropdown-item" href="postgresql"><i class="fa-solid fa-database"></i> PostgreSQL</a>
-              <?php
-            }
+                  <a class="dropdown-item" href="postgresql"><i class="fa-solid fa-database"></i> PostgreSQL</a>
+                  <?php
+                }
             ?>
           </div>
         </li>
@@ -58,6 +61,26 @@
             ?>
           </div>
         </li>
+          <?php
+          $updater = new SysNAND();
+          $consulta = $updater -> getLatestVersionName();
+          $version = $consulta['Version'];
+          $link = $consulta['Descarga'];
+          if(env("VERSION","2.6") < $version){
+              ?>
+              <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fa-solid fa-bell"></i>
+
+                      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="margin-top: 5px">1</span>
+                      Novedades</a>
+                  <div class="dropdown-menu" aria-labelledby="dropdownId">
+                      <a class="dropdown-item" href="<?php echo $link ?>"><i class="fa-solid fa-cloud-arrow-down"></i> Se ha detectado una nueva versión <?php echo $version; ?></a>
+                  </div>
+              </li>
+              <?php
+          }
+          ?>
         <?php
         if ($_SESSION['id_usuario'] == 1 OR $_SESSION['id_usuario'] == 2 OR $_SESSION['id_usuario'] == 4){
           ?>
@@ -84,9 +107,11 @@
         }
         ?>
       </ul>
-      <form class="d-flex my-2 my-lg-0" action="<?php $_SERVER['PHP_SELF']; ?>" method="post">
-        <button class="btn btn-outline-light my-2 my-sm-0" style="width: 100%;" name ="salir" type="submit">Salir</button>
-      </form>
+        <div class="d-flex my-2 my-lg-0">
+          <form action="<?php $_SERVER['PHP_SELF']; ?>" method="post">
+            <button class="btn btn-outline-light my-2 my-sm-0" style="width: 100%;" name ="salir" type="submit">Salir</button>
+          </form>
+        </div>
     </div>
   </div>
 </nav>

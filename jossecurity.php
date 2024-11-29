@@ -309,7 +309,7 @@ function verificar_usuario($check_user): bool {
     }
 
     // Crear una instancia de la clase GranMySQL con la conexión
-    $mysql = new GranMySQL($conexion);
+    $mysql = new GranMySQL();
 
     // Sanitizar la entrada
     $check_user = mysqli_real_escape_string($conexion, (string) $check_user);
