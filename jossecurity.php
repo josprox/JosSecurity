@@ -355,7 +355,7 @@ function cambiar_contra($token,$contra,$repit_contra):bool{
     $consulta->personalizacion = "WHERE url = '$token' AND accion = 'cambiar_contra'";
     $existe = $consulta->clasic();
     if ($existe['count'] >= 1){
-        $consulta -> seleccion = "mht_table_users.name, check_mht_table_users.id_user";
+        $consulta -> seleccion = "name, id_user";
         $consulta -> tabla = "table_users";
         $consulta -> comparar = "id";
         $consulta -> tabla_innerjoin = "table_check_users";

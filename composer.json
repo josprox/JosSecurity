@@ -17,7 +17,7 @@
     ],
     "require": {
         "php": ">=8.3",
-        "vlucas/phpdotenv": "^5.4",
+        "vlucas/phpdotenv": "^5.6",
         "phpmailer/phpmailer": "^6.6",
         "mercadopago/dx-php": "^2.5",
         "evert/sitemap-php": "^1.2",
